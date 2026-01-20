@@ -1,26 +1,30 @@
 <script setup lang="ts">
 import NavMain from '@/components/NavMain.vue';
-import NavUser from '@/components/NavUser.vue';
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, konten } from '@/routes';
+import {
+    artikel,
+    dashboard,
+    gayaBelajar,
+    intelegensi,
+    konten,
+    layanan,
+    minatBakat,
+} from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import {
+    BookOpenCheck,
     Brain,
     Building2,
     Flame,
     GraduationCap,
-    HandCoins,
-    Handshake,
     LayoutGrid,
-    Newspaper,
     Stethoscope,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -40,41 +44,34 @@ const contentNavItems = [
         icon: Building2,
     },
     {
-        title: 'Layanan',
-        href: konten(),
-        icon: Stethoscope,
-    },
-    {
-        title: 'Mitra',
-        href: konten(),
-        icon: Handshake,
-    },
-    {
         title: 'Artikel',
-        href: konten(),
-        icon: Newspaper,
+        href: artikel(),
+        icon: BookOpenCheck,
     },
 ];
 
 const servicesNavItems = [
     {
-        title: 'Pemesanan',
-        href: konten(),
-        icon: HandCoins,
+        title: 'Data Layanan',
+        href: layanan(),
+        icon: Stethoscope,
     },
+];
+
+const testNavItems = [
     {
         title: 'Minat Bakat',
-        href: konten(),
+        href: minatBakat(),
         icon: Flame,
     },
     {
         title: 'Gaya Belajar',
-        href: konten(),
+        href: gayaBelajar(),
         icon: GraduationCap,
     },
     {
         title: 'Intelegensi',
-        href: konten(),
+        href: intelegensi(),
         icon: Brain,
     },
 ];
@@ -102,11 +99,8 @@ const servicesNavItems = [
             <NavMain label="Menu Utama" :items="mainNavItems" />
             <NavMain label="Manajemen Konten" :items="contentNavItems" />
             <NavMain label="Manajemen Layanan" :items="servicesNavItems" />
+            <NavMain label="Manajemen Tes" :items="testNavItems" />
         </SidebarContent>
-
-        <SidebarFooter>
-            <NavUser />
-        </SidebarFooter>
     </Sidebar>
     <slot />
 </template>
