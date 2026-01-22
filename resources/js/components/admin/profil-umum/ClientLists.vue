@@ -48,9 +48,7 @@ const services = [
             class="overflow-hidden rounded-lg border border-gray-200 shadow-sm dark:border-gray-800"
         >
             <Table>
-                <TableHeader
-                    class="bg-linear-to-r from-primary/90 to-primary/80"
-                >
+                <TableHeader class="bg-primary">
                     <TableRow class="border-0 hover:bg-transparent">
                         <TableHead
                             class="w-16 text-center font-semibold text-white"

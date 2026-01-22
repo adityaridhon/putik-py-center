@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import ArticleCard from '@/components/admin/manajemen-artikel/ArticleCardHeader.vue';
+import ArticleData from '@/components/admin/manajemen-artikel/ArticleData.vue';
+import ArticleLists from '@/components/admin/manajemen-artikel/ArticleLists.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { artikel } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -24,7 +26,8 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
             <div>
                 <h1 class="my-4 text-2xl font-bold">Artikel terbaru</h1>
-                <h1 class="my-4 text-2xl font-bold">Daftar Artikel</h1>
+                <ArticleData />
+                <ArticleLists class="mt-10 mb-4" />
             </div>
         </div>
     </AppLayout>

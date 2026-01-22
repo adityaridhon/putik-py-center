@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
+import Badge from '@/components/ui/badge/Badge.vue';
 import {
     Table,
     TableBody,
@@ -48,32 +48,54 @@ const getStatusVariant = (status: string) => {
 </script>
 
 <template>
-    <Table>
-        <TableHeader class="bg-primary/10 text-white">
-            <TableRow class="text-center text-white">
-                <TableHead> No </TableHead>
-                <TableHead>Nama Pengguna</TableHead>
-                <TableHead>Aktivitas</TableHead>
-                <TableHead> Tanggal </TableHead>
-                <TableHead>Status</TableHead>
-            </TableRow>
-        </TableHeader>
-        <TableBody>
-            <TableRow v-for="activity in activities" :key="activity.id">
-                <TableCell class="font-medium">
-                    {{ activity.id }}
-                </TableCell>
-                <TableCell>{{ activity.nama_pengguna }}</TableCell>
-                <TableCell>{{ activity.aktivitas }}</TableCell>
-                <TableCell>
-                    {{ activity.tanggal }}
-                </TableCell>
-                <TableCell>
-                    <Badge :variant="getStatusVariant(activity.status)">
-                        {{ activity.status }}
-                    </Badge>
-                </TableCell>
-            </TableRow>
-        </TableBody>
-    </Table>
+    <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+        <Table>
+            <TableHeader class="bg-primary">
+                <TableRow class="border-0 hover:bg-transparent">
+                    <TableHead
+                        class="w-16 text-center font-semibold text-white"
+                    >
+                        No
+                    </TableHead>
+                    <TableHead class="font-semibold text-white">
+                        Nama Pengguna
+                    </TableHead>
+                    <TableHead class="font-semibold text-white">
+                        Aktivitas
+                    </TableHead>
+                    <TableHead class="font-semibold text-white">
+                        Tanggal
+                    </TableHead>
+                    <TableHead class="font-semibold text-white">
+                        Status
+                    </TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                <TableRow
+                    v-for="activity in activities"
+                    :key="activity.id"
+                    class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                >
+                    <TableCell class="text-center font-semibold text-gray-600">
+                        {{ activity.id }}
+                    </TableCell>
+                    <TableCell class="font-semibold">
+                        {{ activity.nama_pengguna }}
+                    </TableCell>
+                    <TableCell class="text-gray-600">
+                        {{ activity.aktivitas }}
+                    </TableCell>
+                    <TableCell class="text-gray-600">
+                        {{ activity.tanggal }}
+                    </TableCell>
+                    <TableCell>
+                        <Badge :variant="getStatusVariant(activity.status)">
+                            {{ activity.status }}
+                        </Badge>
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>
+    </div>
 </template>
