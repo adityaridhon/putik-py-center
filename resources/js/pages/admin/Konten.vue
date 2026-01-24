@@ -7,6 +7,16 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { konten } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    profile?: any;
+    services?: any[];
+    clients?: any[];
+}>();
+
+const servicesCount = computed(() => props.services?.length || 0);
+const clientsCount = computed(() => props.clients?.length || 0);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,13 +34,13 @@ const breadcrumbs: BreadcrumbItem[] = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <ProfileCard />
+                <ProfileCard :servicesCount="servicesCount" :clientsCount="clientsCount" />
             </div>
             <div>
                 <h1 class="my-4 text-2xl font-bold">Profil umum</h1>
-                <GeneralProfileCard />
-                <ServiceLists class="my-10" />
-                <ClientLists class="my-10" />
+                <GeneralProfileCard :profile="profile" />
+                <ServiceLists class="my-10" :services="services" />
+                <ClientLists class="my-10" :clients="clients" />
             </div>
         </div>
     </AppLayout>

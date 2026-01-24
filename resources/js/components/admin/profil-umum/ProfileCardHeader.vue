@@ -8,23 +8,29 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { HandshakeIcon, Stethoscope } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-const datacard = [
+const props = defineProps<{
+    servicesCount?: number;
+    clientsCount?: number;
+}>();
+
+const datacard = computed(() => [
     {
         title: 'Layanan',
-        value: '5',
+        value: props.servicesCount?.toString() || '0',
         icon: Stethoscope,
     },
     {
         title: 'Mitra',
-        value: '12',
+        value: props.clientsCount?.toString() || '0',
         icon: HandshakeIcon,
     },
-];
+]);
 </script>
 
 <template>
-    <Card class="@container/card" v-for="value in datacard" key="value.title">
+    <Card class="@container/card" v-for="value in datacard" :key="value.title">
         <CardHeader>
             <div class="flex items-start gap-4">
                 <div class="rounded-lg bg-primary/5 p-2">
