@@ -9,27 +9,41 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Instagram, Mail, Pencil, Phone } from 'lucide-vue-next';
+import { router } from '@inertiajs/vue3';
 
-const headline =
-    'Mitra terpercaya dalam pemecahan masalah psikologis untuk individu, pendidikan, dan perusahaan di Balikpapan sejak 2006';
+// Props dengan default value
+const props = defineProps<{
+    profile?: {
+        company_name?: string;
+        headline?: string;
+        about?: string;
+        phone?: string;
+        email?: string;
+        instagram?: string;
+        logo_url?: string;
+        landing_image_url?: string;
+    };
+}>();
 
-const tentang =
-    'Putik didirikan sebagai lembaga yang bergerak di bidang pelayanan psikologi, meliputi Children Center, layanan konseling, terapi, dan pemeriksaan psikologi. Pembentukan Putik bertujuan menjadi wadah bagi sarjana psikologi dalam menyalurkan gagasan dan keilmuannya untuk mendukung kesejahteraan masyarakat.';
-
+// Computed untuk kontak (agar aman dari null)
 const kontak = [
     {
         icon: Phone,
-        value: '0812 5581 350',
+        value: props.profile?.phone ?? '-',
     },
     {
         icon: Mail,
-        value: 'putik_pc@yahoo.com',
+        value: props.profile?.email ?? '-',
     },
     {
         icon: Instagram,
-        value: '@putikpsycenter',
+        value: props.profile?.instagram ?? '-',
     },
 ];
+
+const editProfile = () => {
+    router.visit('/profil-umum');
+};
 </script>
 
 <template>
@@ -40,30 +54,38 @@ const kontak = [
                     <CardTitle class="font-semibold">
                         Gambar Landing Page
                     </CardTitle>
-                    <img src="/images/logo_putik.webp" alt="headline" />
+                    <img 
+                        :src="profile?.landing_image_url ? `/storage/${profile.landing_image_url}` : '/images/logo_putik.webp'" 
+                        alt="Landing Image" 
+                        class="mt-2 rounded border"
+                    />
                 </div>
                 <div class="flex max-w-2xl flex-col gap-3">
                     <div class="space-y-2">
-                        <CardTitle class="font-semibold"> Headline </CardTitle>
-                        <CardDescription>{{ headline }}</CardDescription>
+                        <CardTitle class="font-semibold">Nama Perusahaan</CardTitle>
+                        <CardDescription class="text-lg font-medium text-black">{{ profile?.company_name ?? 'Belum ada nama perusahaan' }}</CardDescription>
+                    </div>
+                    <div class="space-y-2">
+                        <CardTitle class="font-semibold">Headline</CardTitle>
+                        <CardDescription>{{ profile?.headline ?? 'Belum ada headline' }}</CardDescription>
                     </div>
                     <div class="space-y-2">
                         <CardTitle class="font-semibold">
-                            Tentang Putik
+                            Tentang {{ profile?.company_name ?? 'Putik' }}
                         </CardTitle>
-                        <CardDescription>{{ tentang }}</CardDescription>
+                        <CardDescription>{{ profile?.about ?? 'Belum ada deskripsi' }}</CardDescription>
                     </div>
                     <div class="space-y-2">
                         <CardTitle class="font-semibold">
-                            Kontak Putik
+                            Kontak {{ profile?.company_name ?? 'Putik' }}
                         </CardTitle>
-                        <CardDescription class="flex gap-2">
+                        <CardDescription class="flex gap-2 flex-wrap">
                             <Badge
                                 v-for="(item, index) in kontak"
                                 :key="index"
                                 class="bg-blue-500 text-white"
                             >
-                                <component :is="item.icon" />
+                                <component :is="item.icon" class="w-4 h-4 mr-2" />
                                 {{ item.value }}
                             </Badge>
                         </CardDescription>
@@ -71,10 +93,10 @@ const kontak = [
                 </div>
             </div>
         </CardHeader>
-        <CardFooter class="">
-            <CardAction class="mx-auto w-full px-10">
-                <Button class="w-full"> <Pencil /> Edit</Button>
-            </CardAction>
-        </CardFooter>
+        <CardAction class="mx-auto w-full px-10">
+            <Button @click="editProfile" class="w-full"> 
+                <Pencil class="w-4 h-4 mr-2" /> Edit
+            </Button>
+        </CardAction>
     </Card>
 </template>
