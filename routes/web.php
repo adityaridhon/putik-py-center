@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Admin\ArticleController;
 
 Route::get('/', function () {
    $profile = CompanyProfile::first();
@@ -37,9 +38,9 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('konten');
 
-    Route::get('/artikel', function () {
-        return Inertia::render('admin/Artikel');
-    })->name('artikel');
+    // Route::get('/artikel', function () {
+    //     return Inertia::render('admin/Artikel');
+    // })->name('artikel');
     
     Route::get('/layanan', function () {
         $services = Service::where('is_active', true)->get();
@@ -72,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
     
     // Routes untuk Clients (Klien)
     Route::resource('clients', ClientController::class)->except(['create', 'edit']);
-});
 
+    // Routes untuk Articles (Artikel)
+    Route::resource('artikel', ArticleController::class);
+
+});
 require __DIR__.'/settings.php';
