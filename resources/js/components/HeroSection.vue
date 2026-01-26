@@ -23,7 +23,7 @@
                         >Solusi Psikologi Terpadu & Terpercaya</span
                     >
                 </h1>
-                <p class="mb-220 text-base text-white">
+                <p class="mb-20 text-base text-white">
                     Mitra terpercaya dalam pemecahan masalah psikologis untuk
                     individu, pendidikan, dan perusahaan di Balikpapan sejak
                     2006
