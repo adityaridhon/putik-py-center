@@ -23,7 +23,7 @@ const auth = computed(() => page.props.auth as Auth);
         class="border-default fixed start-0 top-0 z-20 w-full border-b bg-primary"
     >
         <div
-            class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4"
+            class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4"
         >
             <div class="logo">
                 <img src="/images/logo_putik.webp" width="50" />
@@ -36,7 +36,7 @@ const auth = computed(() => page.props.auth as Auth);
                     <DropdownMenuTrigger as-child>
                         <button
                             type="button"
-                            class="bg-neutral-primary focus:ring-neutral-tertiary flex rounded-full text-sm focus:ring-4 md:me-0"
+                            class="focus:ring-neutral-tertiary flex rounded-full bg-white text-sm focus:ring-4 md:me-0"
                         >
                             <span class="sr-only">Open user menu</span>
                             <div
