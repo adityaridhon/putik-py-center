@@ -1,48 +1,103 @@
 <script setup lang="ts">
+import { ArrowRight } from 'lucide-vue-next';
 const aboutcards = [
     {
-        judul: 'Mengenal Diri Lewat Jurnal Harian',
+        judul: 'Mengenali Tanda-Tanda Depresi pada Remaja',
         deskripsi:
-            'Tidur yang cukup bantu otakmu pulih dan bikin kamu lebih siap menghadapi hari esok',
-        gambar: '/images/Artikel.png',
+            'Depresi pada remaja sering kali tidak terdeteksi karena dianggap sebagai bagian dari fase pubertas.',
+        gambar: '/images/Artikel_1.jpg',
+        kategori: 'Kesehatan Mental Remaja',
+        tanggal: '20 Januari 2026',
     },
     {
         judul: 'Mengenal Diri Lewat Jurnal Harian',
         deskripsi:
-            'Tidur yang cukup bantu otakmu pulih dan bikin kamu lebih siap menghadapi hari esok',
-        gambar: '/images/Artikel.png',
+            'Tidur yang cukup bantu otakmu pulih dan bikin kamu lebih siap menghadapi hari esok.',
+        gambar: '/images/Artikel_1.jpg',
+        kategori: 'Kesehatan Mental Anak',
+        tanggal: '18 Januari 2026',
     },
     {
-        judul: 'Mengenal Diri Lewat Jurnal Harian',
+        judul: 'Manajemen Stres untuk Mahasiswa',
         deskripsi:
-            'Tidur yang cukup bantu otakmu pulih dan bikin kamu lebih siap menghadapi hari esok',
-        gambar: '/images/Artikel.png',
+            'Tekanan akademik bisa berdampak pada kesehatan mental jika tidak dikelola dengan baik.',
+        gambar: '/images/Artikel_1.jpg',
+        kategori: 'Kesehatan Mental',
+        tanggal: '15 Januari 2026',
     },
 ];
+
+const truncate = (text: string, limit = 80) => {
+    if (!text) return '';
+    return text.length > limit ? `${text.slice(0, limit).trimEnd()}...` : text;
+};
 </script>
 
 <template>
-    <section class="py-12 text-center">
-        <h1 class="font-title mb-4 text-4xl font-bold md:text-6xl">ARTIKEL</h1>
+    <section class="bg-gray-50 py-16">
+        <h1 class="font-title text-center text-4xl font-bold">ARTIKEL</h1>
+
+        <p class="mx-auto max-w-3xl py-6 text-center text-primary">
+            Baca artikel edukatif dari para psikolog profesional kami tentang
+            berbagai topik kesehatan mental dan psikologi.
+        </p>
+
         <div
-            class="mx-auto grid max-w-4xl grid-cols-1 gap-12 px-6 sm:px-8 md:grid-cols-3 md:gap-10 lg:px-4"
+            class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-3"
         >
             <div
-                class="transform cursor-pointer rounded-2xl bg-white p-6 shadow-lg transition duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl"
                 v-for="card in aboutcards"
                 :key="card.judul"
+                class="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition hover:shadow-xl"
             >
-                <img
-                    :src="card.gambar"
-                    :alt="card.judul"
-                    class="mx-auto mb-1 w-8"
-                />
-                <h3 class="font-heading mb-1 text-xl font-bold text-primary">
-                    {{ card.judul }}
-                </h3>
-                <p class="text-gray-700">
-                    {{ card.deskripsi }}
-                </p>
+                <!-- IMAGE -->
+                <div class="relative">
+                    <img
+                        :src="card.gambar"
+                        :alt="card.judul"
+                        class="h-56 w-full object-cover"
+                    />
+                </div>
+
+                <!-- CONTENT -->
+                <div class="flex flex-1 flex-col p-6 text-left">
+                    <!-- KATEGORI -->
+                    <span
+                        class="inline-flex w-fit items-center rounded-full bg-emerald-100 px-4 py-1 text-sm font-medium text-emerald-700"
+                    >
+                        {{ card.kategori }}
+                    </span>
+
+                    <!-- TITLE -->
+                    <h3
+                        class="mt-4 text-lg font-bold text-gray-900 group-hover:text-primary"
+                    >
+                        {{ card.judul }}
+                    </h3>
+
+                    <!-- DESCRIPTION -->
+                    <p class="mt-2 line-clamp-3 text-sm text-gray-600">
+                        {{ truncate(card.deskripsi, 80) }}
+                    </p>
+
+                    <!-- FOOTER -->
+                    <div
+                        class="mt-auto flex items-center justify-between pt-6 text-sm text-gray-500"
+                    >
+                        <div class="flex items-center gap-2">
+                            <span>{{ card.tanggal }}</span>
+                        </div>
+
+                        <!-- ARROW BUTTON -->
+                        <button
+                            type="button"
+                            class="inline-flex items-center justify-center px-4 text-primary transition-colors focus:outline-none"
+                            aria-label="Baca artikel"
+                        >
+                            <ArrowRight />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
