@@ -2,18 +2,18 @@
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-8 pt-15 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-8 py-20 pt-15 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
     >
         <div class="image">
             <img
                 src="/images/Company_Profile.png"
                 alt="hero"
-                class="w-200 md:w-200"
+                class="w-150 md:w-150"
             />
         </div>
 
         <div class="caption max-w-lg text-center lg:text-left">
-            <h1 class="font-title mb-4 text-4xl font-bold md:text-6xl">
+            <h1 class="font-title mb-4 text-4xl font-bold md:text-5xl">
                 TENTANG PUTIK
             </h1>
 
