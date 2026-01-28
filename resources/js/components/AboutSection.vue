@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+    profile?: {
+        company_name?: string;
+        about?: string;
+        logo_url?: string;
+    };
+}>();
+</script>
 
 <template>
     <div
@@ -6,24 +14,26 @@
     >
         <div class="image">
             <img
-                src="/images/Company_Profile.png"
-                alt="hero"
+                :src="
+                    profile?.logo_url
+                        ? `/storage/${profile.logo_url}`
+                        : '/images/Company_Profile.png'
+                "
+                alt="Company Profile"
                 class="w-200 md:w-200"
             />
         </div>
 
         <div class="caption max-w-lg text-center lg:text-left">
             <h1 class="font-title mb-4 text-4xl font-bold md:text-6xl">
-                TENTANG PUTIK
+                TENTANG {{ profile?.company_name?.toUpperCase() || 'PUTIK' }}
             </h1>
 
             <p class="text-base text-primary">
-                Putik didirikan sebagai lembaga yang bergerak di bidang
-                pelayanan psikologi, meliputi Children Center, layanan
-                konseling, terapi, dan pemeriksaan psikologi. Pembentukan Putik
-                bertujuan menjadi wadah bagi sarjana psikologi dalam menyalurkan
-                gagasan dan keilmuannya untuk mendukung kesejahteraan
-                masyarakat.
+                {{
+                    profile?.about ||
+                    'Putik didirikan sebagai lembaga yang bergerak di bidang pelayanan psikologi, meliputi Children Center, layanan konseling, terapi, dan pemeriksaan psikologi. Pembentukan Putik bertujuan menjadi wadah bagi sarjana psikologi dalam menyalurkan gagasan dan keilmuannya untuk mendukung kesejahteraan masyarakat.'
+                }}
             </p>
         </div>
     </div>

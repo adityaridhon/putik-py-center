@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Badge from '@/components/ui/badge/Badge.vue';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Table,
@@ -9,47 +8,21 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { article } from '@/routes';
+import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash } from 'lucide-vue-next';
 
-const articles = [
-    {
-        id: 1,
-        judul_artikel: 'Mengenal Konseling Individual: Manfaat dan Prosesnya',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-        status: 'Terbit',
-    },
-    {
-        id: 2,
-        judul_artikel: 'Mengenal NPD',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-        status: 'Draft',
-    },
-    {
-        id: 3,
-        judul_artikel: 'Tes Psikologi: Jenis, Manfaat, dan Prosedurnya',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-        status: 'Terbit',
-    },
-];
-
-const getStatusVariant = (status: string) => {
-    switch (status) {
-        case 'Terbit':
-            return 'default';
-        case 'Draft':
-            return 'secondary';
-        case 'Batal':
-            return 'destructive';
-        default:
-            return 'outline';
-    }
-};
+const props = defineProps<{
+    articles?: {
+        data: any[];
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number;
+        to: number;
+    };
+}>();
 </script>
 
 <template>
@@ -88,10 +61,10 @@ const getStatusVariant = (status: string) => {
                         <TableHead class="font-semibold text-white">
                             Tanggal Terbit
                         </TableHead>
-                        <TableHead
+                        <!-- <TableHead
                             class="w-32 text-center font-semibold text-white"
                             >Status</TableHead
-                        >
+                        > -->
                         <TableHead
                             class="w-32 text-center font-semibold text-white"
                         >
@@ -101,38 +74,41 @@ const getStatusVariant = (status: string) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow
-                        v-for="article in articles"
+                        v-for="(article, index) in articles?.data"
                         :key="article.id"
                         class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     >
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
                         >
-                            {{ article.id }}
+                            {{ (articles?.from || 0) + index }}
                         </TableCell>
                         <TableCell class="text-center">
                             <div class="flex justify-center">
                                 <img
-                                    :src="article.image"
-                                    :alt="article.judul_artikel"
+                                    :src="
+                                        article.image_url ||
+                                        '/images/logo_putik.webp'
+                                    "
+                                    :alt="article.title"
                                     class="h-16 w-16 rounded-lg border border-gray-200 object-cover shadow-sm dark:border-gray-700"
                                 />
                             </div>
                         </TableCell>
                         <TableCell class="font-semibold">
-                            {{ article.judul_artikel }}
+                            {{ article.title }}
                         </TableCell>
                         <TableCell class="text-gray-600">
-                            {{ article.penulis }}
+                            {{ article.author }}
                         </TableCell>
                         <TableCell class="text-gray-600">
-                            {{ article.tanggal_terbit }}
+                            {{ article.published_at }}
                         </TableCell>
-                        <TableCell class="w-32 text-center">
+                        <!-- <TableCell class="w-32 text-center">
                             <Badge :variant="getStatusVariant(article.status)">
-                                {{ article.status }}
+                                {{ article.category_id }}
                             </Badge>
-                        </TableCell>
+                        </TableCell> -->
                         <TableCell class="align-middle">
                             <div class="flex items-center justify-center gap-1">
                                 <Button variant="default" size="sm">
@@ -153,6 +129,95 @@ const getStatusVariant = (status: string) => {
                     </TableRow>
                 </TableBody>
             </Table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="articles && articles.last_page > 1" class="mt-4">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Menampilkan {{ articles.from }} - {{ articles.to }} dari
+                    {{ articles.total }} artikel
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Previous Button -->
+                    <button
+                        @click="
+                            () =>
+                                articles &&
+                                router.get(
+                                    article().url,
+                                    { page: articles.current_page - 1 },
+                                    {
+                                        preserveState: true,
+                                        preserveScroll: true,
+                                    },
+                                )
+                        "
+                        :disabled="articles.current_page === 1"
+                        :class="[
+                            'inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                            articles.current_page === 1
+                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                : 'border bg-white text-gray-900 hover:bg-gray-100',
+                        ]"
+                    >
+                        Previous
+                    </button>
+
+                    <!-- Page Numbers -->
+                    <div class="flex gap-1">
+                        <button
+                            v-for="page in articles.last_page"
+                            :key="page"
+                            @click="
+                                () =>
+                                    router.get(
+                                        article().url,
+                                        { page },
+                                        {
+                                            preserveState: true,
+                                            preserveScroll: true,
+                                        },
+                                    )
+                            "
+                            :class="[
+                                'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors',
+                                'h-9 w-9',
+                                page === articles.current_page
+                                    ? 'bg-primary text-white hover:bg-primary/90'
+                                    : 'border bg-white text-gray-900 hover:bg-gray-100',
+                            ]"
+                        >
+                            {{ page }}
+                        </button>
+                    </div>
+
+                    <!-- Next Button -->
+                    <button
+                        @click="
+                            () =>
+                                articles &&
+                                router.get(
+                                    article().url,
+                                    { page: articles.current_page + 1 },
+                                    {
+                                        preserveState: true,
+                                        preserveScroll: true,
+                                    },
+                                )
+                        "
+                        :disabled="articles.current_page === articles.last_page"
+                        :class="[
+                            'inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                            articles.current_page === articles.last_page
+                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                : 'border bg-white text-gray-900 hover:bg-gray-100',
+                        ]"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>

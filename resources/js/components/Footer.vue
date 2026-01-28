@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { Instagram, Mail, MapPin, Phone } from 'lucide-vue-next';
+
+defineProps<{
+    profile?: {
+        phone?: string;
+        email?: string;
+        instagram?: string;
+        address?: string;
+        logo_url?: string;
+    };
+}>();
 </script>
 
 <template>
@@ -14,7 +24,11 @@ import { Instagram, Mail, MapPin, Phone } from 'lucide-vue-next';
                 >
                     <a class="inline-block">
                         <img
-                            src="/images/logo_putik.webp"
+                            :src="
+                                profile?.logo_url
+                                    ? `/storage/${profile.logo_url}`
+                                    : '/images/logo_putik.webp'
+                            "
                             width="250"
                             alt="logo"
                         />
@@ -31,40 +45,42 @@ import { Instagram, Mail, MapPin, Phone } from 'lucide-vue-next';
                             HUBUNGI KAMI
                         </h2>
                         <ul class="text-body space-y-3 font-medium">
-                            <li>
+                            <li v-if="profile?.phone">
                                 <a
                                     class="flex items-center justify-center gap-3 transition-colors hover:underline md:justify-start"
-                                    ><Phone class="h-5 w-5" />0812 5581 350
+                                    ><Phone class="h-5 w-5" />{{
+                                        profile.phone
+                                    }}
                                 </a>
                             </li>
-                            <li>
+                            <li v-if="profile?.email">
                                 <a
-                                    href="mailto:putik_pc@yahoo.com"
+                                    :href="`mailto:${profile.email}`"
                                     target="_blank"
                                     class="flex items-center justify-center gap-3 transition-colors hover:underline md:justify-start"
-                                    ><Mail class="h-5 w-5" />putik_pc@yahoo.com
-                                    | shofijati@gmail.com</a
+                                    ><Mail class="h-5 w-5" />{{
+                                        profile.email
+                                    }}</a
                                 >
                             </li>
-                            <li>
+                            <li v-if="profile?.instagram">
                                 <a
-                                    href="https://www.instagram.com/putikpsycenter?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                                    :href="`https://www.instagram.com/${profile.instagram.replace('@', '')}`"
                                     target="_blank"
                                     class="flex items-center justify-center gap-3 transition-colors hover:underline md:justify-start"
-                                    ><Instagram
-                                        class="h-5 w-5"
-                                    />@putikpsycenter</a
+                                    ><Instagram class="h-5 w-5" />{{
+                                        profile.instagram
+                                    }}</a
                                 >
                             </li>
-                            <li>
+                            <li v-if="profile?.address">
                                 <a
                                     href="https://maps.app.goo.gl/kRRqRavvEHMZkYGHA"
                                     target="_blank"
                                     class="flex items-center justify-center gap-3 transition-colors hover:underline md:justify-start"
                                 >
-                                    <MapPin class="h-5 w-5" /> Jl. Telindung No.
-                                    141 B RT. 086 Kota Balikpapan 76125,
-                                    Kalimantan Timur
+                                    <MapPin class="h-5 w-5" />
+                                    {{ profile.address }}
                                 </a>
                             </li>
                         </ul>

@@ -11,12 +11,16 @@ import { computed } from 'vue';
 
 const props = defineProps<{
     profile?: any;
-    services?: any[];
-    clients?: any[];
+    services?: any;
+    clients?: any;
 }>();
 
-const servicesCount = computed(() => props.services?.length || 0);
-const clientsCount = computed(() => props.clients?.length || 0);
+const servicesCount = computed(
+    () => props.services?.total || props.services?.length || 0,
+);
+const clientsCount = computed(
+    () => props.clients?.total || props.clients?.length || 0,
+);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -34,7 +38,10 @@ const breadcrumbs: BreadcrumbItem[] = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <ProfileCard :servicesCount="servicesCount" :clientsCount="clientsCount" />
+                <ProfileCard
+                    :servicesCount="servicesCount"
+                    :clientsCount="clientsCount"
+                />
             </div>
             <div>
                 <h1 class="my-4 text-2xl font-bold">Profil umum</h1>

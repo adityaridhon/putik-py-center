@@ -2,14 +2,14 @@
 import ManageServiceCard from '@/components/admin/manajemen-layanan/ManageServiceCard.vue';
 import ServiceDate from '@/components/admin/manajemen-layanan/ServiceDate.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { layanan } from '@/routes';
+import { service } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Layanan',
-        href: layanan().url,
+        href: service().url,
     },
 ];
 </script>

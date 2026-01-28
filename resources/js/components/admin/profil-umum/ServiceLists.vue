@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
     Table,
     TableBody,
     TableCell,
@@ -8,21 +16,24 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { konten } from '@/routes';
+import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash } from 'lucide-vue-next';
-import { router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ServiceAddDialog from './dialogs/ServiceAddDialog.vue';
+import ServiceEditDialog from './dialogs/ServiceEditDialog.vue';
+import ServiceViewDialog from './dialogs/ServiceViewDialog.vue';
 
-defineProps<{
-    services?: any[];
+const props = defineProps<{
+    services?: {
+        data: any[];
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number;
+        to: number;
+    };
 }>();
 
 // State untuk modal
@@ -30,28 +41,6 @@ const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showViewModal = ref(false);
 const selectedService = ref<any>(null);
-
-// Form untuk tambah layanan
-const addForm = useForm({
-    name: '',
-    description: '',
-    image: null as File | null,
-    is_active: true,
-});
-
-// Form untuk edit layanan
-const editForm = useForm({
-    name: '',
-    description: '',
-    image: null as File | null,
-    is_active: true,
-});
-
-// Fungsi untuk membuka modal tambah
-const openAddModal = () => {
-    addForm.reset();
-    showAddModal.value = true;
-};
 
 // Fungsi untuk membuka modal view
 const openViewModal = (service: any) => {
@@ -62,44 +51,24 @@ const openViewModal = (service: any) => {
 // Fungsi untuk membuka modal edit
 const openEditModal = (service: any) => {
     selectedService.value = service;
-    editForm.name = service.name;
-    editForm.description = service.description;
-    editForm.is_active = service.is_active;
-    editForm.image = null;
     showEditModal.value = true;
-};
-
-// Fungsi untuk submit tambah layanan
-const submitAdd = () => {
-    addForm.post('/services', {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            showAddModal.value = false;
-            addForm.reset();
-        },
-    });
-};
-
-// Fungsi untuk submit edit layanan
-const submitEdit = () => {
-    editForm.post(`/services/${selectedService.value.id}`, {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            showEditModal.value = false;
-            editForm.reset();
-        },
-    });
 };
 
 // Fungsi untuk delete layanan
 const deleteService = (id: number) => {
     if (confirm('Apakah Anda yakin ingin menghapus layanan ini?')) {
-        router.delete(`/services/${id}`, {
+        router.delete(`/admin/services/${id}`, {
             preserveScroll: true,
         });
     }
+};
+
+const goToServicesPage = (page: number) => {
+    router.get(
+        konten().url,
+        { services_page: page },
+        { preserveState: true, preserveScroll: true },
+    );
 };
 </script>
 
@@ -109,7 +78,7 @@ const deleteService = (id: number) => {
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                 Daftar Layanan
             </h2>
-            <Button @click="openAddModal">
+            <Button @click="showAddModal = true">
                 <Plus class="mr-2 h-4 w-4" />
                 Tambah Layanan
             </Button>
@@ -146,19 +115,22 @@ const deleteService = (id: number) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow
-                        v-for="(service, index) in services"
+                        v-for="(service, index) in services?.data"
                         :key="service.id"
                         class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     >
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
                         >
-                            {{ index + 1 }}
+                            {{ (services?.from || 0) + index }}
                         </TableCell>
                         <TableCell class="text-center">
                             <div class="flex justify-center">
                                 <img
-                                    :src="service.image_url || '/images/logo_putik.webp'"
+                                    :src="
+                                        service.image_url ||
+                                        '/images/logo_putik.webp'
+                                    "
                                     :alt="service.name"
                                     class="h-16 w-16 rounded-lg border border-gray-200 object-cover shadow-sm dark:border-gray-700"
                                 />
@@ -176,8 +148,8 @@ const deleteService = (id: number) => {
                         </TableCell>
                         <TableCell class="align-middle">
                             <div class="flex items-center justify-center gap-1">
-                                <Button 
-                                    variant="default" 
+                                <Button
+                                    variant="default"
                                     size="sm"
                                     @click="openViewModal(service)"
                                 >
@@ -191,8 +163,8 @@ const deleteService = (id: number) => {
                                 >
                                     <Pencil class="h-4 w-4" />
                                 </Button>
-                                <Button 
-                                    variant="destructive" 
+                                <Button
+                                    variant="destructive"
                                     size="sm"
                                     @click="deleteService(service.id)"
                                 >
@@ -205,131 +177,61 @@ const deleteService = (id: number) => {
             </Table>
         </div>
 
-        <!-- Modal Tambah Layanan -->
-        <Dialog v-model:open="showAddModal">
-            <DialogContent class="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Tambah Layanan Baru</DialogTitle>
-                    <DialogDescription>
-                        Isi form di bawah ini untuk menambahkan layanan baru
-                    </DialogDescription>
-                </DialogHeader>
-                <form @submit.prevent="submitAdd" class="space-y-4">
-                    <div>
-                        <Label>Nama Layanan</Label>
-                        <Input v-model="addForm.name" placeholder="Contoh: Konseling Individual" required />
-                        <span v-if="addForm.errors.name" class="text-red-500 text-sm">{{ addForm.errors.name }}</span>
-                    </div>
-                    <div>
-                        <Label>Deskripsi</Label>
-                        <textarea 
-                            v-model="addForm.description" 
-                            rows="4" 
-                            class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                            placeholder="Deskripsi lengkap layanan..."
-                        ></textarea>
-                        <span v-if="addForm.errors.description" class="text-red-500 text-sm">{{ addForm.errors.description }}</span>
-                    </div>
-                    <div>
-                        <Label>Gambar Layanan</Label>
-                        <Input 
-                            type="file" 
-                            accept="image/*"
-                            @change="addForm.image = ($event.target as HTMLInputElement).files?.[0] || null"
-                        />
-                        <span v-if="addForm.errors.image" class="text-red-500 text-sm">{{ addForm.errors.image }}</span>
-                    </div>
-                    <div class="flex justify-end gap-2 pt-4">
-                        <Button type="button" variant="outline" @click="showAddModal = false">Batal</Button>
-                        <Button type="submit" :disabled="addForm.processing">
-                            {{ addForm.processing ? 'Menyimpan...' : 'Simpan' }}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
-
-        <!-- Modal Edit Layanan -->
-        <Dialog v-model:open="showEditModal">
-            <DialogContent class="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Edit Layanan</DialogTitle>
-                    <DialogDescription>
-                        Ubah informasi layanan di bawah ini
-                    </DialogDescription>
-                </DialogHeader>
-                <form @submit.prevent="submitEdit" class="space-y-4">
-                    <div>
-                        <Label>Nama Layanan</Label>
-                        <Input v-model="editForm.name" required />
-                        <span v-if="editForm.errors.name" class="text-red-500 text-sm">{{ editForm.errors.name }}</span>
-                    </div>
-                    <div>
-                        <Label>Deskripsi</Label>
-                        <textarea 
-                            v-model="editForm.description" 
-                            rows="4" 
-                            class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                        ></textarea>
-                        <span v-if="editForm.errors.description" class="text-red-500 text-sm">{{ editForm.errors.description }}</span>
-                    </div>
-                    <div>
-                        <Label>Gambar Layanan (Kosongkan jika tidak ingin mengubah)</Label>
-                        <div v-if="selectedService?.image_url" class="mb-2">
-                            <img :src="selectedService.image_url" alt="Current" class="h-20 w-20 object-cover rounded border" />
-                        </div>
-                        <Input 
-                            type="file" 
-                            accept="image/*"
-                            @change="editForm.image = ($event.target as HTMLInputElement).files?.[0] || null"
-                        />
-                        <span v-if="editForm.errors.image" class="text-red-500 text-sm">{{ editForm.errors.image }}</span>
-                    </div>
-                    <div class="flex justify-end gap-2 pt-4">
-                        <Button type="button" variant="outline" @click="showEditModal = false">Batal</Button>
-                        <Button type="submit" :disabled="editForm.processing">
-                            {{ editForm.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
-
-        <!-- Modal View Detail Layanan -->
-        <Dialog v-model:open="showViewModal">
-            <DialogContent class="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Detail Layanan</DialogTitle>
-                </DialogHeader>
-                <div v-if="selectedService" class="space-y-4">
-                    <div class="flex justify-center">
-                        <img 
-                            :src="selectedService.image_url || '/images/logo_putik.webp'" 
-                            :alt="selectedService.name"
-                            class="h-32 w-32 rounded-lg object-cover border shadow"
-                        />
-                    </div>
-                    <div>
-                        <Label class="text-gray-600">Nama Layanan</Label>
-                        <p class="text-lg font-semibold mt-1">{{ selectedService.name }}</p>
-                    </div>
-                    <div>
-                        <Label class="text-gray-600">Deskripsi</Label>
-                        <p class="mt-1 text-gray-700">{{ selectedService.description }}</p>
-                    </div>
-                    <div>
-                        <Label class="text-gray-600">Status</Label>
-                        <p class="mt-1">
-                            <span :class="selectedService.is_active ? 'text-green-600' : 'text-red-600'" class="font-semibold">
-                                {{ selectedService.is_active ? 'Aktif' : 'Tidak Aktif' }}
-                            </span>
-                        </p>
-                    </div>
-                    <div class="flex justify-end pt-4">
-                        <Button @click="showViewModal = false">Tutup</Button>
-                    </div>
+        <!-- Pagination -->
+        <div v-if="services && services.last_page > 1" class="mt-4">
+            <div class="w-full flex-col items-center justify-between">
+                <div class="mb-2 text-center text-sm text-gray-600">
+                    Menampilkan {{ services.from }} - {{ services.to }} dari
+                    {{ services.total }} layanan
                 </div>
-            </DialogContent>
-        </Dialog>
+
+                <Pagination
+                    :total="services.total"
+                    :items-per-page="services.per_page"
+                    :default-page="services.current_page"
+                    v-slot="{ page }"
+                >
+                    <PaginationContent v-slot="{ items }">
+                        <PaginationPrevious
+                            :disabled="services.current_page === 1"
+                            @click="goToServicesPage(services.current_page - 1)"
+                        />
+
+                        <template v-for="(item, index) in items" :key="index">
+                            <PaginationItem
+                                v-if="item.type === 'page'"
+                                :value="item.value"
+                                :is-active="
+                                    item.value === services.current_page
+                                "
+                                @click="goToServicesPage(item.value)"
+                            >
+                                {{ item.value }}
+                            </PaginationItem>
+
+                            <PaginationEllipsis v-else />
+                        </template>
+
+                        <PaginationNext
+                            :disabled="
+                                services.current_page === services.last_page
+                            "
+                            @click="goToServicesPage(services.current_page + 1)"
+                        />
+                    </PaginationContent>
+                </Pagination>
+            </div>
+        </div>
+
+        <!-- Dialogs -->
+        <ServiceViewDialog
+            v-model:open="showViewModal"
+            :service="selectedService"
+        />
+        <ServiceAddDialog v-model:open="showAddModal" />
+        <ServiceEditDialog
+            v-model:open="showEditModal"
+            :service="selectedService"
+        />
     </div>
 </template>

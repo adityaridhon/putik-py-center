@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DashboardCard from '@/components/admin/DashboardCard.vue';
-import TableDashboard from '@/components/admin/TableDashboard.vue';
+import DashboardCard from '@/components/admin/dashboard/DashboardCard.vue';
+import TableDashboard from '@/components/admin/dashboard/TableDashboard.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';

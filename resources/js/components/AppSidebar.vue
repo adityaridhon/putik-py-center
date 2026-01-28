@@ -9,13 +9,13 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import {
-    artikel,
+    article,
     dashboard,
     gayaBelajar,
     intelegensi,
     konten,
-    layanan,
     minatBakat,
+    service,
 } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -45,7 +45,7 @@ const contentNavItems = [
     },
     {
         title: 'Artikel',
-        href: artikel(),
+        href: article(),
         icon: BookOpenCheck,
     },
 ];
@@ -53,7 +53,7 @@ const contentNavItems = [
 const servicesNavItems = [
     {
         title: 'Data Layanan',
-        href: layanan(),
+        href: service(),
         icon: Stethoscope,
     },
 ];

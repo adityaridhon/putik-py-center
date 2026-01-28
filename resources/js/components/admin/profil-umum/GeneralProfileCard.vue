@@ -8,8 +8,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Instagram, Mail, Pencil, Phone } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
+import { Instagram, Mail, Pencil, Phone } from 'lucide-vue-next';
 
 // Props dengan default value
 const props = defineProps<{
@@ -42,7 +42,7 @@ const kontak = [
 ];
 
 const editProfile = () => {
-    router.visit('/profil-umum');
+    router.visit('/admin/konten/edit');
 };
 </script>
 
@@ -54,38 +54,53 @@ const editProfile = () => {
                     <CardTitle class="font-semibold">
                         Gambar Landing Page
                     </CardTitle>
-                    <img 
-                        :src="profile?.landing_image_url ? `/storage/${profile.landing_image_url}` : '/images/logo_putik.webp'" 
-                        alt="Landing Image" 
+                    <img
+                        :src="
+                            profile?.landing_image_url
+                                ? `/storage/${profile.landing_image_url}`
+                                : '/images/logo_putik.webp'
+                        "
+                        alt="Landing Image"
                         class="mt-2 rounded border"
                     />
                 </div>
                 <div class="flex max-w-2xl flex-col gap-3">
                     <div class="space-y-2">
-                        <CardTitle class="font-semibold">Nama Perusahaan</CardTitle>
-                        <CardDescription class="text-lg font-medium text-black">{{ profile?.company_name ?? 'Belum ada nama perusahaan' }}</CardDescription>
+                        <CardTitle class="font-semibold"
+                            >Nama Perusahaan</CardTitle
+                        >
+                        <CardDescription>{{
+                            profile?.company_name ?? 'Belum ada nama perusahaan'
+                        }}</CardDescription>
                     </div>
                     <div class="space-y-2">
                         <CardTitle class="font-semibold">Headline</CardTitle>
-                        <CardDescription>{{ profile?.headline ?? 'Belum ada headline' }}</CardDescription>
+                        <CardDescription>{{
+                            profile?.headline ?? 'Belum ada headline'
+                        }}</CardDescription>
                     </div>
                     <div class="space-y-2">
                         <CardTitle class="font-semibold">
                             Tentang {{ profile?.company_name ?? 'Putik' }}
                         </CardTitle>
-                        <CardDescription>{{ profile?.about ?? 'Belum ada deskripsi' }}</CardDescription>
+                        <CardDescription>{{
+                            profile?.about ?? 'Belum ada deskripsi'
+                        }}</CardDescription>
                     </div>
                     <div class="space-y-2">
                         <CardTitle class="font-semibold">
                             Kontak {{ profile?.company_name ?? 'Putik' }}
                         </CardTitle>
-                        <CardDescription class="flex gap-2 flex-wrap">
+                        <CardDescription class="flex flex-wrap gap-2">
                             <Badge
                                 v-for="(item, index) in kontak"
                                 :key="index"
                                 class="bg-blue-500 text-white"
                             >
-                                <component :is="item.icon" class="w-4 h-4 mr-2" />
+                                <component
+                                    :is="item.icon"
+                                    class="mr-2 h-4 w-4"
+                                />
                                 {{ item.value }}
                             </Badge>
                         </CardDescription>
@@ -94,8 +109,8 @@ const editProfile = () => {
             </div>
         </CardHeader>
         <CardAction class="mx-auto w-full px-10">
-            <Button @click="editProfile" class="w-full"> 
-                <Pencil class="w-4 h-4 mr-2" /> Edit
+            <Button @click="editProfile" class="w-full">
+                <Pencil class="mr-2 h-4 w-4" /> Edit
             </Button>
         </CardAction>
     </Card>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Badge from '@/components/ui/badge/Badge.vue';
 import {
     Table,
     TableBody,
@@ -11,13 +10,6 @@ import {
 import { SquarePen } from 'lucide-vue-next';
 import ArticleChart from './ArticleChart.vue';
 
-const datacard = [
-    {
-        title: 'Artikel Draft',
-        value: '12',
-        icon: SquarePen,
-    },
-];
 
 const articles = [
     {
@@ -26,7 +18,6 @@ const articles = [
         image: '/images/logo_putik.webp',
         penulis: 'Admin Putik',
         tanggal_terbit: '14 Januari 2026',
-        status: 'Terbit',
     },
     {
         id: 2,
@@ -34,7 +25,6 @@ const articles = [
         image: '/images/logo_putik.webp',
         penulis: 'Admin Putik',
         tanggal_terbit: '14 Januari 2026',
-        status: 'Draft',
     },
     {
         id: 3,
@@ -42,7 +32,6 @@ const articles = [
         image: '/images/logo_putik.webp',
         penulis: 'Admin Putik',
         tanggal_terbit: '14 Januari 2026',
-        status: 'Terbit',
     },
     {
         id: 4,
@@ -50,7 +39,6 @@ const articles = [
         image: '/images/logo_putik.webp',
         penulis: 'Admin Putik',
         tanggal_terbit: '14 Januari 2026',
-        status: 'Terbit',
     },
     {
         id: 5,
@@ -58,7 +46,6 @@ const articles = [
         image: '/images/logo_putik.webp',
         penulis: 'Admin Putik',
         tanggal_terbit: '14 Januari 2026',
-        status: 'Draft',
     },
 ];
 
@@ -102,10 +89,6 @@ const getStatusVariant = (status: string) => {
                         <TableHead class="font-semibold text-white">
                             Tanggal Terbit
                         </TableHead>
-                        <TableHead
-                            class="w-32 text-center font-semibold text-white"
-                            >Status</TableHead
-                        >
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -138,11 +121,6 @@ const getStatusVariant = (status: string) => {
                         </TableCell>
                         <TableCell class="text-gray-600">
                             {{ article.tanggal_terbit }}
-                        </TableCell>
-                        <TableCell class="w-32 text-center">
-                            <Badge :variant="getStatusVariant(article.status)">
-                                {{ article.status }}
-                            </Badge>
                         </TableCell>
                     </TableRow>
                 </TableBody>

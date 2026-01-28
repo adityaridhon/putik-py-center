@@ -14,6 +14,12 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
 import { computed } from 'vue';
 
+defineProps<{
+    profile?: {
+        logo_url?: string;
+    };
+}>();
+
 const page = usePage();
 const auth = computed(() => page.props.auth as Auth);
 </script>
@@ -26,7 +32,15 @@ const auth = computed(() => page.props.auth as Auth);
             class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4"
         >
             <div class="logo">
-                <img src="/images/logo_putik.webp" width="50" />
+                <img
+                    :src="
+                        profile?.logo_url
+                            ? `/storage/${profile.logo_url}`
+                            : '/images/logo_putik.webp'
+                    "
+                    width="50"
+                    alt="Logo"
+                />
             </div>
 
             <div
