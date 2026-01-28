@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Dialog,
@@ -50,16 +51,13 @@ const emit = defineEmits<{
                 <div>
                     <Label class="text-gray-600">Status</Label>
                     <p class="mt-1">
-                        <span
-                            :class="[
-                                'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium',
-                                service.is_active
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-gray-100 text-gray-700',
-                            ]"
+                        <Badge
+                            :variant="
+                                service.is_active ? 'default' : 'destructive'
+                            "
                         >
                             {{ service.is_active ? 'Aktif' : 'Nonaktif' }}
-                        </span>
+                        </Badge>
                     </p>
                 </div>
                 <div class="flex justify-end pt-4">
