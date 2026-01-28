@@ -21,6 +21,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+    Route::get('/tentang-kami', function () {
+        return Inertia::render('user/tentang-kami/Index');
+    })->name('tentang-kami');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('admin/Dashboard');
