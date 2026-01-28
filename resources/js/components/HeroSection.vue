@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+    profile?: {
+        company_name?: string;
+        headline?: string;
+        landing_image_url?: string;
+    };
+}>();
+</script>
 
 <template>
     <div class="h-screen bg-primary">
@@ -7,7 +15,11 @@
         >
             <div class="image flex items-center">
                 <img
-                    src="/images/Hero_1.png"
+                    :src="
+                        profile?.landing_image_url
+                            ? `/storage/${profile.landing_image_url}`
+                            : '/images/Hero_1.png'
+                    "
                     alt="hero"
                     class="mb-5 w-50 md:mb-0 md:w-90"
                 />
@@ -18,15 +30,16 @@
                 <h1
                     class="font-title text-4xl font-bold text-white md:text-5xl"
                 >
-                    PUTIK PSYCHOLOGY CENTER :
+                    {{ profile?.company_name || 'PUTIK PSYCHOLOGY CENTER' }} :
                     <span class="text-white"
                         >Solusi Psikologi Terpadu & Terpercaya</span
                     >
                 </h1>
                 <p class="mb-20 text-base text-white">
-                    Mitra terpercaya dalam pemecahan masalah psikologis untuk
-                    individu, pendidikan, dan perusahaan di Balikpapan sejak
-                    2006
+                    {{
+                        profile?.headline ||
+                        'Mitra terpercaya dalam pemecahan masalah psikologis untuk individu, pendidikan, dan perusahaan di Balikpapan sejak 2006'
+                    }}
                 </p>
             </div>
         </div>

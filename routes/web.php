@@ -5,7 +5,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Service;
 use App\Models\CompanyProfile;
-use App\Models\Client;
+use App\Models\Client; 
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
@@ -17,65 +17,41 @@ Route::get('/', function () {
 
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
-        'companyProfile' => $profile // <-- Kirim data ini ke Vue
+        'companyProfile' => $profile 
     ]);
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('admin/Dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
 
-    Route::get('/konten', function () {
-        $profile = CompanyProfile::first();
-        $services = Service::all();
-        $clients = Client::all();
-        
-        return Inertia::render('admin/Konten', [
-            'profile' => $profile,
-            'services' => $services,
-            'clients' => $clients,
-        ]);
-    })->name('konten');
-
-    // Route::get('/artikel', function () {
-    //     return Inertia::render('admin/Artikel');
-    // })->name('artikel');
+    // Company Profile & Content Management
+    Route::get('/admin/konten', [CompanyProfileController::class, 'index'])->name('konten');
+    Route::get('/admin/konten/edit', [CompanyProfileController::class, 'edit'])->name('konten.edit');
+    Route::post('/admin/konten', [CompanyProfileController::class, 'update'])->name('konten.update');
     
-    Route::get('/layanan', function () {
-        $services = Service::where('is_active', true)->get();
-        return Inertia::render('admin/Layanan', [
-            'listServices' => $services 
-        ]);
-    })->name('layanan');
-
-    Route::get('/minat-bakat', function () {
-        return Inertia::render('admin/MinatBakat');
-    })->name('minat-bakat');
+    // Services Management
+    Route::get('/admin/services', [ServiceController::class, 'index'])->name('service');
+    Route::post('/admin/services', [ServiceController::class, 'store'])->name('service.store');
+    Route::put('/admin/services/{service}', [ServiceController::class, 'update'])->name('service.update');
+    Route::delete('/admin/services/{service}', [ServiceController::class, 'destroy'])->name('service.destroy');
     
-    Route::get('/gaya-belajar', function () {
-        return Inertia::render('admin/GayaBelajar');
-    })->name('gaya-belajar');
+    // Clients Management
+    Route::resource('admin/clients', ClientController::class)->except(['create', 'edit']);
 
-    Route::get('/intelegensi', function () {
-        return Inertia::render('admin/Intelegensi');
-    })->name('intelegensi');
+    // Articles Management
+    Route::get('/admin/articles', [ArticleController::class, 'index'])->name('article');
+    Route::post('/admin/articles', [ArticleController::class, 'store'])->name('article.store');
+    Route::get('/admin/articles/{article}', [ArticleController::class, 'show'])->name('article.show');
+    Route::put('/admin/articles/{article}', [ArticleController::class, 'update'])->name('article.update');
+    Route::delete('/admin/articles/{article}', [ArticleController::class, 'destroy'])->name('article.destroy');
 
-    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-    Route::get('/profil-umum', [CompanyProfileController::class, 'index'])
-        ->name('admin.general-profile.index');
-    
-    Route::post('/profil-umum', [CompanyProfileController::class, 'update'])
-        ->name('admin.general-profile.update');
+    // Bookings
+    Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');
 
-    // Routes untuk Services (Layanan)
-    Route::resource('services', ServiceController::class)->except(['create', 'edit']);
-    
-    // Routes untuk Clients (Klien)
-    Route::resource('clients', ClientController::class)->except(['create', 'edit']);
-
-    // Routes untuk Articles (Artikel)
-    Route::resource('artikel', ArticleController::class);
-
-});
+    // Assessment Modules
+    Route::get('/admin/asesmen/minat-bakat', fn() => Inertia::render('admin/tes-minat-bakat/Index'))->name('minatBakat');
+    Route::get('/admin/asesmen/gaya-belajar', fn() => Inertia::render('admin/tes-gaya-belajar/Index'))->name('gayaBelajar');
+    Route::get('/admin/asesmen/intelegensi', fn() => Inertia::render('admin/tes-intelegensi/Index'))->name('intelegensi');
+}); 
 require __DIR__.'/settings.php';

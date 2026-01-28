@@ -34,10 +34,6 @@ class ClientController extends Controller
         return redirect()->route('konten')->with('success', 'Klien berhasil ditambahkan.');
     }
 
-    public function show(Client $client)
-    {
-        return response()->json($client);
-    }
 
     public function update(Request $request, Client $client)
     {

@@ -16,11 +16,11 @@ class ArticleController extends Controller
     {
         $articles = Article::with('category')
             ->latest()
-            ->get();
+            ->paginate(5); // Pagination 5 artikel per halaman
 
         $categories = ArticleCategory::select('id', 'name')->get();
 
-        return Inertia::render('admin/Artikel', [
+        return Inertia::render('admin/manajemen-artikel/Index', [
             'articles'   => $articles,
             'categories' => $categories,
         ]);
@@ -55,7 +55,7 @@ class ArticleController extends Controller
         Article::create($validated);
 
         return redirect()
-            ->route('artikel')
+            ->route('article')
             ->with('success', 'Artikel berhasil ditambahkan');
     }
 
@@ -63,7 +63,7 @@ class ArticleController extends Controller
     {
         $artikel->load('category');
 
-        return Inertia::render('admin/ArtikelDetail', [
+        return Inertia::render('admin/manajemen-artikel/Detail', [
             'artikel' => $artikel,
         ]);
     }
@@ -107,7 +107,7 @@ class ArticleController extends Controller
         $artikel->update($validated);
 
         return redirect()
-            ->route('artikel')
+            ->route('article')
             ->with('success', 'Artikel berhasil diperbarui');
     }
 
@@ -121,7 +121,7 @@ class ArticleController extends Controller
         $artikel->delete();
 
         return redirect()
-            ->route('artikel')
+            ->route('article')
             ->with('success', 'Artikel berhasil dihapus');
     }
 }

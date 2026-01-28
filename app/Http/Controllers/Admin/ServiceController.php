@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
     public function index()
     {
         $services = Service::all();
-        return response()->json($services);
+        return Inertia::render('admin/manajemen-layanan/Index', [
+            'services' => $services 
+        ]);
     }
 
     public function store(Request $request)
@@ -32,12 +35,7 @@ class ServiceController extends Controller
 
         $service = Service::create($data);
 
-        return redirect()->route('konten')->with('success', 'Layanan berhasil ditambahkan.');
-    }
-
-    public function show(Service $service)
-    {
-        return response()->json($service);
+        return redirect()->route('konten.index')->with('success', 'Layanan berhasil ditambahkan.');
     }
 
     public function update(Request $request, Service $service)
@@ -60,7 +58,7 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        return redirect()->route('konten')->with('success', 'Layanan berhasil diperbarui.');
+        return redirect()->route('konten.index')->with('success', 'Layanan berhasil diperbarui.');
     }
 
     public function destroy(Service $service)
@@ -71,6 +69,6 @@ class ServiceController extends Controller
 
         $service->delete();
 
-        return redirect()->route('konten')->with('success', 'Layanan berhasil dihapus.');
+        return redirect()->route('konten.index')->with('success', 'Layanan berhasil dihapus.');
     }
 }
