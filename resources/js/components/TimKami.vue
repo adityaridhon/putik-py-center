@@ -4,7 +4,7 @@ import Button from './ui/button/Button.vue';
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-8 pt-8 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-10 py-6 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
     >
         <div class="image">
             <img
@@ -14,8 +14,10 @@ import Button from './ui/button/Button.vue';
             />
         </div>
 
-        <div class="caption max-w-lg text-center lg:text-left">
-            <h1 class="font-title mb-4 text-4xl font-bold md:text-6xl">
+        <div
+            class="caption flex max-w-lg flex-col items-center gap-4 text-center lg:items-start lg:text-left"
+        >
+            <h1 class="font-title mb-4 text-4xl font-bold md:text-4xl">
                 TIM KAMI
             </h1>
 
@@ -23,9 +25,12 @@ import Button from './ui/button/Button.vue';
                 Layanan psikologi terpadu di bawah pengawasan Psikolog Senior
                 bersertifikasi SIPP & HIMPSI
             </p>
+
+            <Button
+                class="rounded border border-primary bg-transparent px-6 py-3 text-primary transition hover:bg-primary/10"
+            >
+                Lihat Profil Tim
+            </Button>
         </div>
-    </div>
-    <div class="flex justify-center mt-10">
-        <Button class=""> Lihat Profil Tim </Button>
     </div>
 </template>

@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-8 pt-15 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-8 py-20 pt-15 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
     >
         <div class="image">
             <img
