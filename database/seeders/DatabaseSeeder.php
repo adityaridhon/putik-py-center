@@ -13,18 +13,22 @@ class DatabaseSeeder extends Seeder
         $this->call(ServiceSeeder::class);
 
         // Admin user tanpa 2FA
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'email_verified_at' => now(),
-            'password' => bcrypt('admin123'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin',
+                'email_verified_at' => now(),
+                'password' => bcrypt('admin123'),
+            ]
+        );
 
         // Test user dengan 2FA
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+            ]
+        );
         // Panggil seeder lainnya
         $this->call([
             CompanyProfileSeeder::class,
