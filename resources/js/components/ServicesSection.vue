@@ -1,48 +1,91 @@
 <script setup lang="ts">
-import { BookOpen, Brain, HeartHandshake } from 'lucide-vue-next';
+import {
+    BookOpen,
+    Brain,
+    BriefcaseBusiness,
+    GraduationCap,
+    HeartHandshake,
+    MessageCircle,
+} from 'lucide-vue-next';
 
 const services = [
     {
         id: 1,
         title: 'Konseling dan Terapi',
         description:
-            'Layanan konseling dan terapi profesional untuk membantu Anda mengatasi kecemasan, depresi, trauma, dan masalah hubungan.',
-        icon: Brain,
+            'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
+        icon: MessageCircle,
         images: [
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
+            '/images/Konseling_1.png',
+            '/images/Konseling_2.png',
+            '/images/Konseling_3.png',
         ],
         primaryAction: 'Jadwalkan Layanan',
-        secondaryAction: 'Pelajari Lebih Lanjut',
     },
     {
         id: 2,
-        title: 'Meditasi & Relaksasi',
+        title: 'Tes Kepribadian ',
         description:
-            'Program meditasi terpandu untuk membantu menenangkan pikiran dan menjaga keseimbangan emosional.',
+            'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
         icon: HeartHandshake,
         images: [
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
+            '/images/TesKep_1.png',
+            '/images/TesKep_2.png',
+            '/images/TesKep_1.png',
         ],
-        primaryAction: 'Mulai Meditasi',
-        secondaryAction: 'Lihat Program',
+        primaryAction: 'Jadwalkan Layanan',
     },
     {
         id: 3,
-        title: 'Jurnal Harian',
+        title: 'Tes Kesiapan Masuk SD',
         description:
-            'Fitur jurnal harian untuk refleksi diri dan pemantauan kesehatan mental.',
+            'Memperoleh gambaran mengenai kematangan aspek-aspek perkembangan atau fungsi psikologis anak untuk mengikuti kegiatan pendidikan di SD.',
         icon: BookOpen,
         images: [
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
-            '/images/Company_Profile.png',
+            '/images/TesSD_1.png',
+            '/images/TesSD_2.png',
+            '/images/TesSD_1.png',
         ],
-        primaryAction: 'Tulis Jurnal',
-        secondaryAction: 'Pelajari Fitur',
+        primaryAction: 'Jadwalkan Layanan',
+    },
+    {
+        id: 4,
+        title: 'Tes Penjurusan Bimbingan Karir',
+        description:
+            'Mencari potensi kesesuaian bakat dan minat dalam mengikuti pendidikan pada jurusan di SMA maupun Perguruan Tinggi.',
+        icon: GraduationCap,
+        images: [
+            '/images/Penjurusan_1.png',
+            '/images/Penjurusan_2.png',
+            '/images/Penjurusan_1.png',
+        ],
+        primaryAction: 'Jadwalkan Layanan',
+    },
+    {
+        id: 5,
+        title: 'Tes Perusahaan',
+        description:
+            'Mencari potensi, minat dan bakat, kecakapan intelektual,emosi serta motivasi dari pribadi seseorang sesuai dengan tuntutan tugas agar nantinya tercapai kepuasan kerja.',
+        icon: BriefcaseBusiness,
+        images: [
+            '/images/TesPer_1.png',
+            '/images/TesPer_2.png',
+            '/images/TesPer_1.png',
+        ],
+        primaryAction: 'Jadwalkan Layanan',
+    },
+    {
+        id: 6,
+        title: 'Talent Mapping',
+        description:
+            'Asesmen ini berguna untuk memetakan bakat alami, potensi, dan kekuatan unik seseorang melalui identifikasi urutan bakat dari yang paling dominan hingga terlemah, guna membantu menentukan karier atau jurusan yang tepat serta mengoptimalkan kinerja individu dan tim dalam organisasi.',
+        icon: Brain,
+        images: [
+            '/images/Mapping_1.png',
+            '/images/Mapping_1.png',
+            '/images/Mapping_1.png',
+        ],
+        primaryAction: 'Jadwalkan Layanan',
     },
 ];
 </script>
@@ -55,7 +98,6 @@ const services = [
             class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2"
             :class="service.id % 2 === 0 ? '' : 'lg:auto-cols-max'"
         >
-            <!-- KONTEN (Tampil di kiri untuk ID ganjil, kanan untuk ID genap) -->
             <div
                 class="flex flex-col justify-center"
                 :class="service.id % 2 === 0 ? 'lg:order-2' : ''"
@@ -83,16 +125,9 @@ const services = [
                     >
                         {{ service.primaryAction }}
                     </button>
-
-                    <button
-                        class="rounded-xl border px-6 py-3 text-slate-700 hover:bg-slate-100"
-                    >
-                        {{ service.secondaryAction }}
-                    </button>
                 </div>
             </div>
 
-            <!-- GAMBAR (Tampil di kanan untuk ID ganjil, kiri untuk ID genap) -->
             <div
                 class="grid grid-cols-2 gap-4"
                 :class="service.id % 2 === 0 ? 'lg:order-1' : ''"
