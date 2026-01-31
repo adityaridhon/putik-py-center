@@ -19,11 +19,15 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
         'companyProfile' => $profile 
     ]);
-})->name('home');
+    })->name('home');
 
     Route::get('/tentang-kami', function () {
         return Inertia::render('user/tentang-kami/Index');
     })->name('tentang-kami');
+
+    Route::get('/layanan-kami', function () {
+        return Inertia::render('user/layanan-kami/Index');
+    })->name('layanan-kami');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard
