@@ -15,38 +15,51 @@ import {
     ChartTooltipContent,
     componentToString,
 } from '@/components/ui/chart';
+import { getCategoryColor } from '@/utils/categoryColors';
 import { Donut } from '@unovis/ts';
 import { VisDonut, VisSingleContainer } from '@unovis/vue';
+import { computed } from 'vue';
 
-const chartData = [
-    { kategori: 'edukasi', jumlah: 275, fill: 'var(--color-edukasi)' },
-    {
-        kategori: 'pengembangan-diri',
-        jumlah: 200,
-        fill: 'var(--color-pengembangan-diri)',
-    },
-    { kategori: 'event', jumlah: 187, fill: 'var(--color-event)' },
-];
-type Data = (typeof chartData)[number];
+const props = defineProps<{
+    data?: { kategori: string; kategori_id: number; jumlah: number }[];
+}>();
 
-const chartConfig = {
-    jumlah: {
-        label: 'Jumlah Artikel ',
-        color: undefined,
-    },
-    edukasi: {
-        label: 'Edukasi',
-        color: 'var(--chart-1)',
-    },
-    'pengembangan-diri': {
-        label: 'Pengembangan Diri',
-        color: 'var(--chart-2)',
-    },
-    event: {
-        label: 'Event',
-        color: 'var(--chart-3)',
-    },
-} satisfies ChartConfig;
+const chartData = computed(() => {
+    if (!props.data || props.data.length === 0) return [];
+
+    return props.data.map((item) => ({
+        kategori: item.kategori,
+        kategori_id: item.kategori_id,
+        jumlah: item.jumlah,
+        fill: getCategoryColor(item.kategori_id).chart,
+    }));
+});
+
+const chartConfig = computed(() => {
+    const config: ChartConfig = {
+        jumlah: {
+            label: 'Jumlah Artikel ',
+            color: undefined,
+        },
+    };
+
+    chartData.value.forEach((item) => {
+        config[item.kategori] = {
+            label:
+                item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1),
+            color: getCategoryColor(item.kategori_id).chart,
+        };
+    });
+
+    return config;
+});
+
+type Data = {
+    kategori: string;
+    kategori_id: number;
+    jumlah: number;
+    fill: string;
+};
 </script>
 
 <template>

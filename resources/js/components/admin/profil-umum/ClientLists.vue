@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Pagination,
@@ -17,8 +27,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { konten } from '@/routes';
+import { destroy } from '@/routes/clients';
 import { router } from '@inertiajs/vue3';
-import { Eye, Pencil, Plus, Trash } from 'lucide-vue-next';
+import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
 import ClientAddDialog from './dialogs/ClientAddDialog.vue';
 import ClientEditDialog from './dialogs/ClientEditDialog.vue';
@@ -40,6 +51,7 @@ defineProps<{
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showViewModal = ref(false);
+const showDeleteDialog = ref(false);
 const selectedClient = ref<any>(null);
 
 // Fungsi untuk membuka modal view
@@ -54,13 +66,23 @@ const openEditModal = (client: any) => {
     showEditModal.value = true;
 };
 
-// Fungsi untuk delete klien
-const deleteClient = (id: number) => {
-    if (confirm('Apakah Anda yakin ingin menghapus klien ini?')) {
-        router.delete(`/admin/clients/${id}`, {
-            preserveScroll: true,
-        });
-    }
+// Fungsi untuk membuka dialog delete
+const openDeleteDialog = (client: any) => {
+    selectedClient.value = client;
+    showDeleteDialog.value = true;
+};
+
+// Fungsi untuk delete klien menggunakan wayfinder
+const confirmDeleteClient = () => {
+    if (!selectedClient.value) return;
+
+    router.delete(destroy.url(selectedClient.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteDialog.value = false;
+            selectedClient.value = null;
+        },
+    });
 };
 
 const goToClientsPage = (page: number) => {
@@ -166,7 +188,7 @@ const goToClientsPage = (page: number) => {
                                 <Button
                                     variant="destructive"
                                     size="sm"
-                                    @click="deleteClient(client.id)"
+                                    @click="openDeleteDialog(client)"
                                 >
                                     <Trash class="h-4 w-4" />
                                 </Button>
@@ -230,5 +252,37 @@ const goToClientsPage = (page: number) => {
             v-model:open="showEditModal"
             :client="selectedClient"
         />
+
+        <!-- Delete Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+                    <AlertDialogDescription class="text-center">
+                        <TriangleAlert
+                            class="mx-auto mb-4 h-24 w-24 text-yellow-400"
+                        />
+                        <p
+                            class="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
+                        >
+                            Apakah Anda yakin ingin menghapus klien
+                            <span class="font-semibold text-foreground">
+                                {{ selectedClient?.name }}
+                            </span>
+                            ?
+                        </p>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        class="bg-destructive hover:bg-destructive/90"
+                        @click="confirmDeleteClient"
+                    >
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </div>
 </template>

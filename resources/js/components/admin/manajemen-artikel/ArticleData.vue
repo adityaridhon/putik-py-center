@@ -7,59 +7,23 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { SquarePen } from 'lucide-vue-next';
 import ArticleChart from './ArticleChart.vue';
 
+defineProps<{
+    articles?: any[];
+    articlesByCategory?: any[];
+}>();
 
-const articles = [
-    {
-        id: 1,
-        judul_artikel: 'Mengenal Konseling Individual: Manfaat dan Prosesnya',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-    },
-    {
-        id: 2,
-        judul_artikel: 'Mengenal NPD',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-    },
-    {
-        id: 3,
-        judul_artikel: 'Tes Psikologi: Jenis, Manfaat, dan Prosedurnya',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-    },
-    {
-        id: 4,
-        judul_artikel: 'Mengenal Konseling Individual: Manfaat dan Prosesnya',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-    },
-    {
-        id: 5,
-        judul_artikel: 'Mengenal NPD',
-        image: '/images/logo_putik.webp',
-        penulis: 'Admin Putik',
-        tanggal_terbit: '14 Januari 2026',
-    },
-];
+const formatDate = (dateString: string) => {
+    if (!dateString) return '-';
 
-const getStatusVariant = (status: string) => {
-    switch (status) {
-        case 'Terbit':
-            return 'default';
-        case 'Draft':
-            return 'secondary';
-        case 'Batal':
-            return 'destructive';
-        default:
-            return 'outline';
-    }
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }).format(date);
 };
 </script>
 
@@ -93,39 +57,42 @@ const getStatusVariant = (status: string) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow
-                        v-for="article in articles"
+                        v-for="(article, index) in articles"
                         :key="article.id"
                         class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     >
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
                         >
-                            {{ article.id }}
+                            {{ index + 1 }}
                         </TableCell>
                         <TableCell class="text-center">
                             <div class="flex justify-center">
                                 <img
-                                    :src="article.image"
-                                    :alt="article.judul_artikel"
+                                    :src="
+                                        article.image_url ||
+                                        '/images/logo_putik.webp'
+                                    "
+                                    :alt="article.title"
                                     class="h-16 w-16 rounded-lg border border-gray-200 object-cover shadow-sm dark:border-gray-700"
                                 />
                             </div>
                         </TableCell>
                         <TableCell class="max-w-48 font-semibold">
                             <div class="truncate">
-                                {{ article.judul_artikel }}
+                                {{ article.title }}
                             </div>
                         </TableCell>
                         <TableCell class="text-gray-600">
-                            {{ article.penulis }}
+                            {{ article.author }}
                         </TableCell>
                         <TableCell class="text-gray-600">
-                            {{ article.tanggal_terbit }}
+                            {{ formatDate(article.published_at) }}
                         </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
         </div>
-        <ArticleChart />
+        <ArticleChart :data="articlesByCategory" />
     </div>
 </template>

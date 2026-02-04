@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ClientController from '@/actions/App/Http/Controllers/Admin/ClientController';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Dialog,
@@ -9,8 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { Form } from '@inertiajs/vue3';
 
 const props = defineProps<{
     open: boolean;
@@ -26,35 +26,8 @@ const emit = defineEmits<{
     'update:open': [value: boolean];
 }>();
 
-const form = useForm({
-    name: '',
-    location: '',
-    logo: null as File | null,
-});
-
-watch(
-    () => props.client,
-    (newClient) => {
-        if (newClient) {
-            form.name = newClient.name;
-            form.location = newClient.location || '';
-            form.logo = null;
-        }
-    },
-    { immediate: true },
-);
-
-const submit = () => {
-    if (!props.client) return;
-
-    form.post(`/admin/clients/${props.client.id}`, {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('update:open', false);
-            form.reset();
-        },
-    });
+const handleSuccess = () => {
+    emit('update:open', false);
 };
 </script>
 
@@ -67,22 +40,26 @@ const submit = () => {
                     Ubah informasi klien di bawah ini
                 </DialogDescription>
             </DialogHeader>
-            <form @submit.prevent="submit" class="space-y-4">
+            <Form
+                v-if="client"
+                v-bind="ClientController.update.form(client.id)"
+                class="space-y-4"
+                preserve-scroll
+                @success="handleSuccess"
+                v-slot="{ errors, processing }"
+            >
                 <div>
                     <Label>Nama Klien</Label>
-                    <Input v-model="form.name" required />
-                    <span v-if="form.errors.name" class="text-sm text-red-500">
-                        {{ form.errors.name }}
+                    <Input name="name" :default-value="client.name" required />
+                    <span v-if="errors.name" class="text-sm text-red-500">
+                        {{ errors.name }}
                     </span>
                 </div>
                 <div>
                     <Label>Domisili</Label>
-                    <Input v-model="form.location" />
-                    <span
-                        v-if="form.errors.location"
-                        class="text-sm text-red-500"
-                    >
-                        {{ form.errors.location }}
+                    <Input name="location" :default-value="client.location" />
+                    <span v-if="errors.location" class="text-sm text-red-500">
+                        {{ errors.location }}
                     </span>
                 </div>
                 <div>
@@ -96,17 +73,9 @@ const submit = () => {
                             class="h-20 w-20 rounded border object-cover"
                         />
                     </div>
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        @change="
-                            form.logo =
-                                ($event.target as HTMLInputElement)
-                                    .files?.[0] || null
-                        "
-                    />
-                    <span v-if="form.errors.logo" class="text-sm text-red-500">
-                        {{ form.errors.logo }}
+                    <Input name="logo" type="file" accept="image/*" />
+                    <span v-if="errors.logo" class="text-sm text-red-500">
+                        {{ errors.logo }}
                     </span>
                 </div>
                 <div class="flex justify-end gap-2 pt-4">
@@ -117,15 +86,11 @@ const submit = () => {
                     >
                         Batal
                     </Button>
-                    <Button type="submit" :disabled="form.processing">
-                        {{
-                            form.processing
-                                ? 'Menyimpan...'
-                                : 'Simpan Perubahan'
-                        }}
+                    <Button type="submit" :disabled="processing">
+                        {{ processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                     </Button>
                 </div>
-            </form>
+            </Form>
         </DialogContent>
     </Dialog>
 </template>

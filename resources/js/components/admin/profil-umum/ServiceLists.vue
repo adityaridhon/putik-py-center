@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Pagination,
@@ -17,8 +27,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { konten } from '@/routes';
+import { destroy } from '@/routes/service';
 import { router } from '@inertiajs/vue3';
-import { Eye, Pencil, Plus, Trash } from 'lucide-vue-next';
+import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
 import ServiceAddDialog from './dialogs/ServiceAddDialog.vue';
 import ServiceEditDialog from './dialogs/ServiceEditDialog.vue';
@@ -40,6 +51,7 @@ const props = defineProps<{
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showViewModal = ref(false);
+const showDeleteDialog = ref(false);
 const selectedService = ref<any>(null);
 
 // Fungsi untuk membuka modal view
@@ -54,13 +66,23 @@ const openEditModal = (service: any) => {
     showEditModal.value = true;
 };
 
-// Fungsi untuk delete layanan
-const deleteService = (id: number) => {
-    if (confirm('Apakah Anda yakin ingin menghapus layanan ini?')) {
-        router.delete(`/admin/services/${id}`, {
-            preserveScroll: true,
-        });
-    }
+// Fungsi untuk membuka dialog delete
+const openDeleteDialog = (service: any) => {
+    selectedService.value = service;
+    showDeleteDialog.value = true;
+};
+
+// Fungsi untuk delete layanan menggunakan wayfinder
+const confirmDeleteService = () => {
+    if (!selectedService.value) return;
+
+    router.delete(destroy.url(selectedService.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteDialog.value = false;
+            selectedService.value = null;
+        },
+    });
 };
 
 const goToServicesPage = (page: number) => {
@@ -166,7 +188,7 @@ const goToServicesPage = (page: number) => {
                                 <Button
                                     variant="destructive"
                                     size="sm"
-                                    @click="deleteService(service.id)"
+                                    @click="openDeleteDialog(service)"
                                 >
                                     <Trash class="h-4 w-4" />
                                 </Button>
@@ -233,5 +255,37 @@ const goToServicesPage = (page: number) => {
             v-model:open="showEditModal"
             :service="selectedService"
         />
+
+        <!-- Delete Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+                    <AlertDialogDescription class="text-center">
+                        <TriangleAlert
+                            class="mx-auto mb-4 h-24 w-24 text-yellow-400"
+                        />
+                        <p
+                            class="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
+                        >
+                            Apakah Anda yakin ingin menghapus layanan
+                            <span class="font-semibold text-foreground">
+                                {{ selectedService?.name }}
+                            </span>
+                            ?
+                        </p>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        class="bg-destructive hover:bg-destructive/90"
+                        @click="confirmDeleteService"
+                    >
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </div>
 </template>

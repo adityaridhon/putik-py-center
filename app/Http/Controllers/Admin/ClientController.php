@@ -31,14 +31,14 @@ class ClientController extends Controller
 
         $client = Client::create($data);
 
-        return redirect()->route('konten')->with('success', 'Klien berhasil ditambahkan.');
+        return back()->with('success', 'Klien berhasil ditambahkan.');
     }
 
 
     public function update(Request $request, Client $client)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'location' => 'nullable|string|max:255',
             'logo' => 'nullable|image|max:2048',
         ]);
@@ -54,7 +54,7 @@ class ClientController extends Controller
 
         $client->update($data);
 
-        return redirect()->route('konten')->with('success', 'Klien berhasil diperbarui.');
+        return back()->with('success', 'Klien berhasil diperbarui.');
     }
 
     public function destroy(Client $client)
@@ -65,6 +65,6 @@ class ClientController extends Controller
 
         $client->delete();
 
-        return redirect()->route('konten')->with('success', 'Klien berhasil dihapus.');
+        return back()->with('success', 'Klien berhasil dihapus.');
     }
 }
