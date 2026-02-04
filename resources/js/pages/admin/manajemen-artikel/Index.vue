@@ -8,6 +8,8 @@ import { Head } from '@inertiajs/vue3';
 
 defineProps<{
     articles?: any;
+    recentArticles?: any[];
+    articlesByCategory?: any[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,7 +28,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         >
             <div>
                 <h1 class="my-4 text-2xl font-bold">Artikel terbaru</h1>
-                <ArticleData />
+                <ArticleData
+                    :articles="recentArticles"
+                    :articlesByCategory="articlesByCategory"
+                />
                 <ArticleLists :articles="articles" class="mt-10 mb-4" />
             </div>
         </div>

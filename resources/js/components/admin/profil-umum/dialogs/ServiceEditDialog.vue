@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import ServiceController from '@/actions/App/Http/Controllers/Admin/ServiceController';
 import Button from '@/components/ui/button/Button.vue';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -10,9 +10,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { Form } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     open: boolean;
@@ -21,7 +22,7 @@ const props = defineProps<{
         name: string;
         description?: string;
         image_url?: string;
-        is_active: boolean;
+        is_active: boolean | number;
     } | null;
 }>();
 
@@ -29,37 +30,20 @@ const emit = defineEmits<{
     'update:open': [value: boolean];
 }>();
 
-const form = useForm({
-    name: '',
-    description: '',
-    image: null as File | null,
-    is_active: true,
-});
+const isActive = ref('1');
 
 watch(
     () => props.service,
     (newService) => {
         if (newService) {
-            form.name = newService.name;
-            form.description = newService.description || '';
-            form.is_active = newService.is_active;
-            form.image = null;
+            isActive.value = newService.is_active ? '1' : '0';
         }
     },
     { immediate: true },
 );
 
-const submit = () => {
-    if (!props.service) return;
-
-    form.post(`/admin/services/${props.service.id}`, {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('update:open', false);
-            form.reset();
-        },
-    });
+const handleSuccess = () => {
+    emit('update:open', false);
 };
 </script>
 
@@ -72,22 +56,33 @@ const submit = () => {
                     Ubah informasi layanan di bawah ini
                 </DialogDescription>
             </DialogHeader>
-            <form @submit.prevent="submit" class="space-y-4">
+            <Form
+                v-if="service"
+                v-bind="ServiceController.update.form(service.id)"
+                class="space-y-4"
+                preserve-scroll
+                @success="handleSuccess"
+                v-slot="{ errors, processing }"
+            >
                 <div>
                     <Label>Nama Layanan</Label>
-                    <Input v-model="form.name" required />
-                    <span v-if="form.errors.name" class="text-sm text-red-500">
-                        {{ form.errors.name }}
+                    <Input name="name" :default-value="service.name" required />
+                    <span v-if="errors.name" class="text-sm text-red-500">
+                        {{ errors.name }}
                     </span>
                 </div>
                 <div>
                     <Label>Deskripsi</Label>
-                    <Textarea v-model="form.description" class="resize-none" />
+                    <Textarea
+                        name="description"
+                        :default-value="service.description"
+                        class="resize-none"
+                    />
                     <span
-                        v-if="form.errors.description"
+                        v-if="errors.description"
                         class="text-sm text-red-500"
                     >
-                        {{ form.errors.description }}
+                        {{ errors.description }}
                     </span>
                 </div>
                 <div>
@@ -102,25 +97,41 @@ const submit = () => {
                             class="h-20 w-20 rounded border object-cover"
                         />
                     </div>
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        @change="
-                            form.image =
-                                ($event.target as HTMLInputElement)
-                                    .files?.[0] || null
-                        "
-                    />
-                    <span v-if="form.errors.image" class="text-sm text-red-500">
-                        {{ form.errors.image }}
+                    <Input name="image" type="file" accept="image/*" />
+                    <span v-if="errors.image" class="text-sm text-red-500">
+                        {{ errors.image }}
                     </span>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <Checkbox
-                        :checked="form.is_active"
-                        @update:checked="form.is_active = $event"
-                    />
-                    <Label>Aktif</Label>
+                <div class="space-y-3">
+                    <Label>Status Layanan</Label>
+                    <RadioGroup v-model="isActive" class="flex gap-4">
+                        <div class="flex items-center space-x-2">
+                            <RadioGroupItem
+                                :id="`active_yes_${service.id}`"
+                                value="1"
+                            />
+                            <Label
+                                :for="`active_yes_${service.id}`"
+                                class="cursor-pointer font-normal"
+                            >
+                                Aktif
+                            </Label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <RadioGroupItem
+                                :id="`active_no_${service.id}`"
+                                value="0"
+                            />
+                            <Label
+                                :for="`active_no_${service.id}`"
+                                class="cursor-pointer font-normal"
+                            >
+                                Nonaktif
+                            </Label>
+                        </div>
+                    </RadioGroup>
+                    <!-- Hidden input untuk form submission -->
+                    <input type="hidden" name="is_active" :value="isActive" />
                 </div>
                 <div class="flex justify-end gap-2 pt-4">
                     <Button
@@ -130,15 +141,11 @@ const submit = () => {
                     >
                         Batal
                     </Button>
-                    <Button type="submit" :disabled="form.processing">
-                        {{
-                            form.processing
-                                ? 'Menyimpan...'
-                                : 'Simpan Perubahan'
-                        }}
+                    <Button type="submit" :disabled="processing">
+                        {{ processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                     </Button>
                 </div>
-            </form>
+            </Form>
         </DialogContent>
     </Dialog>
 </template>

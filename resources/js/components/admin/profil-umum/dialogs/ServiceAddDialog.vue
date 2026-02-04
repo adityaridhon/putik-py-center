@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { store } from '@/routes/service';
 import { useForm } from '@inertiajs/vue3';
 
 defineProps<{
@@ -29,7 +30,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post('/admin/services', {
+    form.post(store.url(), {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {

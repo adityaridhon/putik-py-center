@@ -170,3 +170,12 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Ensure toaster is visible with high z-index */
+[data-sonner-toaster] {
+    z-index: 9999 !important;
+}
+
+[data-sonner-toast] {
+    z-index: 9999 !important;
+}

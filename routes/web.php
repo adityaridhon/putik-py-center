@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Models\Service;
 use App\Models\CompanyProfile;
-use App\Models\Client; 
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
@@ -49,10 +47,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Articles Management
     Route::get('/admin/articles', [ArticleController::class, 'index'])->name('article');
+    Route::get('/admin/articles/create', [ArticleController::class, 'create'])->name('article.create');
     Route::post('/admin/articles', [ArticleController::class, 'store'])->name('article.store');
-    Route::get('/admin/articles/{article}', [ArticleController::class, 'show'])->name('article.show');
-    Route::put('/admin/articles/{article}', [ArticleController::class, 'update'])->name('article.update');
-    Route::delete('/admin/articles/{article}', [ArticleController::class, 'destroy'])->name('article.destroy');
+    Route::get('/admin/articles/{article:slug}', [ArticleController::class, 'show'])->name('article.show');
+    Route::get('/admin/articles/{article:slug}/edit', [ArticleController::class, 'edit'])->name('article.edit');
+    Route::put('/admin/articles/{article:slug}', [ArticleController::class, 'update'])->name('article.update');
+    Route::delete('/admin/articles/{article:slug}', [ArticleController::class, 'destroy'])->name('article.destroy');
 
     // Bookings
     Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');

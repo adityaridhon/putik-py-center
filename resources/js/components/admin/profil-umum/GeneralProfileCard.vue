@@ -49,7 +49,9 @@ const editProfile = () => {
 <template>
     <Card class="@container/card">
         <CardHeader>
-            <div class="flex flex-row justify-between">
+            <div
+                class="flex flex-row items-start gap-6 @lg/card:flex-row @lg/card:items-center"
+            >
                 <div class="max-w-xs">
                     <CardTitle class="font-semibold">
                         Gambar Landing Page
@@ -61,7 +63,7 @@ const editProfile = () => {
                                 : '/images/logo_putik.webp'
                         "
                         alt="Landing Image"
-                        class="mt-2 rounded border"
+                        class="mt-2 h-52 rounded border"
                     />
                 </div>
                 <div class="flex max-w-2xl flex-col gap-3">

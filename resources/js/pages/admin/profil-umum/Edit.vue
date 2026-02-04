@@ -101,64 +101,68 @@ const submit = () => {
                     <!-- Grid 2 Kolom -->
 
                     <div class="flex w-full flex-col justify-center">
-                        <!-- Logo Preview & Upload -->
-                        <div class="mt-4 max-w-xs">
-                            <h1 class="mb-2 font-semibold">Logo Perusahaan</h1>
-                            <div
-                                v-if="getLogoPreview()"
-                                class="mb-3 rounded border bg-gray-50 p-3"
-                            >
-                                <img
-                                    :src="getLogoPreview() ?? undefined"
-                                    alt="Logo Preview"
-                                    class="h-24 w-auto rounded object-contain"
+                        <div class="grid w-full grid-cols-2 gap-8">
+                            <!-- Logo Preview & Upload -->
+                            <div class="max-w-md">
+                                <h1 class="mb-2 font-semibold">
+                                    Logo Perusahaan
+                                </h1>
+                                <div
+                                    v-if="getLogoPreview()"
+                                    class="mb-3 rounded border bg-gray-50 p-3"
+                                >
+                                    <img
+                                        :src="getLogoPreview() ?? undefined"
+                                        alt="Logo Preview"
+                                        class="h-48 w-auto rounded object-contain"
+                                    />
+                                </div>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    @change="
+                                        form.logo =
+                                            ($event.target as HTMLInputElement)
+                                                .files?.[0] || null
+                                    "
                                 />
+                                <span
+                                    v-if="form.errors.logo"
+                                    class="text-sm text-red-500"
+                                    >{{ form.errors.logo }}</span
+                                >
                             </div>
-                            <Input
-                                type="file"
-                                accept="image/*"
-                                @change="
-                                    form.logo =
-                                        ($event.target as HTMLInputElement)
-                                            .files?.[0] || null
-                                "
-                            />
-                            <span
-                                v-if="form.errors.logo"
-                                class="text-sm text-red-500"
-                                >{{ form.errors.logo }}</span
-                            >
-                        </div>
 
-                        <!-- Landing Image Preview & Upload -->
-                        <div class="mt-6 max-w-md">
-                            <h1 class="mb-2 font-semibold">
-                                Gambar Landing Page
-                            </h1>
-                            <div
-                                v-if="getLandingPreview()"
-                                class="mb-3 rounded border bg-gray-50 p-3"
-                            >
-                                <img
-                                    :src="getLandingPreview() ?? undefined"
-                                    alt="Landing Image Preview"
-                                    class="h-48 w-full rounded object-cover"
+                            <!-- Landing Image Preview & Upload -->
+                            <div class="max-w-md">
+                                <h1 class="mb-2 font-semibold">
+                                    Gambar Landing Page
+                                </h1>
+                                <div
+                                    v-if="getLandingPreview()"
+                                    class="mb-3 rounded border bg-gray-50 p-3"
+                                >
+                                    <img
+                                        :src="getLandingPreview() ?? undefined"
+                                        alt="Landing Image Preview"
+                                        class="h-48 w-full rounded object-contain"
+                                    />
+                                </div>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    @change="
+                                        form.landing_image =
+                                            ($event.target as HTMLInputElement)
+                                                .files?.[0] || null
+                                    "
                                 />
+                                <span
+                                    v-if="form.errors.landing_image"
+                                    class="text-sm text-red-500"
+                                    >{{ form.errors.landing_image }}</span
+                                >
                             </div>
-                            <Input
-                                type="file"
-                                accept="image/*"
-                                @change="
-                                    form.landing_image =
-                                        ($event.target as HTMLInputElement)
-                                            .files?.[0] || null
-                                "
-                            />
-                            <span
-                                v-if="form.errors.landing_image"
-                                class="text-sm text-red-500"
-                                >{{ form.errors.landing_image }}</span
-                            >
                         </div>
 
                         <div class="grid w-full grid-cols-2 gap-8 pt-6">

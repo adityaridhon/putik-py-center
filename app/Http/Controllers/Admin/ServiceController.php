@@ -24,10 +24,17 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-            'is_active' => 'boolean',
+            'is_active' => 'sometimes|in:0,1,true,false',
         ]);
 
-        $data = $request->only(['name', 'description', 'is_active']);
+        $data = [
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            // Convert to boolean: 1, "1", true -> 1; 0, "0", false -> 0; default true
+            'is_active' => $request->has('is_active') 
+                ? (filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN) ? 1 : 0)
+                : 1,
+        ];
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('services', 'public');
@@ -35,19 +42,32 @@ class ServiceController extends Controller
 
         $service = Service::create($data);
 
-        return redirect()->route('konten.index')->with('success', 'Layanan berhasil ditambahkan.');
+        return back()->with('success', 'Layanan berhasil ditambahkan.');
     }
 
     public function update(Request $request, Service $service)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-            'is_active' => 'boolean',
+            'is_active' => 'sometimes|in:0,1,true,false',
         ]);
 
-        $data = $request->only(['name', 'description', 'is_active']);
+        $data = [];
+        
+        if ($request->has('name')) {
+            $data['name'] = $request->input('name');
+        }
+        
+        if ($request->has('description')) {
+            $data['description'] = $request->input('description');
+        }
+        
+        if ($request->has('is_active')) {
+            // Convert to boolean: 1, "1", true -> 1; 0, "0", false -> 0
+            $data['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        }
 
         if ($request->hasFile('image')) {
             if ($service->image) {
@@ -58,7 +78,7 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        return redirect()->route('konten.index')->with('success', 'Layanan berhasil diperbarui.');
+        return back()->with('success', 'Layanan berhasil diperbarui.');
     }
 
     public function destroy(Service $service)
@@ -69,6 +89,6 @@ class ServiceController extends Controller
 
         $service->delete();
 
-        return redirect()->route('konten.index')->with('success', 'Layanan berhasil dihapus.');
+        return back()->with('success', 'Layanan berhasil dihapus.');
     }
 }

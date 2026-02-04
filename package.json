@@ -32,6 +32,12 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.1.0",
         "@tanstack/vue-table": "^8.21.3",
+        "@tiptap/extension-link": "^3.17.1",
+        "@tiptap/extension-text-align": "^3.17.1",
+        "@tiptap/extension-underline": "^3.17.1",
+        "@tiptap/pm": "^3.17.1",
+        "@tiptap/starter-kit": "^3.17.1",
+        "@tiptap/vue-3": "^3.17.1",
         "@unovis/ts": "^1.6.2",
         "@unovis/vue": "^1.6.2",
         "@vueuse/core": "^12.8.2",
@@ -39,12 +45,13 @@
         "clsx": "^2.1.1",
         "laravel-vite-plugin": "^2.0.0",
         "lucide-vue-next": "^0.468.0",
-        "reka-ui": "^2.7.0",
+        "reka-ui": "^2.8.0",
         "tailwind-merge": "^3.2.0",
         "tailwindcss": "^4.1.1",
         "tw-animate-css": "^1.2.5",
         "vue": "^3.5.13",
         "vue-input-otp": "^0.3.2",
+        "vue-sonner": "^2.0.9",
         "vue3-marquee": "^4.2.2"
     },
     "optionalDependencies": {

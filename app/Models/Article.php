@@ -25,6 +25,11 @@ class Article extends Model
         'published_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'cover_image_url',
+        'file_path_url',
+    ];
+
     protected static function booted()
     {
         static::creating(function ($article) {
@@ -34,8 +39,23 @@ class Article extends Model
         });
     }
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function category()
     {
         return $this->belongsTo(ArticleCategory::class, 'category_id');
+    }
+
+    public function getCoverImageUrlAttribute()
+    {
+        return $this->cover_image;
+    }
+
+    public function getFilePathUrlAttribute()
+    {
+        return $this->file_path;
     }
 }
