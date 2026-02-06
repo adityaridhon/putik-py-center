@@ -28,6 +28,7 @@ class Article extends Model
     protected $appends = [
         'cover_image_url',
         'file_path_url',
+        'image_url', // alias untuk cover_image_url (backward compatibility)
     ];
 
     protected static function booted()
@@ -51,11 +52,23 @@ class Article extends Model
 
     public function getCoverImageUrlAttribute()
     {
-        return $this->cover_image;
+        if (!$this->cover_image) {
+            return null;
+        }
+        return asset('storage/' . $this->cover_image);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        // Alias untuk backward compatibility
+        return $this->getCoverImageUrlAttribute();
     }
 
     public function getFilePathUrlAttribute()
     {
-        return $this->file_path;
+        if (!$this->file_path) {
+            return null;
+        }
+        return asset('storage/' . $this->file_path);
     }
 }
