@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CreateArticleForm from '@/components/admin/manajemen-artikel/CreateArticleForm.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { article } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -19,6 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 <template>
     <Head title="Tambah Artikel" />
     <AppLayout :breadcrumbs="breadcrumbs">
+        <PageHeader title="Tambah Artikel" :back-url="article().url" />
         <div class="p-6">
             <CreateArticleForm :categories="categories" />
         </div>

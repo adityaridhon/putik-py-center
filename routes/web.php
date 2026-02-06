@@ -58,7 +58,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');
 
     // Assessment Modules
+
+    // Minat Bakat
     Route::get('/admin/asesmen/minat-bakat', fn() => Inertia::render('admin/tes-minat-bakat/Index'))->name('minatBakat');
+    Route::get('/admin/asesmen/minat-bakat/create', fn() => Inertia::render('admin/tes-minat-bakat/Create'))->name('minatBakat.create');
+
+
+    
     Route::get('/admin/asesmen/gaya-belajar', fn() => Inertia::render('admin/tes-gaya-belajar/Index'))->name('gayaBelajar');
     Route::get('/admin/asesmen/intelegensi', fn() => Inertia::render('admin/tes-intelegensi/Index'))->name('intelegensi');
 }); 

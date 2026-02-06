@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import {
     Card,
     CardContent,
@@ -9,11 +9,10 @@ import {
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { article as articleRoute } from '@/routes';
-import { edit } from '@/routes/article';
 import { type BreadcrumbItem } from '@/types';
 import { getCategoryColor } from '@/utils/categoryColors';
-import { Head, Link } from '@inertiajs/vue3';
-import { ArrowLeft, Calendar, Download, FileText, Pencil, User } from 'lucide-vue-next';
+import { Head } from '@inertiajs/vue3';
+import { Calendar, Download, FileText, User } from 'lucide-vue-next';
 
 const props = defineProps<{
     artikel: {
@@ -73,27 +72,12 @@ const getStatusText = (status: string) => {
 <template>
     <Head :title="`Detail Artikel - ${artikel.title}`" />
     <AppLayout :breadcrumbs="breadcrumbs">
+        <PageHeader title="Detail Artikel" :back-url="articleRoute().url" />
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-6">
-            <!-- Header Actions -->
-            <div class="flex items-center justify-between">
-                <Link :href="articleRoute().url">
-                    <Button variant="outline" size="sm">
-                        <ArrowLeft class="mr-2 h-4 w-4" />
-                        Kembali
-                    </Button>
-                </Link>
-                <Link :href="edit.url(artikel.slug)">
-                    <Button size="sm">
-                        <Pencil class="mr-2 h-4 w-4" />
-                        Edit Artikel
-                    </Button>
-                </Link>
-            </div>
-
             <!-- Main Content -->
             <div class="grid gap-6 lg:grid-cols-3">
                 <!-- Left Column - Main Content -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="space-y-6 lg:col-span-2">
                     <!-- Cover Image -->
                     <Card>
                         <CardContent class="p-0">
@@ -114,7 +98,9 @@ const getStatusText = (status: string) => {
                             <CardTitle class="text-3xl">
                                 {{ artikel.title }}
                             </CardTitle>
-                            <CardDescription class="flex items-center gap-4 text-base">
+                            <CardDescription
+                                class="flex items-center gap-4 text-base"
+                            >
                                 <span class="flex items-center gap-1">
                                     <User class="h-4 w-4" />
                                     {{ artikel.author }}
@@ -131,16 +117,18 @@ const getStatusText = (status: string) => {
                                     Deskripsi
                                 </h3>
                                 <div
-                                    class="prose prose-gray max-w-none dark:prose-invert"
+                                    class="prose prose-gray dark:prose-invert max-w-none"
                                 >
-                                    <p class="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                                    <p
+                                        class="whitespace-pre-wrap text-gray-700 dark:text-gray-300"
+                                    >
                                         {{ artikel.description }}
                                     </p>
                                 </div>
                             </div>
 
                             <!-- PDF File -->
-                            <div v-if="artikel.file_path" class="pt-4 border-t">
+                            <div v-if="artikel.file_path" class="border-t pt-4">
                                 <h3 class="mb-3 text-lg font-semibold">
                                     File Artikel
                                 </h3>
@@ -161,7 +149,7 @@ const getStatusText = (status: string) => {
                 </div>
 
                 <!-- Right Column - Metadata -->
-                <div class="lg:col-span-1 space-y-6">
+                <div class="space-y-6 lg:col-span-1">
                     <!-- Article Info -->
                     <Card>
                         <CardHeader>
@@ -170,7 +158,9 @@ const getStatusText = (status: string) => {
                         <CardContent class="space-y-4">
                             <!-- Status -->
                             <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                <p
+                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                >
                                     Status
                                 </p>
                                 <span
@@ -185,13 +175,16 @@ const getStatusText = (status: string) => {
 
                             <!-- Category -->
                             <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                <p
+                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                >
                                     Kategori
                                 </p>
                                 <span
                                     :class="[
                                         'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium',
-                                        getCategoryColor(artikel.category_id).badge,
+                                        getCategoryColor(artikel.category_id)
+                                            .badge,
                                     ]"
                                 >
                                     {{ artikel.category?.name || '-' }}
@@ -199,32 +192,46 @@ const getStatusText = (status: string) => {
                             </div>
 
                             <!-- Divider -->
-                            <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-700"
+                            ></div>
 
                             <!-- Dates -->
                             <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                <p
+                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                >
                                     Tanggal Publikasi
                                 </p>
-                                <p class="text-sm text-gray-900 dark:text-gray-100">
+                                <p
+                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                >
                                     {{ formatDate(artikel.published_at) }}
                                 </p>
                             </div>
 
                             <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                <p
+                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                >
                                     Dibuat Pada
                                 </p>
-                                <p class="text-sm text-gray-900 dark:text-gray-100">
+                                <p
+                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                >
                                     {{ formatDate(artikel.created_at) }}
                                 </p>
                             </div>
 
                             <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                <p
+                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                >
                                     Terakhir Diperbarui
                                 </p>
-                                <p class="text-sm text-gray-900 dark:text-gray-100">
+                                <p
+                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                >
                                     {{ formatDate(artikel.updated_at) }}
                                 </p>
                             </div>

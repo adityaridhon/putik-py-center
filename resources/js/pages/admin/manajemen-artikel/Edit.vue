@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EditArticleForm from '@/components/admin/manajemen-artikel/EditArticleForm.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { article as articleRoute } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -32,6 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 <template>
     <Head title="Edit Artikel" />
     <AppLayout :breadcrumbs="breadcrumbs">
+        <PageHeader title="Edit Artikel" :back-url="articleRoute().url" />
         <div class="p-6">
             <EditArticleForm :article="artikel" :categories="categories" />
         </div>

@@ -14,7 +14,19 @@ export function useActiveUrl() {
         currentUrl?: string,
     ) {
         const urlToCompare = currentUrl ?? currentUrlReactive.value;
-        return toUrl(urlToCheck) === urlToCompare;
+        const urlToCheckPath = toUrl(urlToCheck);
+
+        // Exact match
+        if (urlToCheckPath === urlToCompare) {
+            return true;
+        }
+
+        // Check if current URL starts with the menu URL (for subpages)
+        if (urlToCompare.startsWith(urlToCheckPath + '/')) {
+            return true;
+        }
+
+        return false;
     }
 
     return {
