@@ -51,7 +51,26 @@ class ArticleController extends Controller
         $article->load('category');
 
         return Inertia::render('admin/manajemen-artikel/Detail', [
-            'artikel' => $article,
+            'artikel' => [
+                'id' => $article->id,
+                'title' => $article->title,
+                'slug' => $article->slug,
+                'author' => $article->author,
+                'category_id' => $article->category_id,
+                'category' => $article->category ? [
+                    'id' => $article->category->id,
+                    'name' => $article->category->name,
+                ] : null,
+                'description' => $article->description,
+                'status' => $article->status,
+                'file_path' => $article->file_path,
+                'cover_image' => $article->cover_image,
+                'cover_image_url' => $article->cover_image_url,
+                'file_path_url' => $article->file_path_url,
+                'published_at' => $article->published_at?->toISOString(),
+                'created_at' => $article->created_at->toISOString(),
+                'updated_at' => $article->updated_at->toISOString(),
+            ],
         ]);
     }
 
