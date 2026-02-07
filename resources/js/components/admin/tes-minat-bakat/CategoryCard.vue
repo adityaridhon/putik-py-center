@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Card, CardAction, CardHeader } from '@/components/ui/card';
-import { create } from '@/routes/minatBakat';
+import { create, edit } from '@/routes/minatBakat';
 import { Link } from '@inertiajs/vue3';
 import { FileQuestion, Folder, PencilRuler } from 'lucide-vue-next';
 
@@ -25,9 +25,11 @@ defineProps<{
                         ><FileQuestion /> Buat soal</Button
                     >
                 </Link>
-                <Button variant="secondary" size="sm" class="w-full"
-                    ><PencilRuler /> Kelola Soal</Button
-                >
+                <Link :href="edit(index).url">
+                    <Button variant="secondary" size="sm" class="w-full"
+                        ><PencilRuler /> Kelola Soal</Button
+                    >
+                </Link>
             </CardAction>
         </CardHeader>
     </Card>
