@@ -9,6 +9,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getInitials } from '@/composables/useInitials';
+import { dashboard, logout } from '@/routes';
 import type { Auth } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
@@ -92,12 +93,12 @@ const auth = computed(() => page.props.auth as Auth);
                                 <Link href="#">Pengaturan Akun</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem as-child>
-                                <Link href="#">Dashboard User</Link>
+                                <Link :href="dashboard().url">Dashboard Admin</Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem as-child>
-                            <Link href="#">Keluar</Link>
+                            <Link :href="logout().url" method="post" as="button" class="w-full text-start">Keluar</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

@@ -9,15 +9,28 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { minatBakat } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { Pencil, Plus, Trash } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { edit as minatBakatEdit, update as minatBakatUpdate } from '@/routes/minatBakat';
+import { store as jobsStore, update as jobsUpdate, destroy as jobsDestroy } from '@/routes/minatBakat/jobs';
 
 const props = defineProps<{
-    id: string;
+    category: any;
+    jobs?: any[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,42 +38,70 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Kelola Soal', href: '#' },
 ];
 
-// Helper untuk mendapatkan nama kategori berdasarkan id (A-I)
-const getCategoryName = (id: string) => {
-    const categoryIndex = parseInt(id);
-    return String.fromCharCode(64 + categoryIndex); // 1 -> A, 2 -> B, dst.
+// Form untuk update instruksi
+const instructionForm = useForm({
+    instruction: props.category.instruction || '',
+});
+
+// Modal state
+const showJobModal = ref(false);
+const isEditing = ref(false);
+const editingJobId = ref<number | null>(null);
+
+// Form untuk job (add/edit)
+const jobForm = useForm({
+    job_name: '',
+    category_id: props.category.id,
+});
+
+const openAddModal = () => {
+    isEditing.value = false;
+    jobForm.reset();
+    jobForm.category_id = props.category.id;
+    editingJobId.value = null;
+    showJobModal.value = true;
 };
 
-// Data dummy untuk demonstrasi
-// Nanti akan diganti dengan data dari backend
-const instruction =
-    'Pilih pekerjaan yang paling Anda minati dari daftar berikut.';
-const workList = [
-    { id: 1, name: 'Guru' },
-    { id: 2, name: 'Dokter' },
-    { id: 3, name: 'Programmer' },
-    { id: 4, name: 'Desainer Grafis' },
-    { id: 5, name: 'Akuntan' },
-];
-
-const handleEdit = (workId: number) => {
-    console.log('Edit work:', workId);
-    // TODO: Implementasi edit
+const openEditModal = (job: any) => {
+    isEditing.value = true;
+    jobForm.job_name = job.job_name;
+    jobForm.category_id = props.category.id;
+    editingJobId.value = job.id;
+    showJobModal.value = true;
 };
 
-const handleDelete = (workId: number) => {
-    console.log('Delete work:', workId);
-    // TODO: Implementasi delete
+const submitJob = () => {
+    if (isEditing.value && editingJobId.value) {
+        jobForm.put(jobsUpdate(editingJobId.value).url, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showJobModal.value = false;
+                jobForm.reset();
+            },
+        });
+    } else {
+        jobForm.post(jobsStore().url, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showJobModal.value = false;
+                jobForm.reset();
+            },
+        });
+    }
 };
 
-const handleAddWork = () => {
-    console.log('Add new work');
-    // TODO: Implementasi tambah pekerjaan baru
+const deleteJob = (id: number) => {
+    if (confirm('Apakah Anda yakin ingin menghapus pekerjaan ini?')) {
+        router.delete(jobsDestroy(id).url, {
+            preserveScroll: true,
+        });
+    }
 };
 
-const handleSave = () => {
-    console.log('Save changes');
-    // TODO: Implementasi save
+const saveInstruction = () => {
+    instructionForm.put(minatBakatUpdate(props.category.id).url, {
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -73,29 +114,35 @@ const handleSave = () => {
             <!-- Heading -->
             <div class="space-y-2">
                 <h1 class="text-2xl font-bold">
-                    Kategori {{ getCategoryName(id) }}
+                    {{ category.name }}
                 </h1>
             </div>
 
             <!-- Instruksi Tes -->
             <div class="space-y-2">
-                <h2 class="text-xl font-bold">Instruksi Tes</h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Instruksi Tes</h2>
+                    <Button size="sm" @click="saveInstruction" :disabled="instructionForm.processing">
+                        {{ instructionForm.processing ? 'Menyimpan...' : 'Simpan Instruksi' }}
+                    </Button>
+                </div>
                 <p class="text-sm text-gray-600">
                     Masukkan instruksi tes sesuai dengan kebutuhan tes minat dan
                     bakat
                 </p>
                 <Textarea
-                    :model-value="instruction"
+                    v-model="instructionForm.instruction"
                     class="h-25 resize-none"
                     placeholder="Masukkan instruksi tes di sini..."
                 />
+                <span v-if="instructionForm.errors.instruction" class="text-red-500 text-sm">{{ instructionForm.errors.instruction }}</span>
             </div>
 
-            <!-- Daftar Pekerjaan -->
-            <div class="space-y-2">
+            <!-- Daftar Pekerjaan (Hanya jika kategori memiliki jobs) -->
+            <div v-if="category.has_jobs" class="space-y-2">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-bold">Daftar Pekerjaan</h2>
-                    <Button variant="default" size="sm" @click="handleAddWork">
+                    <Button variant="default" size="sm" @click="openAddModal">
                         <Plus class="h-4 w-4" />
                         Tambah Pekerjaan
                     </Button>
@@ -124,8 +171,8 @@ const handleSave = () => {
                         </TableHeader>
                         <TableBody>
                             <TableRow
-                                v-for="(work, index) in workList"
-                                :key="work.id"
+                                v-for="(job, index) in jobs"
+                                :key="job.id"
                                 class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                             >
                                 <TableCell
@@ -134,7 +181,7 @@ const handleSave = () => {
                                     {{ index + 1 }}
                                 </TableCell>
                                 <TableCell>
-                                    {{ work.name }}
+                                    {{ job.job_name }}
                                 </TableCell>
                                 <TableCell class="align-middle">
                                     <div
@@ -144,14 +191,14 @@ const handleSave = () => {
                                             variant="secondary"
                                             size="sm"
                                             class="bg-yellow-400 text-white hover:bg-yellow-400/80"
-                                            @click="handleEdit(work.id)"
+                                            @click="openEditModal(job)"
                                         >
                                             <Pencil class="h-4 w-4" />
                                         </Button>
                                         <Button
                                             variant="destructive"
                                             size="sm"
-                                            @click="handleDelete(work.id)"
+                                            @click="deleteJob(job.id)"
                                         >
                                             <Trash class="h-4 w-4" />
                                         </Button>
@@ -159,7 +206,7 @@ const handleSave = () => {
                                 </TableCell>
                             </TableRow>
                             <TableRow
-                                v-if="workList.length === 0"
+                                v-if="!jobs || jobs.length === 0"
                                 class="hover:bg-transparent"
                             >
                                 <TableCell colspan="3" class="text-center">
@@ -173,17 +220,34 @@ const handleSave = () => {
                     </Table>
                 </div>
             </div>
+            <div v-else class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
+                <p>Kategori ini adalah kategori Esai/Isian Bebas. Tidak ada daftar pekerjaan yang perlu dikelola. Cukup atur instruksi tes di atas.</p>
+            </div>
         </div>
 
-        <!-- Footer Actions -->
-        <div class="flex justify-end gap-2 p-4">
-            <Button
-                variant="outline"
-                @click="() => $inertia.visit(minatBakat().url)"
-            >
-                Batal
-            </Button>
-            <Button @click="handleSave"> Simpan Perubahan </Button>
-        </div>
+        <!-- Modal Job -->
+        <Dialog v-model:open="showJobModal">
+            <DialogContent class="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>{{ isEditing ? 'Edit Pekerjaan' : 'Tambah Pekerjaan' }}</DialogTitle>
+                    <DialogDescription>
+                        {{ isEditing ? 'Ubah nama pekerjaan.' : 'Masukkan nama pekerjaan baru untuk kategori ini.' }}
+                    </DialogDescription>
+                </DialogHeader>
+                <form @submit.prevent="submitJob" class="space-y-4">
+                    <div>
+                        <Label>Nama Pekerjaan</Label>
+                        <Input v-model="jobForm.job_name" placeholder="Contoh: Dokter" required autofocus />
+                        <span v-if="jobForm.errors.job_name" class="text-red-500 text-sm">{{ jobForm.errors.job_name }}</span>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <Button type="button" variant="outline" @click="showJobModal = false">Batal</Button>
+                        <Button type="submit" :disabled="jobForm.processing">
+                            {{ jobForm.processing ? 'Menyimpan...' : 'Simpan' }}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     </AppLayout>
 </template>

@@ -7,6 +7,8 @@ use App\Models\CompanyProfile;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\InterestCategoryController;
+use App\Http\Controllers\Admin\InterestJobController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 
@@ -60,9 +62,15 @@ Route::middleware(['auth'])->group(function () {
     // Assessment Modules
 
     // Minat Bakat
-    Route::get('/admin/asesmen/minat-bakat', fn() => Inertia::render('admin/tes-minat-bakat/Index'))->name('minatBakat');
-    Route::get('/admin/asesmen/minat-bakat/create', fn() => Inertia::render('admin/tes-minat-bakat/Create'))->name('minatBakat.create');
-    Route::get('/admin/asesmen/minat-bakat/{id}/edit', fn($id) => Inertia::render('admin/tes-minat-bakat/Edit', ['id' => $id]))->name('minatBakat.edit');
+    Route::get('/admin/asesmen/minat-bakat', [InterestCategoryController::class, 'index'])->name('minatBakat');
+    // Route::get('/admin/asesmen/minat-bakat/create', fn() => Inertia::render('admin/tes-minat-bakat/Create'))->name('minatBakat.create'); // Deprecated/Unused for fixed categories
+    Route::get('/admin/asesmen/minat-bakat/{id}/edit', [InterestCategoryController::class, 'edit'])->name('minatBakat.edit');
+    Route::put('/admin/asesmen/minat-bakat/{id}', [InterestCategoryController::class, 'update'])->name('minatBakat.update');
+
+    // Minat Bakat Jobs
+    Route::post('/admin/asesmen/minat-bakat/jobs', [InterestJobController::class, 'store'])->name('minatBakat.jobs.store');
+    Route::put('/admin/asesmen/minat-bakat/jobs/{id}', [InterestJobController::class, 'update'])->name('minatBakat.jobs.update');
+    Route::delete('/admin/asesmen/minat-bakat/jobs/{id}', [InterestJobController::class, 'destroy'])->name('minatBakat.jobs.destroy');
 
 
     
