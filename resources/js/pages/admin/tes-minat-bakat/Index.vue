@@ -5,6 +5,10 @@ import { minatBakat } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+defineProps<{
+    categories: any[];
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Tes Minat Bakat',
@@ -31,7 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <!-- Content -->
             <div class="grid auto-rows-min gap-4 md:grid-cols-4">
-                <CategoryCard v-for="n in 9" :key="n" :index="n" />
+                <CategoryCard v-for="category in categories" :key="category.id" :category="category" />
             </div>
         </div>
     </AppLayout>
