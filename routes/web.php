@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
     // Minat Bakat
     Route::get('/admin/asesmen/minat-bakat', fn() => Inertia::render('admin/tes-minat-bakat/Index'))->name('minatBakat');
     Route::get('/admin/asesmen/minat-bakat/create', fn() => Inertia::render('admin/tes-minat-bakat/Create'))->name('minatBakat.create');
+    Route::get('/admin/asesmen/minat-bakat/{id}/edit', fn($id) => Inertia::render('admin/tes-minat-bakat/Edit', ['id' => $id]))->name('minatBakat.edit');
 
 
     
