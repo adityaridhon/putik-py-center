@@ -63,7 +63,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Minat Bakat
     Route::get('/admin/asesmen/minat-bakat', [InterestCategoryController::class, 'index'])->name('minatBakat');
-    // Route::get('/admin/asesmen/minat-bakat/create', fn() => Inertia::render('admin/tes-minat-bakat/Create'))->name('minatBakat.create'); // Deprecated/Unused for fixed categories
     Route::get('/admin/asesmen/minat-bakat/{id}/edit', [InterestCategoryController::class, 'edit'])->name('minatBakat.edit');
     Route::put('/admin/asesmen/minat-bakat/{id}', [InterestCategoryController::class, 'update'])->name('minatBakat.update');
 
@@ -73,8 +72,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/asesmen/minat-bakat/jobs/{id}', [InterestJobController::class, 'destroy'])->name('minatBakat.jobs.destroy');
 
 
-    
+    // Gaya Belajar
     Route::get('/admin/asesmen/gaya-belajar', fn() => Inertia::render('admin/tes-gaya-belajar/Index'))->name('gayaBelajar');
+    Route::get('/admin/asesmen/gaya-belajar/create', fn()=> Inertia::render('admin/tes-gaya-belajar/Create'))->name('gayaBelajar.create');
+
+
+
     Route::get('/admin/asesmen/intelegensi', fn() => Inertia::render('admin/tes-intelegensi/Index'))->name('intelegensi');
 }); 
 require __DIR__.'/settings.php';
