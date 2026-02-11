@@ -77,7 +77,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/asesmen/gaya-belajar/create', fn()=> Inertia::render('admin/tes-gaya-belajar/Create'))->name('gayaBelajar.create');
 
 
-
+    // Intelegensi
     Route::get('/admin/asesmen/intelegensi', fn() => Inertia::render('admin/tes-intelegensi/Index'))->name('intelegensi');
+    Route::get('/admin/asesmen/intelegensi/edit', fn() => Inertia::render('admin/tes-intelegensi/Edit'))->name('intelegensi.edit');
+
+
+    // Bank Soal
+    Route::get('/admin/asesmen/bank-soal', fn() => Inertia::render('admin/bank-soal/Index'))->name('bankSoal');
 }); 
 require __DIR__.'/settings.php';
