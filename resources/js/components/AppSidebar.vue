@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
     article,
+    bankSoal,
     dashboard,
     gayaBelajar,
     intelegensi,
@@ -19,6 +20,7 @@ import {
 } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import {
+    Archive,
     BookOpenCheck,
     Brain,
     Building2,
@@ -27,6 +29,7 @@ import {
     LayoutGrid,
     Stethoscope,
 } from 'lucide-vue-next';
+
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems = [
@@ -65,14 +68,19 @@ const testNavItems = [
         icon: Flame,
     },
     {
+        title: 'Intelegensi',
+        href: intelegensi(),
+        icon: Brain,
+    },
+    {
         title: 'Gaya Belajar',
         href: gayaBelajar(),
         icon: GraduationCap,
     },
     {
-        title: 'Intelegensi',
-        href: intelegensi(),
-        icon: Brain,
+        title: 'Bank Soal',
+        href: bankSoal(),
+        icon: Archive,
     },
 ];
 </script>
