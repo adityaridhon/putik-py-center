@@ -28,6 +28,10 @@ Route::get('/', function () {
     Route::get('/layanan-kami', function () {
         return Inertia::render('user/layanan-kami/Index');
     })->name('layanan-kami');
+    
+    Route::get('/kontak', function () {
+        return Inertia::render('user/kontak/Index');
+    })->name('kontak');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard
