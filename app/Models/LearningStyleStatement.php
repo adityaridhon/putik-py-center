@@ -9,5 +9,10 @@ class LearningStyleStatement extends Model
     protected $fillable = [
         'statement',
         'order',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

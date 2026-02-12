@@ -10,8 +10,6 @@ class DatabaseSeeder extends Seeder
     
     public function run(): void
     {
-        $this->call(ServiceSeeder::class);
-
         // Admin user tanpa 2FA
         User::firstOrCreate(
             ['email' => 'admin@admin.com'],
@@ -22,13 +20,15 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Test user dengan 2FA
+        // Test user
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
+                'password' => bcrypt('password'),
             ]
         );
+        
         // Panggil seeder lainnya
         $this->call([
             CompanyProfileSeeder::class,
@@ -37,6 +37,8 @@ class DatabaseSeeder extends Seeder
             ArticleCategorySeeder::class,
             ArticleSeeder::class,
             MinatBakatSeeder::class,
-            LearningStyleStatementSeeder::class,
-        ]);    }
+            GayaBelajarSeeder::class,
+            IntelligenceTestSeeder::class,
+        ]);
+    }
 }

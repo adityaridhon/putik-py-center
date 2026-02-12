@@ -5,6 +5,11 @@ import { intelegensi } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+// Terima props dari backend
+const props = defineProps<{
+    categories?: any[];
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Tes Intelegensi',
@@ -31,7 +36,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </p>
                 </div>
             </div>
-            <IntelegentTable />
+            <IntelegentTable :categories="categories" />
         </div>
     </AppLayout>
 </template>
