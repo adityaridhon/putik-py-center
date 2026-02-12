@@ -28,10 +28,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Pencil, Trash, TriangleAlert } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { router, useForm } from '@inertiajs/vue3';
 
-// Dummy data
-const statements = ref([
+// Terima props dari parent
+const props = defineProps<{
+    statements?: any;
+}>();
+
+// Fallback ke dummy data jika backend belum tersambung
+const defaultStatements = [
     {
         id: 1,
         statement: 'Saya suka belajar dengan melihat gambar atau diagram.',
@@ -54,7 +60,9 @@ const statements = ref([
         statement:
             'Saya mudah mengingat wajah orang tetapi sulit mengingat nama.',
     },
-]);
+];
+
+const statements = computed(() => props.statements?.data || defaultStatements);
 
 // Modal states
 const showEditDialog = ref(false);
@@ -62,13 +70,13 @@ const showDeleteDialog = ref(false);
 const selectedStatement = ref<any>(null);
 
 // Form state for edit
-const editForm = ref({
+const editForm = useForm({
     statement: '',
 });
 
 const openEditDialog = (statement: any) => {
     selectedStatement.value = statement;
-    editForm.value.statement = statement.statement;
+    editForm.statement = statement.statement;
     showEditDialog.value = true;
 };
 
@@ -78,32 +86,43 @@ const openDeleteDialog = (statement: any) => {
 };
 
 const handleEditSubmit = () => {
-    // TODO: Implement actual API call
-    console.log('Edit statement:', editForm.value);
-
-    // Update dummy data
-    const index = statements.value.findIndex(
-        (s) => s.id === selectedStatement.value.id,
-    );
-    if (index !== -1) {
-        statements.value[index].statement = editForm.value.statement;
+    if (!selectedStatement.value) return;
+    
+    if (props.statements) {
+        // Real API call to backend
+        editForm.put(`/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`, {
+            onSuccess: () => {
+                showEditDialog.value = false;
+                selectedStatement.value = null;
+                editForm.reset();
+            }
+        });
+    } else {
+        // Fallback: Update dummy data locally
+        console.log('Edit statement (offline):', editForm.statement);
+        showEditDialog.value = false;
+        selectedStatement.value = null;
+        editForm.reset();
     }
-
-    showEditDialog.value = false;
-    selectedStatement.value = null;
 };
 
 const confirmDeleteStatement = () => {
-    // TODO: Implement actual API call
-    console.log('Delete statement:', selectedStatement.value);
-
-    // Remove from dummy data
-    statements.value = statements.value.filter(
-        (s) => s.id !== selectedStatement.value.id,
-    );
-
-    showDeleteDialog.value = false;
-    selectedStatement.value = null;
+    if (!selectedStatement.value) return;
+    
+    if (props.statements) {
+        // Real API call to backend
+        router.delete(`/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`, {
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                selectedStatement.value = null;
+            }
+        });
+    } else {
+        // Fallback: Remove from dummy data locally
+        console.log('Delete statement (offline):', selectedStatement.value);
+        showDeleteDialog.value = false;
+        selectedStatement.value = null;
+    }
 };
 
 const addNewStatement = () => {

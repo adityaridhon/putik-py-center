@@ -10,7 +10,8 @@ return new class extends Migration {
         Schema::create('learning_style_statements', function (Blueprint $table) {
             $table->id();
             $table->text('statement');
-            $table->unsignedInteger('order')->default(0);
+            $table->integer('order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

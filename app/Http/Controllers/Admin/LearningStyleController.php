@@ -11,80 +11,53 @@ class LearningStyleController extends Controller
 {
     public function index()
     {
-        $statements = LearningStyleStatement::orderBy('order')->get();
+        $statements = LearningStyleStatement::orderBy('order')
+            ->paginate(10);
 
-        return Inertia::render('admin/asesmen/GayaBelajar/Index', [
+        return Inertia::render('admin/tes-gaya-belajar/Index', [
             'statements' => $statements
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('admin/asesmen/GayaBelajar/Create');
+        return Inertia::render('admin/tes-gaya-belajar/Create');
     }
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'statement' => 'required|string|min:5',
-            ]);
-
-            $order = LearningStyleStatement::max('order') + 1;
-
-            LearningStyleStatement::create([
-                'statement' => $validated['statement'],
-                'order' => $order
-            ]);
-
-            return redirect()
-                ->route('admin.gaya-belajar.index')
-                ->with('success', 'Pernyataan berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan saat menyimpan data.');
-        }
-    }
-
-    public function edit(LearningStyleStatement $gaya_belajar)
-    {
-        return Inertia::render('admin/asesmen/GayaBelajar/Edit', [
-            'statement' => $gaya_belajar
+        $validated = $request->validate([
+            'statement' => 'required|string|min:10|max:500',
         ]);
+
+        $maxOrder = LearningStyleStatement::max('order') ?? 0;
+
+        LearningStyleStatement::create([
+            'statement' => $validated['statement'],
+            'order' => $maxOrder + 1,
+        ]);
+
+        return redirect()->route('gayaBelajar')->with('success', 'Pernyataan berhasil ditambahkan!');
     }
 
-    public function update(Request $request, LearningStyleStatement $gaya_belajar)
+    public function update(Request $request, $id)
     {
-        try {
-            $validated = $request->validate([
-                'statement' => 'required|string|min:5',
-            ]);
+        $validated = $request->validate([
+            'statement' => 'required|string|min:10|max:500',
+        ]);
 
-            $gaya_belajar->update($validated);
+        $statement = LearningStyleStatement::findOrFail($id);
+        $statement->update($validated);
 
-            return redirect()
-                ->route('admin.gaya-belajar.index')
-                ->with('success', 'Pernyataan berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data.');
-        }
+        return redirect()->back()->with('success', 'Pernyataan berhasil diupdate!');
     }
 
-    public function destroy(LearningStyleStatement $gaya_belajar)
+    public function destroy($id)
     {
-        try {
-            $gaya_belajar->delete();
+        $statement = LearningStyleStatement::findOrFail($id);
+        $statement->delete();
 
-            return redirect()
-                ->route('admin.gaya-belajar.index')
-                ->with('warning', 'Pernyataan berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan saat menghapus data.');
-        }
+        return redirect()->back()->with('success', 'Pernyataan berhasil dihapus!');
     }
 }
+
