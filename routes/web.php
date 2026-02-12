@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\LearningStyleController;
+
 
 Route::get('/', function () {
    $profile = CompanyProfile::first();
@@ -77,8 +79,12 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Gaya Belajar
-    Route::get('/admin/asesmen/gaya-belajar', fn() => Inertia::render('admin/tes-gaya-belajar/Index'))->name('gayaBelajar');
-    Route::get('/admin/asesmen/gaya-belajar/create', fn()=> Inertia::render('admin/tes-gaya-belajar/Create'))->name('gayaBelajar.create');
+    Route::get('/admin/asesmen/gaya-belajar', [LearningStyleController::class, 'index'])->name('gayaBelajar');
+    Route::get('/admin/asesmen/gaya-belajar/create', [LearningStyleController::class, 'create'])->name('gayaBelajar.create');
+    Route::post('/admin/asesmen/gaya-belajar', [LearningStyleController::class, 'store'])->name('gayaBelajar.store');
+    Route::get('/admin/asesmen/gaya-belajar/{learningStyle}/edit', [LearningStyleController::class, 'edit'])->name('gayaBelajar.edit');
+    Route::put('/admin/asesmen/gaya-belajar/{learningStyle}', [LearningStyleController::class, 'update'])->name('gayaBelajar.update');
+    Route::delete('/admin/asesmen/gaya-belajar/{learningStyle}', [LearningStyleController::class, 'destroy'])->name('gayaBelajar.destroy');
 
 
     // Intelegensi

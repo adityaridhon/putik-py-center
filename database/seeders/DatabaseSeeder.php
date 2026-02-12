@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ArticleCategorySeeder::class,
             ArticleSeeder::class,
+            MinatBakatSeeder::class,
+            LearningStyleStatementSeeder::class,
         ]);    }
 }
