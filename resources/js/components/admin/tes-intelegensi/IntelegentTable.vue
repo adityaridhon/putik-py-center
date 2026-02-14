@@ -19,75 +19,83 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { edit } from '@/routes/intelegensi';
-import { Link } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import { Eye, Pencil, Trash, TriangleAlert } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
-const ist = [
+// Terima props dari parent
+const props = defineProps<{
+    categories?: any[];
+}>();
+
+// Dummy data sebagai fallback
+const defaultData = [
     {
-        no: 1,
-        kategori: 'SE',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Teks)',
-        durasi: '6 Menit',
+        id: 1,
+        code: 'SE',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Teks)',
+        duration_text: '6 Menit',
     },
     {
-        no: 2,
-        kategori: 'WA',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Teks)',
-        durasi: '6 Menit',
+        id: 2,
+        code: 'WA',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Teks)',
+        duration_text: '6 Menit',
     },
     {
-        no: 3,
-        kategori: 'AN',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Teks)',
-        durasi: '7 Menit',
+        id: 3,
+        code: 'AN',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Teks)',
+        duration_text: '7 Menit',
     },
     {
-        no: 4,
-        kategori: 'GE',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Teks)',
-        durasi: '8 Menit',
+        id: 4,
+        code: 'GE',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Teks)',
+        duration_text: '8 Menit',
     },
     {
-        no: 5,
-        kategori: 'RA',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Numerik)',
-        durasi: '10 Menit',
+        id: 5,
+        code: 'RA',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Numerik)',
+        duration_text: '10 Menit',
     },
     {
-        no: 6,
-        kategori: 'ZR',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Deret Angka)',
-        durasi: '10 Menit',
+        id: 6,
+        code: 'ZR',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Deret Angka)',
+        duration_text: '10 Menit',
     },
     {
-        no: 7,
-        kategori: 'FA',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Gambar)',
-        durasi: '7 Menit',
+        id: 7,
+        code: 'FA',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Gambar)',
+        duration_text: '7 Menit',
     },
     {
-        no: 8,
-        kategori: 'WU',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Klasifikasi Kata)',
-        durasi: '9 Menit',
+        id: 8,
+        code: 'WU',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Klasifikasi Kata)',
+        duration_text: '9 Menit',
     },
     {
-        no: 9,
-        kategori: 'ME',
-        jumlahSoal: 20,
-        tipeJawaban: 'Pilihan Ganda (Memori)',
-        durasi: '6 Menit',
+        id: 9,
+        code: 'ME',
+        total_questions: 20,
+        answer_type_text: 'Pilihan Ganda (Memori)',
+        duration_text: '6 Menit',
     },
 ];
+
+const ist = computed(() => props.categories || defaultData);
 
 // State modal
 const showDeleteDialog = ref(false);
@@ -99,14 +107,24 @@ const openDeleteDialog = (subtest: any) => {
     showDeleteDialog.value = true;
 };
 
-// Confirm delete (dummy function)
+// Confirm delete
 const confirmDeleteSubtest = () => {
     if (!selectedSubtest.value) return;
 
-    alert(`Subtest ${selectedSubtest.value.kategori} berhasil dihapus!`);
-
-    showDeleteDialog.value = false;
-    selectedSubtest.value = null;
+    if (props.categories) {
+        // Real API call jika ada backend
+        router.delete(`/admin/asesmen/intelegensi/${selectedSubtest.value.id}`, {
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                selectedSubtest.value = null;
+            }
+        });
+    } else {
+        // Fallback dummy
+        alert(`Subtest ${selectedSubtest.value.code} berhasil dihapus!`);
+        showDeleteDialog.value = false;
+        selectedSubtest.value = null;
+    }
 };
 </script>
 
@@ -135,25 +153,25 @@ const confirmDeleteSubtest = () => {
             </TableHeader>
             <TableBody>
                 <TableRow
-                    v-for="item in ist"
-                    :key="item.no"
+                    v-for="(item, index) in ist"
+                    :key="item.id"
                     class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 >
                     <TableCell
                         class="text-center font-semibold text-gray-600 dark:text-gray-400"
                     >
-                        {{ item.no }}
+                        {{ index + 1 }}
                     </TableCell>
-                    <TableCell> {{ item.kategori }} </TableCell>
-                    <TableCell> {{ item.jumlahSoal }} Soal </TableCell>
-                    <TableCell> {{ item.tipeJawaban }} </TableCell>
-                    <TableCell> {{ item.durasi }} </TableCell>
+                    <TableCell> {{ item.code }} </TableCell>
+                    <TableCell> {{ item.total_questions }} Soal </TableCell>
+                    <TableCell> {{ item.answer_type_text }} </TableCell>
+                    <TableCell> {{ item.duration_text }} </TableCell>
                     <TableCell class="align-middle">
                         <div class="flex items-center justify-center gap-1">
                             <Button variant="default" size="sm">
                                 <Eye class="h-4 w-4" />
                             </Button>
-                            <Link :href="edit()">
+                            <Link :href="edit(item.id).url">
                                 <Button
                                     variant="secondary"
                                     size="sm"
@@ -172,17 +190,6 @@ const confirmDeleteSubtest = () => {
                         </div>
                     </TableCell>
                 </TableRow>
-                <!-- <TableRow
-                        v-if="!statements || statements.length === 0"
-                        class="hover:bg-transparent"
-                    >
-                        <TableCell colspan="3" class="text-center">
-                            <p class="py-4 text-gray-500">
-                                Belum ada data pernyataan. Klik tombol "Tambah
-                                Pernyataan" untuk menambahkan.
-                            </p>
-                        </TableCell>
-                    </TableRow> -->
             </TableBody>
         </Table>
     </div>
@@ -200,7 +207,7 @@ const confirmDeleteSubtest = () => {
                         class="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
                     >
                         Apakah Anda yakin ingin menghapus subtest
-                        <strong>{{ selectedSubtest?.kategori }}</strong> ?
+                        <strong>{{ selectedSubtest?.code }}</strong> ?
                         <br />
                         <small class="text-red-600"
                             >Semua soal dalam subtest ini akan ikut

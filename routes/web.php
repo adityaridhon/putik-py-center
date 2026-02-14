@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\LearningStyleController;
+
 
 Route::get('/', function () {
    $profile = CompanyProfile::first();
@@ -77,13 +79,21 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Gaya Belajar
-    Route::get('/admin/asesmen/gaya-belajar', fn() => Inertia::render('admin/tes-gaya-belajar/Index'))->name('gayaBelajar');
-    Route::get('/admin/asesmen/gaya-belajar/create', fn()=> Inertia::render('admin/tes-gaya-belajar/Create'))->name('gayaBelajar.create');
+    Route::get('/admin/asesmen/gaya-belajar', [LearningStyleController::class, 'index'])->name('gayaBelajar');
+    Route::get('/admin/asesmen/gaya-belajar/create', [LearningStyleController::class, 'create'])->name('gayaBelajar.create');
+    Route::post('/admin/asesmen/gaya-belajar', [LearningStyleController::class, 'store'])->name('gayaBelajar.store');
+    Route::put('/admin/asesmen/gaya-belajar/{id}', [LearningStyleController::class, 'update'])->name('gayaBelajar.update');
+    Route::delete('/admin/asesmen/gaya-belajar/{id}', [LearningStyleController::class, 'destroy'])->name('gayaBelajar.destroy');
 
 
     // Intelegensi
-    Route::get('/admin/asesmen/intelegensi', fn() => Inertia::render('admin/tes-intelegensi/Index'))->name('intelegensi');
-    Route::get('/admin/asesmen/intelegensi/edit', fn() => Inertia::render('admin/tes-intelegensi/Edit'))->name('intelegensi.edit');
+    Route::get('/admin/asesmen/intelegensi', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'index'])->name('intelegensi');
+    Route::get('/admin/asesmen/intelegensi/{id}/edit', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'edit'])->name('intelegensi.edit');
+    Route::put('/admin/asesmen/intelegensi/{id}', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'update'])->name('intelegensi.update');
+    Route::delete('/admin/asesmen/intelegensi/{id}', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'destroy'])->name('intelegensi.destroy');
+    Route::post('/admin/asesmen/intelegensi/questions', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'storeQuestion'])->name('intelegensi.questions.store');
+    Route::put('/admin/asesmen/intelegensi/questions/{id}', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'updateQuestion'])->name('intelegensi.questions.update');
+    Route::delete('/admin/asesmen/intelegensi/questions/{id}', [App\Http\Controllers\Admin\IntelligenceTestController::class, 'destroyQuestion'])->name('intelegensi.questions.destroy');
 
 
     // Bank Soal

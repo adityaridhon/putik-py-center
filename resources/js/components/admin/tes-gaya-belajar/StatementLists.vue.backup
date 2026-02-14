@@ -1,0 +1,342 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { router } from '@inertiajs/vue3';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import Button from '@/components/ui/button/Button.vue';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Pencil, Trash, Plus } from 'lucide-vue-next';
+import { store, update, destroy } from '@/routes/gayaBelajar';
+
+// Terima props dari parent
+const props = defineProps<{
+    category: any;
+    statements: any;
+}>();
+
+const isAddDialogOpen = ref(false);
+const isEditDialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const newStatement = ref('');
+const editingStatement = ref({ id: 0, statement: '' });
+const deletingStatementId = ref<number | null>(null);
+
+const handleAddStatement = () => {
+    router.post(store().url, {
+        category_id: props.category.id,
+        statement: newStatement.value,
+    }, {
+        onSuccess: () => {
+            newStatement.value = '';
+            isAddDialogOpen.value = false;
+        }
+    });
+};
+
+const openEditDialog = (statement: any) => {
+    editingStatement.value = { ...statement };
+    isEditDialogOpen.value = true;
+};
+
+const handleEditStatement = () => {
+    router.put(update(editingStatement.value.id).url, {
+        statement: editingStatement.value.statement,
+    }, {
+        onSuccess: () => {
+            isEditDialogOpen.value = false;
+        }
+    });
+};
+
+const openDeleteDialog = (id: number) => {
+    deletingStatementId.value = id;
+    deleteDialogOpen.value = true;
+};
+
+const handleDeleteStatement = () => {
+    if (deletingStatementId.value) {
+        router.delete(destroy(deletingStatementId.value).url, {
+            onSuccess: () => {
+                deleteDialogOpen.value = false;
+                deletingStatementId.value = null;
+            }
+        });
+    }
+};
+</script>
+
+<template>
+    <Card>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle>Daftar Pernyataan - {{ category.name }}</CardTitle>
+            
+            <Button @click="isAddDialogOpen = true">
+                <Plus :size="16" class="mr-2" />
+                Tambah Pernyataan
+            </Button>
+        </CardHeader>
+
+        <CardContent>
+            <div class="overflow-hidden rounded-lg border">
+                <Table>
+                    <TableHeader class="bg-primary">
+                        <TableRow class="border-0 hover:bg-transparent">
+                            <TableHead class="w-16 text-center font-semibold text-white">
+                                No
+                            </TableHead>
+                            <TableHead class="font-semibold text-white">
+                                Pernyataan
+                            </TableHead>
+                            <TableHead class="w-32 text-center font-semibold text-white">
+                                Aksi
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow v-for="(statement, index) in statements.data" :key="statement.id">
+                            <TableCell class="text-center">
+                                {{ (statements.current_page - 1) * statements.per_page + index + 1 }}
+                            </TableCell>
+                            <TableCell>{{ statement.statement }}</TableCell>
+                            <TableCell class="text-center">
+                                <div class="flex gap-2 justify-center">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        @click="openEditDialog(statement)"
+                                    >
+                                        <Pencil :size="16" />
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        @click="openDeleteDialog(statement.id)"
+                                    >
+                                        <Trash :size="16" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow v-if="!statements.data || statements.data.length === 0">
+                            <TableCell colspan="3" class="text-center py-8 text-muted-foreground">
+                                Belum ada pernyataan. Klik "Tambah Pernyataan" untuk menambahkan.
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Add Dialog -->
+    <Dialog v-model:open="isAddDialogOpen">
+        <DialogContent class="max-w-md">
+            <DialogHeader>
+                <DialogTitle>Tambah Pernyataan Baru</DialogTitle>
+            </DialogHeader>
+            <div class="space-y-4">
+                <div>
+                    <Label>Pernyataan</Label>
+                    <Textarea
+                        v-model="newStatement"
+                        placeholder="Masukkan pernyataan..."
+                        rows="4"
+                        class="mt-2"
+                    />
+                </div>
+                <div class="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" @click="isAddDialogOpen = false">
+                        Batal
+                    </Button>
+                    <Button @click="handleAddStatement" :disabled="!newStatement.trim()">
+                        Simpan
+                    </Button>
+                </div>
+            </div>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Edit Dialog -->
+    <Dialog v-model:open="isEditDialogOpen">
+        <DialogContent class="max-w-md">
+            <DialogHeader>
+                <DialogTitle>Edit Pernyataan</DialogTitle>
+            </DialogHeader>
+            <div class="space-y-4">
+                <div>
+                    <Label>Pernyataan</Label>
+                    <Textarea
+                        v-model="editingStatement.statement"
+                        rows="4"
+                        class="mt-2"
+                    />
+                </div>
+                <div class="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" @click="isEditDialogOpen = false">
+                        Batal
+                    </Button>
+                    <Button @click="handleEditStatement" :disabled="!editingStatement.statement.trim()">
+                        Simpan
+                    </Button>
+                </div>
+            </div>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Delete Dialog -->
+    <AlertDialog v-model:open="deleteDialogOpen">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Hapus Pernyataan?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Tindakan ini tidak dapat dibatalkan. Pernyataan akan dihapus permanen dari database.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction @click="handleDeleteStatement" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Hapus
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+</template>
+</script>
+
+<template>
+    <div class="space-y-4">
+        <div
+            class="overflow-hidden rounded-lg border border-gray-200 shadow-sm dark:border-gray-800"
+        >
+            <Table>
+                <TableHeader class="bg-primary">
+                    <TableRow class="border-0 hover:bg-transparent">
+                        <TableHead
+                            class="w-16 text-center font-semibold text-white"
+                        >
+                            No
+                        </TableHead>
+                        <TableHead class="text-white"> Pernyataan </TableHead>
+
+                        <TableHead
+                            class="w-32 text-center font-semibold text-white"
+                        >
+                            Aksi
+                        </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow
+                        v-for="(statement, index) in statements"
+                        :key="statement.id"
+                        class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    >
+                        <TableCell
+                            class="text-center font-semibold text-gray-600 dark:text-gray-400"
+                        >
+                            {{ index + 1 }}
+                        </TableCell>
+                        <TableCell>
+                            {{ statement.statement }}
+                        </TableCell>
+                        <TableCell class="align-middle">
+                            <div class="flex items-center justify-center gap-1">
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    class="bg-yellow-400 text-white hover:bg-yellow-400/80"
+                                    @click="openEditDialog(statement)"
+                                >
+                                    <Pencil class="h-4 w-4" />
+                                </Button>
+
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    @click="openDeleteDialog(statement)"
+                                >
+                                    <Trash class="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow
+                        v-if="!statements || statements.length === 0"
+                        class="hover:bg-transparent"
+                    >
+                        <TableCell colspan="3" class="text-center">
+                            <p class="py-4 text-gray-500">
+                                Belum ada data pernyataan. Klik tombol "Tambah
+                                Pernyataan" untuk menambahkan.
+                            </p>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+
+        <!-- Edit Dialog -->
+        <Dialog v-model:open="showEditDialog">
+            <DialogContent class="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Edit Pernyataan</DialogTitle>
+                    <DialogDescription>
+                        Ubah pernyataan di bawah ini
+                    </DialogDescription>
+                </DialogHeader>
+                <form @submit.prevent="handleEditSubmit" class="space-y-4">
+                    <div>
+                        <Label>Pernyataan</Label>
+                        <Input
+                            v-model="editForm.statement"
+                            placeholder="Masukkan pernyataan"
+                            required
+                            autofocus
+                        />
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            @click="showEditDialog = false"
+                        >
+                            Batal
+                        </Button>
+                        <Button type="submit"> Simpan Perubahan </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
+
+        <!-- Delete Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+                    <AlertDialogDescription class="text-center">
+                        <TriangleAlert
+                            class="mx-auto mb-4 h-24 w-24 text-yellow-400"
+                        />
+                        <p
+                            class="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
+                        >
+                            Apakah Anda yakin ingin menghapus pernyataan ini?
+                        </p>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        class="bg-destructive hover:bg-destructive/90"
+                        @click="confirmDeleteStatement"
+                    >
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+</template>

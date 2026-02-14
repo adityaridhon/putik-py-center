@@ -8,6 +8,11 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
 
+// Terima props dari backend
+const props = defineProps<{
+    statements?: any;
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Tes Gaya Belajar',
@@ -43,7 +48,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <!-- Content -->
             <div>
-                <StatementLists />
+                <StatementLists :statements="statements" />
             </div>
         </div>
     </AppLayout>
