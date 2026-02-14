@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
+import IntelegentTable from '@/components/admin/tes-intelegensi/IntelegentTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { intelegensi } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -20,28 +20,18 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
+            <div class="flex items-center justify-between">
+                <div class="space-y-2">
+                    <h1 class="text-2xl font-bold">
+                        Daftar Kategori Tes Intelegensi
+                    </h1>
+                    <p class="text-sm text-gray-600">
+                        Admin dapat mengelola kategori tes intelegensi yang
+                        tersedia untuk peserta.
+                    </p>
                 </div>
             </div>
-            <div
-                class="relative min-h-screen flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
-            </div>
+            <IntelegentTable />
         </div>
     </AppLayout>
 </template>

@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import PageHeader from '@/components/PageHeader.vue';
-import Button from '@/components/ui/button/Button.vue';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import Button from '@/components/ui/button/Button.vue';
 import {
     Dialog,
     DialogContent,
@@ -18,15 +20,27 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { minatBakat } from '@/routes';
+import { update as minatBakatUpdate } from '@/routes/minatBakat';
+import {
+    destroy as jobsDestroy,
+    store as jobsStore,
+    update as jobsUpdate,
+} from '@/routes/minatBakat/jobs';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, router } from '@inertiajs/vue3';
-import { Pencil, Plus, Trash } from 'lucide-vue-next';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { edit as minatBakatEdit, update as minatBakatUpdate } from '@/routes/minatBakat';
-import { store as jobsStore, update as jobsUpdate, destroy as jobsDestroy } from '@/routes/minatBakat/jobs';
 
 const props = defineProps<{
     category: any;
@@ -47,6 +61,8 @@ const instructionForm = useForm({
 const showJobModal = ref(false);
 const isEditing = ref(false);
 const editingJobId = ref<number | null>(null);
+const showDeleteDialog = ref(false);
+const selectedJob = ref<any>(null);
 
 // Form untuk job (add/edit)
 const jobForm = useForm({
@@ -90,12 +106,21 @@ const submitJob = () => {
     }
 };
 
-const deleteJob = (id: number) => {
-    if (confirm('Apakah Anda yakin ingin menghapus pekerjaan ini?')) {
-        router.delete(jobsDestroy(id).url, {
-            preserveScroll: true,
-        });
-    }
+const openDeleteDialog = (job: any) => {
+    selectedJob.value = job;
+    showDeleteDialog.value = true;
+};
+
+const confirmDeleteJob = () => {
+    if (!selectedJob.value) return;
+
+    router.delete(jobsDestroy(selectedJob.value.id).url, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteDialog.value = false;
+            selectedJob.value = null;
+        },
+    });
 };
 
 const saveInstruction = () => {
@@ -122,8 +147,16 @@ const saveInstruction = () => {
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-bold">Instruksi Tes</h2>
-                    <Button size="sm" @click="saveInstruction" :disabled="instructionForm.processing">
-                        {{ instructionForm.processing ? 'Menyimpan...' : 'Simpan Instruksi' }}
+                    <Button
+                        size="sm"
+                        @click="saveInstruction"
+                        :disabled="instructionForm.processing"
+                    >
+                        {{
+                            instructionForm.processing
+                                ? 'Menyimpan...'
+                                : 'Simpan Instruksi'
+                        }}
                     </Button>
                 </div>
                 <p class="text-sm text-gray-600">
@@ -135,7 +168,11 @@ const saveInstruction = () => {
                     class="h-25 resize-none"
                     placeholder="Masukkan instruksi tes di sini..."
                 />
-                <span v-if="instructionForm.errors.instruction" class="text-red-500 text-sm">{{ instructionForm.errors.instruction }}</span>
+                <span
+                    v-if="instructionForm.errors.instruction"
+                    class="text-sm text-red-500"
+                    >{{ instructionForm.errors.instruction }}</span
+                >
             </div>
 
             <!-- Daftar Pekerjaan (Hanya jika kategori memiliki jobs) -->
@@ -198,7 +235,7 @@ const saveInstruction = () => {
                                         <Button
                                             variant="destructive"
                                             size="sm"
-                                            @click="deleteJob(job.id)"
+                                            @click="openDeleteDialog(job)"
                                         >
                                             <Trash class="h-4 w-4" />
                                         </Button>
@@ -220,8 +257,15 @@ const saveInstruction = () => {
                     </Table>
                 </div>
             </div>
-            <div v-else class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
-                <p>Kategori ini adalah kategori Esai/Isian Bebas. Tidak ada daftar pekerjaan yang perlu dikelola. Cukup atur instruksi tes di atas.</p>
+            <div
+                v-else
+                class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800"
+            >
+                <p>
+                    Kategori ini adalah kategori Esai/Isian Bebas. Tidak ada
+                    daftar pekerjaan yang perlu dikelola. Cukup atur instruksi
+                    tes di atas.
+                </p>
             </div>
         </div>
 
@@ -229,19 +273,39 @@ const saveInstruction = () => {
         <Dialog v-model:open="showJobModal">
             <DialogContent class="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>{{ isEditing ? 'Edit Pekerjaan' : 'Tambah Pekerjaan' }}</DialogTitle>
+                    <DialogTitle>{{
+                        isEditing ? 'Edit Pekerjaan' : 'Tambah Pekerjaan'
+                    }}</DialogTitle>
                     <DialogDescription>
-                        {{ isEditing ? 'Ubah nama pekerjaan.' : 'Masukkan nama pekerjaan baru untuk kategori ini.' }}
+                        {{
+                            isEditing
+                                ? 'Ubah nama pekerjaan.'
+                                : 'Masukkan nama pekerjaan baru untuk kategori ini.'
+                        }}
                     </DialogDescription>
                 </DialogHeader>
                 <form @submit.prevent="submitJob" class="space-y-4">
                     <div>
                         <Label>Nama Pekerjaan</Label>
-                        <Input v-model="jobForm.job_name" placeholder="Contoh: Dokter" required autofocus />
-                        <span v-if="jobForm.errors.job_name" class="text-red-500 text-sm">{{ jobForm.errors.job_name }}</span>
+                        <Input
+                            v-model="jobForm.job_name"
+                            placeholder="Contoh: Dokter"
+                            required
+                            autofocus
+                        />
+                        <span
+                            v-if="jobForm.errors.job_name"
+                            class="text-sm text-red-500"
+                            >{{ jobForm.errors.job_name }}</span
+                        >
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
-                        <Button type="button" variant="outline" @click="showJobModal = false">Batal</Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            @click="showJobModal = false"
+                            >Batal</Button
+                        >
                         <Button type="submit" :disabled="jobForm.processing">
                             {{ jobForm.processing ? 'Menyimpan...' : 'Simpan' }}
                         </Button>
@@ -249,5 +313,33 @@ const saveInstruction = () => {
                 </form>
             </DialogContent>
         </Dialog>
+
+        <!-- Delete Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+                    <AlertDialogDescription class="text-center">
+                        <TriangleAlert
+                            class="mx-auto mb-4 h-24 w-24 text-yellow-400"
+                        />
+                        <p
+                            class="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
+                        >
+                            Apakah Anda yakin ingin menghapus pekerjaan ini?
+                        </p>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        class="bg-destructive hover:bg-destructive/90"
+                        @click="confirmDeleteJob"
+                    >
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </AppLayout>
 </template>
