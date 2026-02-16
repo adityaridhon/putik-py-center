@@ -20,6 +20,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
     Table,
     TableBody,
     TableCell,
@@ -27,13 +35,22 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Pencil, Trash, TriangleAlert } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { gayaBelajar } from '@/routes';
 import { router, useForm } from '@inertiajs/vue3';
+import { Pencil, Trash, TriangleAlert } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 // Terima props dari parent
 const props = defineProps<{
-    statements?: any;
+    statements?: {
+        data: any[];
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from: number;
+        to: number;
+    };
 }>();
 
 // Fallback ke dummy data jika backend belum tersambung
@@ -64,12 +81,21 @@ const defaultStatements = [
 
 const statements = computed(() => props.statements?.data || defaultStatements);
 
+// Pagination function
+const goToStatementsPage = (page: number) => {
+    router.get(
+        gayaBelajar().url,
+        { page: page },
+        { preserveState: true, preserveScroll: true },
+    );
+};
+
 // Modal states
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
 const selectedStatement = ref<any>(null);
 
-// Form state for edit
+// Form state 
 const editForm = useForm({
     statement: '',
 });
@@ -87,19 +113,19 @@ const openDeleteDialog = (statement: any) => {
 
 const handleEditSubmit = () => {
     if (!selectedStatement.value) return;
-    
+
     if (props.statements) {
-        // Real API call to backend
-        editForm.put(`/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`, {
-            onSuccess: () => {
-                showEditDialog.value = false;
-                selectedStatement.value = null;
-                editForm.reset();
-            }
-        });
+        editForm.put(
+            `/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`,
+            {
+                onSuccess: () => {
+                    showEditDialog.value = false;
+                    selectedStatement.value = null;
+                    editForm.reset();
+                },
+            },
+        );
     } else {
-        // Fallback: Update dummy data locally
-        console.log('Edit statement (offline):', editForm.statement);
         showEditDialog.value = false;
         selectedStatement.value = null;
         editForm.reset();
@@ -108,26 +134,18 @@ const handleEditSubmit = () => {
 
 const confirmDeleteStatement = () => {
     if (!selectedStatement.value) return;
-    
-    if (props.statements) {
-        // Real API call to backend
-        router.delete(`/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`, {
-            onSuccess: () => {
-                showDeleteDialog.value = false;
-                selectedStatement.value = null;
-            }
-        });
-    } else {
-        // Fallback: Remove from dummy data locally
-        console.log('Delete statement (offline):', selectedStatement.value);
-        showDeleteDialog.value = false;
-        selectedStatement.value = null;
-    }
-};
 
-const addNewStatement = () => {
-    // TODO: Implement add new statement
-    console.log('Add new statement');
+    if (props.statements) {
+        router.delete(
+            `/admin/asesmen/gaya-belajar/${selectedStatement.value.id}`,
+            {
+                onSuccess: () => {
+                    showDeleteDialog.value = false;
+                    selectedStatement.value = null;
+                },
+            },
+        );
+    }
 };
 </script>
 
@@ -162,7 +180,7 @@ const addNewStatement = () => {
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
                         >
-                            {{ index + 1 }}
+                            {{ props.statements ? (props.statements.from || 0) + index : index + 1 }}
                         </TableCell>
                         <TableCell>
                             {{ statement.statement }}
@@ -201,6 +219,52 @@ const addNewStatement = () => {
                     </TableRow>
                 </TableBody>
             </Table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="props.statements && props.statements.last_page > 1" class="mt-4">
+            <div class="w-full flex-col items-center justify-between">
+                <div class="mb-2 text-center text-sm text-gray-600">
+                    Menampilkan {{ props.statements.from }} - {{ props.statements.to }} dari
+                    {{ props.statements.total }} pernyataan
+                </div>
+
+                <Pagination
+                    :total="props.statements.total"
+                    :items-per-page="props.statements.per_page"
+                    :default-page="props.statements.current_page"
+                    v-slot="{ page }"
+                >
+                    <PaginationContent v-slot="{ items }">
+                        <PaginationPrevious
+                            :disabled="props.statements.current_page === 1"
+                            @click="goToStatementsPage(props.statements.current_page - 1)"
+                        />
+
+                        <template v-for="(item, index) in items" :key="index">
+                            <PaginationItem
+                                v-if="item.type === 'page'"
+                                :value="item.value"
+                                :is-active="
+                                    item.value === props.statements.current_page
+                                "
+                                @click="goToStatementsPage(item.value)"
+                            >
+                                {{ item.value }}
+                            </PaginationItem>
+
+                            <PaginationEllipsis v-else />
+                        </template>
+
+                        <PaginationNext
+                            :disabled="
+                                props.statements.current_page === props.statements.last_page
+                            "
+                            @click="goToStatementsPage(props.statements.current_page + 1)"
+                        />
+                    </PaginationContent>
+                </Pagination>
+            </div>
         </div>
 
         <!-- Edit Dialog -->

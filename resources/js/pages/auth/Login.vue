@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -35,10 +34,10 @@ const submit = () => {
 
 <template>
     <AuthBase
-        title="Log in to your account"
-        description="Enter your email and password below to log in"
+        title="Admin Login"
+        description="Masukkan email dan password untuk login sebagai admin"
     >
-        <Head title="Log in" />
+        <Head title="Masuk" />
 
         <div
             v-if="status"
@@ -47,80 +46,70 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit" class="flex flex-col gap-6">
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input
-                        id="email"
-                        v-model="form.email"
-                        type="email"
-                        name="email"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="email"
-                        placeholder="email@example.com"
-                    />
-                    <InputError :message="form.errors.email" />
-                </div>
+        <form @submit.prevent="submit" class="flex flex-col">
+            <div class="grid gap-2">
+                <Label for="email">Email address</Label>
+                <Input
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    name="email"
+                    required
+                    autofocus
+                    :tabindex="1"
+                    autocomplete="email"
+                    placeholder="email@example.com"
+                />
+                <InputError :message="form.errors.email" />
+            </div>
 
-                <div class="grid gap-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
-                        <TextLink
-                            v-if="canResetPassword"
-                            :href="request()"
-                            class="text-sm"
-                            :tabindex="5"
-                        >
-                            Forgot password?
-                        </TextLink>
-                    </div>
-                    <Input
-                        id="password"
-                        v-model="form.password"
-                        type="password"
-                        name="password"
-                        required
-                        :tabindex="2"
-                        autocomplete="current-password"
-                        placeholder="Password"
-                    />
-                    <InputError :message="form.errors.password" />
-                </div>
-
+            <div class="mt-4 grid gap-2">
                 <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox 
-                            id="remember" 
-                            v-model:checked="form.remember"
-                            name="remember" 
-                            :tabindex="3" 
-                        />
-                        <span>Remember me</span>
-                    </Label>
+                    <Label for="password">Password</Label>
+                    <TextLink
+                        v-if="canResetPassword"
+                        :href="request()"
+                        class="text-sm"
+                        :tabindex="5"
+                    >
+                        Forgot password?
+                    </TextLink>
                 </div>
-
-                <Button
-                    type="submit"
-                    class="mt-4 w-full"
-                    :tabindex="4"
-                    :disabled="form.processing"
-                    data-test="login-button"
-                >
-                    <Spinner v-if="form.processing" />
-                    Log in
-                </Button>
+                <Input
+                    id="password"
+                    v-model="form.password"
+                    type="password"
+                    name="password"
+                    required
+                    :tabindex="2"
+                    autocomplete="current-password"
+                    placeholder="Password"
+                />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div
-                class="text-center text-sm text-muted-foreground"
-                v-if="canRegister"
+            <div class="mt-2 flex items-center justify-between">
+                <Label for="remember" class="flex items-center">
+                    <Checkbox
+                        id="remember"
+                        v-model:checked="form.remember"
+                        name="remember"
+                        :tabindex="3"
+                    />
+                    <span>Remember me</span>
+                </Label>
+            </div>
+
+            <Button
+                type="submit"
+                class="mt-6"
+                :tabindex="4"
+                :disabled="form.processing"
+                data-test="login-button"
             >
-                Don't have an account?
-                <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
-            </div>
-        </Form>
+                <Spinner v-if="form.processing" />
+                Log in
+            </Button>
+        </form>
     </AuthBase>
 </template>
