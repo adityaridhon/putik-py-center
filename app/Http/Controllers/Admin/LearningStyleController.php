@@ -12,7 +12,7 @@ class LearningStyleController extends Controller
     public function index()
     {
         $statements = LearningStyleStatement::orderBy('order')
-            ->paginate(10);
+            ->paginate(7);
 
         return Inertia::render('admin/tes-gaya-belajar/Index', [
             'statements' => $statements
