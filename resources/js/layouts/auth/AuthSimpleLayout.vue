@@ -11,17 +11,17 @@ defineProps<{
 
 <template>
     <div
-        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-gray-50"
+        class="flex min-h-screen flex-col items-center justify-center gap-6 bg-gray-50"
     >
         <div class="w-full max-w-xl">
             <Link
                 :href="home()"
                 class="flex flex-col items-center gap-2 font-medium"
             >
-                <div
-                    class="mb-1 flex h-30 w-30 items-center justify-center rounded-md"
-                >
-                    <AppLogo />
+                <div>
+                    <AppLogo
+                        class="flex h-30 w-30 items-center justify-center rounded-md"
+                    />
                 </div>
                 <span class="sr-only">{{ title }}</span>
             </Link>

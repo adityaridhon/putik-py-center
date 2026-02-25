@@ -99,5 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Bank Soal
     Route::get('/admin/asesmen/bank-soal', fn() => Inertia::render('admin/bank-soal/Index'))->name('bankSoal');
+    Route::get('/admin/asesmen/bank-soal/create', fn() => Inertia::render('admin/bank-soal/Create'))->name('bankSoal.create');
+    Route::get('/admin/asesmen/bank-soal/detail', fn() => Inertia::render('admin/bank-soal/Detail'))->name('bankSoal.detail');
 }); 
 require __DIR__.'/settings.php';
