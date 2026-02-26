@@ -34,21 +34,24 @@ class IntelligenceTestCategory extends Model
         return $this->hasMany(IntelligenceTestQuestion::class, 'category_id')->orderBy('order');
     }
 
-    // Accessor untuk format durasi
     public function getDurationTextAttribute()
     {
         return $this->duration_minutes . ' Menit';
     }
 
-    // Accessor untuk format jumlah soal
     public function getTotalQuestionsTextAttribute()
     {
         return $this->total_questions . ' Soal';
     }
 
-    // Accessor untuk format tipe jawaban
     public function getAnswerTypeTextAttribute()
     {
+        // Jika text/isian
+        if ($this->answer_type === 'text') {
+            return 'Isian Singkat';
+        }
+        
+        // Jikapilgan
         $types = [
             'text' => 'Pilihan Ganda (Teks)',
             'numeric' => 'Pilihan Ganda (Numerik)',

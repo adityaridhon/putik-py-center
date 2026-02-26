@@ -19,16 +19,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { edit } from '@/routes/intelegensi';
-import { router, Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { Eye, Pencil, Trash, TriangleAlert } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 // Terima props dari parent
 const props = defineProps<{
     categories?: any[];
 }>();
 
-// Dummy data sebagai fallback
+// Dummy fallback
 const defaultData = [
     {
         id: 1,
@@ -55,21 +55,21 @@ const defaultData = [
         id: 4,
         code: 'GE',
         total_questions: 20,
-        answer_type_text: 'Pilihan Ganda (Teks)',
+        answer_type_text: 'Isian singkat',
         duration_text: '8 Menit',
     },
     {
         id: 5,
         code: 'RA',
         total_questions: 20,
-        answer_type_text: 'Pilihan Ganda (Numerik)',
+        answer_type_text: '1-10 (Numerik)',
         duration_text: '10 Menit',
     },
     {
         id: 6,
         code: 'ZR',
         total_questions: 20,
-        answer_type_text: 'Pilihan Ganda (Deret Angka)',
+        answer_type_text: '1-10 (Deret Angka)',
         duration_text: '10 Menit',
     },
     {
@@ -83,7 +83,7 @@ const defaultData = [
         id: 8,
         code: 'WU',
         total_questions: 20,
-        answer_type_text: 'Pilihan Ganda (Klasifikasi Kata)',
+        answer_type_text: 'Pilihan Ganda (Gambar)',
         duration_text: '9 Menit',
     },
     {
@@ -101,26 +101,25 @@ const ist = computed(() => props.categories || defaultData);
 const showDeleteDialog = ref(false);
 const selectedSubtest = ref<any>(null);
 
-// Open delete dialog
 const openDeleteDialog = (subtest: any) => {
     selectedSubtest.value = subtest;
     showDeleteDialog.value = true;
 };
 
-// Confirm delete
 const confirmDeleteSubtest = () => {
     if (!selectedSubtest.value) return;
 
     if (props.categories) {
-        // Real API call jika ada backend
-        router.delete(`/admin/asesmen/intelegensi/${selectedSubtest.value.id}`, {
-            onSuccess: () => {
-                showDeleteDialog.value = false;
-                selectedSubtest.value = null;
-            }
-        });
+        router.delete(
+            `/admin/asesmen/intelegensi/${selectedSubtest.value.id}`,
+            {
+                onSuccess: () => {
+                    showDeleteDialog.value = false;
+                    selectedSubtest.value = null;
+                },
+            },
+        );
     } else {
-        // Fallback dummy
         alert(`Subtest ${selectedSubtest.value.code} berhasil dihapus!`);
         showDeleteDialog.value = false;
         selectedSubtest.value = null;
@@ -141,6 +140,7 @@ const confirmDeleteSubtest = () => {
                         No
                     </TableHead>
                     <TableHead class="text-white"> Kategori </TableHead>
+                    <TableHead class="text-white"> Deskripsi </TableHead>
                     <TableHead class="text-white"> Jumlah Soal </TableHead>
                     <TableHead class="text-white"> Tipe Jawaban</TableHead>
                     <TableHead class="text-white"> Durasi Pengerjaan</TableHead>
@@ -163,6 +163,7 @@ const confirmDeleteSubtest = () => {
                         {{ index + 1 }}
                     </TableCell>
                     <TableCell> {{ item.code }} </TableCell>
+                    <TableCell> {{ item.description }} </TableCell>
                     <TableCell> {{ item.total_questions }} Soal </TableCell>
                     <TableCell> {{ item.answer_type_text }} </TableCell>
                     <TableCell> {{ item.duration_text }} </TableCell>

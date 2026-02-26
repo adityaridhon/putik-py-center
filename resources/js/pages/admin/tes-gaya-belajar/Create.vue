@@ -14,16 +14,22 @@ const form = useForm({
 
 const handleSubmit = () => {
     form.post(store().url, {
+        forceFormData: true,
+        preserveScroll: true,
         onSuccess: () => {
             form.reset();
-        }
+        },
     });
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Tambah Pernyataan Gaya Belajar',
+        title: 'Manajemen Tes Gaya Belajar',
         href: gayaBelajar().url,
+    },
+    {
+        title: 'Tambah Pernyataan Gaya Belajar',
+        href: '#',
     },
 ];
 </script>
@@ -46,13 +52,23 @@ const breadcrumbs: BreadcrumbItem[] = [
                         placeholder="Masukkan pernyataan tes di sini..."
                         :disabled="form.processing"
                     />
-                    <p v-if="form.errors.statement" class="text-sm text-red-600">
+                    <p
+                        v-if="form.errors.statement"
+                        class="text-sm text-red-600"
+                    >
                         {{ form.errors.statement }}
                     </p>
                 </div>
-                <div class="flex justify-end mt-4">
-                    <Button type="submit" :disabled="form.processing || !form.statement.trim()">
-                        {{ form.processing ? 'Menyimpan...' : 'Simpan Pernyataan' }}
+                <div class="mt-4 flex justify-end">
+                    <Button
+                        type="submit"
+                        :disabled="form.processing || !form.statement.trim()"
+                    >
+                        {{
+                            form.processing
+                                ? 'Menyimpan...'
+                                : 'Simpan Pernyataan'
+                        }}
                     </Button>
                 </div>
             </form>
