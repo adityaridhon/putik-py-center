@@ -35,6 +35,10 @@ Route::get('/', function () {
         return Inertia::render('user/kontak/Index');
     })->name('kontak');
 
+    Route::get('/daftar-layanan', function () {
+        return Inertia::render('user/daftar-layanan/Index');
+    })->name('daftar-layanan');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
