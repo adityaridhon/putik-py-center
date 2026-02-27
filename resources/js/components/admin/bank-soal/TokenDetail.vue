@@ -5,30 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useClipboard } from '@vueuse/core';
 import { Calendar, Check, Copy, FileText, Hash } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed, type PropType } from 'vue';
 
-// Dummy data for demonstration
-const tokenData = ref({
-    test_type: 'Tes Gaya Belajar',
-    token_count: 5,
-    expiry_date: '15/01/2026',
-    notes: 'Kelas 10A - SMA Negeri 1 Jakarta',
-    created_at: '25/02/2026',
-});
+export interface TestToken {
+    id: number;
+    token: string;
+    is_used: boolean;
+    used_at?: string | null;
+}
 
-// Generate dummy tokens
-const tokens = ref([
-    { id: 1, code: 'TGB-2026-A1B2C3D4', status: 'available', used_by: null },
-    { id: 2, code: 'TGB-2026-E5F6G7H8', status: 'available', used_by: null },
-    {
-        id: 3,
-        code: 'TGB-2026-I9J0K1L2',
-        status: 'used',
-        used_by: 'Ahmad Rizki',
+export interface TestTokenBatch {
+    id: number;
+    test_type: string;
+    total_tokens: number;
+    expired_at: string;
+    note?: string;
+    created_at?: string;
+    tokens?: TestToken[];
+}
+
+const props = defineProps({
+    batch: {
+        type: Object as PropType<TestTokenBatch>,
+        required: true,
     },
-    { id: 4, code: 'TGB-2026-M3N4O5P6', status: 'available', used_by: null },
-    { id: 5, code: 'TGB-2026-Q7R8S9T0', status: 'available', used_by: null },
-]);
+});
 
 const { copy, copied, isSupported } = useClipboard();
 const copiedTokenId = ref<number | null>(null);
@@ -41,15 +42,33 @@ const copyToken = async (tokenCode: string, tokenId: number) => {
     }, 2000);
 };
 
-const getStatusBadge = (status: string) => {
-    return status === 'available'
-        ? 'bg-green-100 text-green-800 hover:bg-green-100'
-        : 'bg-gray-100 text-gray-800 hover:bg-gray-100';
+const getStatusBadge = (isUsed: boolean) => {
+    return isUsed
+        ? 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+        : 'bg-green-100 text-green-800 hover:bg-green-100';
 };
 
-const getStatusText = (status: string) => {
-    return status === 'available' ? 'Tersedia' : 'Terpakai';
+const getStatusText = (isUsed: boolean) => {
+    return isUsed ? 'Terpakai' : 'Tersedia';
 };
+
+const testTypeLabel: Record<string, string> = {
+    'minat-bakat': 'Tes Minat Bakat',
+    'intelegensi': 'Tes Intelegensi',
+    'gaya-belajar': 'Tes Gaya Belajar',
+};
+
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('id-ID', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+};
+
+const availableTokenCount = computed(() => {
+    return props.batch.tokens?.filter(t => !t.is_used).length || 0;
+});
 </script>
 
 <template>
@@ -65,14 +84,16 @@ const getStatusText = (status: string) => {
                         <Label class="text-sm text-muted-foreground"
                             >Jenis Tes</Label
                         >
-                        <p class="font-medium">{{ tokenData.test_type }}</p>
+                        <p class="font-medium">
+                            {{ testTypeLabel[batch.test_type] || batch.test_type }}
+                        </p>
                     </div>
                     <div class="space-y-2">
                         <Label class="text-sm text-muted-foreground"
                             >Jumlah Token</Label
                         >
                         <p class="font-medium">
-                            {{ tokenData.token_count }} Token
+                            {{ batch.total_tokens }} Token
                         </p>
                     </div>
                     <div class="space-y-2">
@@ -82,7 +103,7 @@ const getStatusText = (status: string) => {
                         <div class="flex items-center gap-2">
                             <Calendar class="h-4 w-4 text-muted-foreground" />
                             <p class="font-medium">
-                                {{ tokenData.expiry_date }}
+                                {{ formatDate(batch.expired_at) }}
                             </p>
                         </div>
                     </div>
@@ -93,16 +114,16 @@ const getStatusText = (status: string) => {
                         <div class="flex items-center gap-2">
                             <Calendar class="h-4 w-4 text-muted-foreground" />
                             <p class="font-medium">
-                                {{ tokenData.created_at }}
+                                {{ formatDate(batch.created_at || '') }}
                             </p>
                         </div>
                     </div>
                 </div>
-                <div v-if="tokenData.notes" class="space-y-2 border-t pt-2">
+                <div v-if="batch.note" class="space-y-2 border-t pt-2">
                     <Label class="text-sm text-muted-foreground">Catatan</Label>
                     <div class="flex items-center gap-2">
                         <FileText class="h-4 w-4 text-muted-foreground" />
-                        <p class="font-medium">{{ tokenData.notes }}</p>
+                        <p class="font-medium">{{ batch.note }}</p>
                     </div>
                 </div>
             </CardContent>
@@ -114,18 +135,14 @@ const getStatusText = (status: string) => {
                 <div class="flex items-center justify-between">
                     <CardTitle class="text-lg">Daftar Token</CardTitle>
                     <Badge variant="secondary">
-                        {{
-                            tokens.filter((t) => t.status === 'available')
-                                .length
-                        }}
-                        / {{ tokens.length }} Tersedia
+                        {{ availableTokenCount }} / {{ batch.total_tokens }} Tersedia
                     </Badge>
                 </div>
             </CardHeader>
             <CardContent>
-                <div class="space-y-3">
+                <div v-if="batch.tokens && batch.tokens.length > 0" class="space-y-3">
                     <div
-                        v-for="token in tokens"
+                        v-for="token in batch.tokens"
                         :key="token.id"
                         class="flex items-center justify-between rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
                     >
@@ -137,19 +154,19 @@ const getStatusText = (status: string) => {
                             </div>
                             <div class="flex-1 space-y-1">
                                 <p class="font-mono text-sm font-semibold">
-                                    {{ token.code }}
+                                    {{ token.token }}
                                 </p>
                                 <div class="flex items-center gap-2">
                                     <Badge
-                                        :class="getStatusBadge(token.status)"
+                                        :class="getStatusBadge(token.is_used)"
                                     >
-                                        {{ getStatusText(token.status) }}
+                                        {{ getStatusText(token.is_used) }}
                                     </Badge>
                                     <span
-                                        v-if="token.used_by"
+                                        v-if="token.used_at"
                                         class="text-xs text-muted-foreground"
                                     >
-                                        Digunakan oleh: {{ token.used_by }}
+                                        Digunakan pada: {{ formatDate(token.used_at) }}
                                     </span>
                                 </div>
                             </div>
@@ -158,7 +175,7 @@ const getStatusText = (status: string) => {
                             v-if="isSupported"
                             variant="outline"
                             size="sm"
-                            @click="copyToken(token.code, token.id)"
+                            @click="copyToken(token.token, token.id)"
                             :class="
                                 copiedTokenId === token.id
                                     ? 'border-green-500 text-green-600'
@@ -177,6 +194,11 @@ const getStatusText = (status: string) => {
                             }}
                         </Button>
                     </div>
+                </div>
+                <div v-else class="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Tidak ada token untuk batch ini.
+                    </p>
                 </div>
             </CardContent>
         </Card>
