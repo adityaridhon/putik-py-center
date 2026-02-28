@@ -59,7 +59,7 @@ class TestTokenController extends Controller
 
             return redirect()
                 ->route('bankSoal')
-                ->with('success', $validated['total_tokens'] . ' token berhasil dibuat.');
+                ->with('success', 'Token berhasil dibuat!');
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -114,7 +114,7 @@ class TestTokenController extends Controller
 
             return redirect()
                 ->route('bankSoal')
-                ->with('warning', 'Batch token berhasil dihapus.');
+                ->with('success', 'Batch token berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()
                 ->back()

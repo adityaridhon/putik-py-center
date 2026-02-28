@@ -97,7 +97,7 @@ const psychologyReport = [
 
 const userManagementNavItems = [
     {
-        title: 'Manajemen Pengguna',
+        title: 'Pengguna',
         href: '#',
         icon: User,
     },
