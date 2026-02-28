@@ -36,6 +36,10 @@ Route::get('/', function () {
         return Inertia::render('user/kontak/Index');
     })->name('kontak');
 
+    Route::get('/daftar-layanan', function () {
+        return Inertia::render('user/daftar-layanan/Index');
+    })->name('daftar-layanan');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
@@ -106,5 +110,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/asesmen/bank-soal/{batch}/edit', [TestTokenController::class, 'edit'])->name('bankSoal.edit');
     Route::put('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'update'])->name('bankSoal.update');
     Route::delete('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'destroy'])->name('bankSoal.destroy');
+    Route::get('/admin/asesmen/bank-soal', fn() => Inertia::render('admin/bank-soal/Index'))->name('bankSoal');
+
+
+    // Laporan Psikologi
+    Route::get('/admin/laporan-psikologi', fn() => Inertia::render('admin/laporan-psikologi/Index'))->name('laporanPsikologi');
+    Route::get('/admin/laporan-psikologi/{id}/upload-laporan', fn($id) => Inertia::render('admin/laporan-psikologi/Upload', ['id' => $id]))->name('laporanPsikologi.detail');
+
 }); 
 require __DIR__.'/settings.php';

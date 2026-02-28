@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { useActiveUrl } from '@/composables/useActiveUrl';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
+import { ChevronRight } from 'lucide-vue-next';
 
 defineProps<{
     items: NavItem[];
@@ -20,20 +28,37 @@ const { urlIsActive } = useActiveUrl();
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel v-if="label">{{ label }}</SidebarGroupLabel>
         <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child
-                    :is-active="urlIsActive(item.href)"
-                    :tooltip="item.title"
-                >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Collapsible as-child default-open class="group/collapsible">
+                <SidebarMenuItem>
+                    <CollapsibleTrigger as-child>
+                        <SidebarMenuButton :tooltip="label">
+                            <span>{{ label }}</span>
+                            <ChevronRight
+                                class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                            />
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub>
+                            <SidebarMenuSubItem
+                                v-for="item in items"
+                                :key="item.title"
+                            >
+                                <SidebarMenuSubButton
+                                    as-child
+                                    :is-active="urlIsActive(item.href)"
+                                >
+                                    <Link :href="item.href">
+                                        <component :is="item.icon" />
+                                        <span>{{ item.title }}</span>
+                                    </Link>
+                                </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
         </SidebarMenu>
     </SidebarGroup>
 </template>

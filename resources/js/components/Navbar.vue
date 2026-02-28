@@ -9,7 +9,15 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getInitials } from '@/composables/useInitials';
-import { dashboard, logout } from '@/routes';
+import {
+    daftarLayanan,
+    dashboard,
+    home,
+    kontak,
+    layananKami,
+    logout,
+    tentangKami,
+} from '@/routes';
 import type { Auth } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
@@ -93,12 +101,20 @@ const auth = computed(() => page.props.auth as Auth);
                                 <Link href="#">Pengaturan Akun</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem as-child>
-                                <Link :href="dashboard().url">Dashboard Admin</Link>
+                                <Link :href="dashboard().url"
+                                    >Dashboard Admin</Link
+                                >
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem as-child>
-                            <Link :href="logout().url" method="post" as="button" class="w-full text-start">Keluar</Link>
+                            <Link
+                                :href="logout().url"
+                                method="post"
+                                as="button"
+                                class="w-full text-start"
+                                >Keluar</Link
+                            >
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -136,18 +152,18 @@ const auth = computed(() => page.props.auth as Auth);
                     class="border-default rounded-base bg-neutral-secondary-soft md:bg-neutral-primary mt-4 flex flex-col border p-4 font-medium text-white md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse"
                 >
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            :href="home().url"
                             class="bg-brand md:text-fg-brand block rounded px-3 py-2 md:bg-transparent md:p-0"
                             aria-current="page"
-                            >Beranda</a
+                            >Beranda</Link
                         >
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            :href="tentangKami().url"
                             class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
-                            >Tentang Kami</a
+                            >Tentang Kami</Link
                         >
                     </li>
                     <li>
@@ -163,13 +179,14 @@ const auth = computed(() => page.props.auth as Auth);
                             <DropdownMenuContent align="start" :side-offset="8">
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem as-child>
-                                        <Link href="#">Layanan Kami</Link>
+                                        <Link :href="layananKami().url"
+                                            >Layanan Kami</Link
+                                        >
                                     </DropdownMenuItem>
                                     <DropdownMenuItem as-child>
-                                        <Link href="#">Daftar Layanan</Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem as-child>
-                                        <Link href="#">Tes Online</Link>
+                                        <Link :href="daftarLayanan().url"
+                                            >Daftar Layanan</Link
+                                        >
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
@@ -183,10 +200,10 @@ const auth = computed(() => page.props.auth as Auth);
                         >
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            :href="kontak().url"
                             class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
-                            >Kontak</a
+                            >Kontak</Link
                         >
                     </li>
                 </ul>
