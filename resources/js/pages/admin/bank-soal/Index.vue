@@ -5,8 +5,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bankSoal } from '@/routes';
 import { create } from '@/routes/bankSoal';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
+import { computed } from 'vue';
+
+const page = usePage()
+
+const batches = computed(() => page.props.batches as any)
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -39,6 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </Link>
                 </div>
             </div>
-            <BankSoalLists /></div
-    ></AppLayout>
+            <BankSoalLists :batches="batches" />
+        </div>
+    </AppLayout>
 </template>
