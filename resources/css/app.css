@@ -169,6 +169,18 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    html,
+    body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
 }
 
 /* Ensure toaster is visible with high z-index */

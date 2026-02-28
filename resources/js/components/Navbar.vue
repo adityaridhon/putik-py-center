@@ -185,7 +185,7 @@ const auth = computed(() => page.props.auth as Auth);
                                     </DropdownMenuItem>
                                     <DropdownMenuItem as-child>
                                         <Link :href="daftarLayanan().url"
-                                            >Daftar Layanan</Link
+                                            >Tes Online</Link
                                         >
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>

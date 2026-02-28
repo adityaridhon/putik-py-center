@@ -35,9 +35,13 @@ Route::get('/', function () {
         return Inertia::render('user/kontak/Index');
     })->name('kontak');
 
-    Route::get('/daftar-layanan', function () {
+    Route::get('/tes-online', function () {
         return Inertia::render('user/daftar-layanan/Index');
     })->name('daftar-layanan');
+
+    Route::get('/booking-layanan', function () {
+        return Inertia::render('user/booking-layanan/Index');
+    })->name('booking-layanan');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard

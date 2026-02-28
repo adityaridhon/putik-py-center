@@ -11,3 +11,4 @@ import Navbar from '@/components/Navbar.vue';
     <ServicesSection />
     <Footer />
 </template>
+
