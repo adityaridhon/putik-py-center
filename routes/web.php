@@ -101,5 +101,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/asesmen/bank-soal', fn() => Inertia::render('admin/bank-soal/Index'))->name('bankSoal');
     Route::get('/admin/asesmen/bank-soal/create', fn() => Inertia::render('admin/bank-soal/Create'))->name('bankSoal.create');
     Route::get('/admin/asesmen/bank-soal/detail', fn() => Inertia::render('admin/bank-soal/Detail'))->name('bankSoal.detail');
+
+
+    // Laporan Psikologi
+    Route::get('/admin/laporan-psikologi', fn() => Inertia::render('admin/laporan-psikologi/Index'))->name('laporanPsikologi');
+    Route::get('/admin/laporan-psikologi/{id}/upload-laporan', fn($id) => Inertia::render('admin/laporan-psikologi/Upload', ['id' => $id]))->name('laporanPsikologi.detail');
+
 }); 
 require __DIR__.'/settings.php';

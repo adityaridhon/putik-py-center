@@ -93,12 +93,20 @@ const auth = computed(() => page.props.auth as Auth);
                                 <Link href="#">Pengaturan Akun</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem as-child>
-                                <Link :href="dashboard().url">Dashboard Admin</Link>
+                                <Link :href="dashboard().url"
+                                    >Dashboard Admin</Link
+                                >
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem as-child>
-                            <Link :href="logout().url" method="post" as="button" class="w-full text-start">Keluar</Link>
+                            <Link
+                                :href="logout().url"
+                                method="post"
+                                as="button"
+                                class="w-full text-start"
+                                >Keluar</Link
+                            >
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
