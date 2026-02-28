@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
             GayaBelajarSeeder::class,
             IntelligenceTestSeeder::class,
             TestTokenSeeder::class,
+            PsychologicalReportSeeder::class,
         ]);
     }
 }

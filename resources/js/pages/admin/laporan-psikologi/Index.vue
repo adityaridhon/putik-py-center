@@ -5,6 +5,16 @@ import { laporanPsikologi } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+// Terima props dari backend
+const props = defineProps<{
+    sessions?: any;
+    filters?: {
+        search?: string;
+        test_type?: string;
+        status?: string;
+    };
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Laporan Psikologi',
@@ -21,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <h1 class="my-2 text-2xl font-bold">Manajemen Laporan Psikologi</h1>
-            <ReportLists />
+            <ReportLists :sessions="sessions" :filters="filters" />
         </div>
     </AppLayout>
 </template>
