@@ -4,7 +4,12 @@ import PageHeader from '@/components/PageHeader.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bankSoal } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const page = usePage()
+
+const batch = computed(() => page.props.batch as any)
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,7 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
         <!-- Token Details -->
         <div class="p-6">
-            <TokenDetail />
+            <TokenDetail :batch="batch" />
         </div>
     </AppLayout>
 </template>

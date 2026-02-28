@@ -8,11 +8,12 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div
-    data-slot="sidebar-content"
-    data-sidebar="content"
-    :class="cn('flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden my-8', props.class)"
+  <span
+    :class="cn(
+      'text-muted-foreground flex items-center gap-2 text-sm [&_svg]:pointer-events-none [&_svg:not([class*=\'size-\'])]:size-4',
+      props.class,
+    )"
   >
     <slot />
-  </div>
+  </span>
 </template>

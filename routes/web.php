@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\InterestJobController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
+use App\Http\Controllers\Admin\TestTokenController;
 
 
 Route::get('/', function () {
@@ -106,8 +107,18 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Bank Soal
-    Route::get('/admin/asesmen/bank-soal', fn() => Inertia::render('admin/bank-soal/Index'))->name('bankSoal');
-    Route::get('/admin/asesmen/bank-soal/create', fn() => Inertia::render('admin/bank-soal/Create'))->name('bankSoal.create');
-    Route::get('/admin/asesmen/bank-soal/detail', fn() => Inertia::render('admin/bank-soal/Detail'))->name('bankSoal.detail');
+    Route::get('/admin/asesmen/bank-soal', [TestTokenController::class, 'index'])->name('bankSoal');
+    Route::get('/admin/asesmen/bank-soal/create', [TestTokenController::class, 'create'])->name('bankSoal.create');
+    Route::post('/admin/asesmen/bank-soal', [TestTokenController::class, 'store'])->name('bankSoal.store');
+    Route::get('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'show'])->name('bankSoal.show');
+    Route::get('/admin/asesmen/bank-soal/{batch}/edit', [TestTokenController::class, 'edit'])->name('bankSoal.edit');
+    Route::put('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'update'])->name('bankSoal.update');
+    Route::delete('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'destroy'])->name('bankSoal.destroy');
+
+
+    // Laporan Psikologi
+    Route::get('/admin/laporan-psikologi', fn() => Inertia::render('admin/laporan-psikologi/Index'))->name('laporanPsikologi');
+    Route::get('/admin/laporan-psikologi/{id}/upload-laporan', fn($id) => Inertia::render('admin/laporan-psikologi/Upload', ['id' => $id]))->name('laporanPsikologi.detail');
+
 }); 
 require __DIR__.'/settings.php';

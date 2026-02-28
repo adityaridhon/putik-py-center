@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             MinatBakatSeeder::class,
             GayaBelajarSeeder::class,
             IntelligenceTestSeeder::class,
+            TestTokenSeeder::class,
         ]);
     }
 }

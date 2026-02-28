@@ -4,17 +4,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useForm } from '@inertiajs/vue3';
+import { store } from '@/routes/bankSoal';
 
 const form = useForm({
     test_type: '',
-    token_count: 5,
-    expiry_date: '',
-    notes: '',
+    total_tokens: 5,
+    expired_at: '',
+    note: '',
 });
 
 const handleSubmit = () => {
-    // Handle form submission logic here
-    alert(JSON.stringify(form.data(), null, 2));
+    form.post(store().url, {
+        onError: () => {
+            alert('Gagal membuat token');
+        },
+    });
 };
 </script>
 
@@ -60,12 +64,12 @@ const handleSubmit = () => {
 
             <!-- Jumlah Token -->
             <div class="space-y-2">
-                <Label for="token-count" class="text-base font-semibold">
+                <Label for="total-tokens" class="text-base font-semibold">
                     Jumlah Token
                 </Label>
                 <Input
-                    id="token-count"
-                    v-model.number="form.token_count"
+                    id="total-tokens"
+                    v-model.number="form.total_tokens"
                     type="number"
                     min="1"
                     placeholder="5"
@@ -78,12 +82,12 @@ const handleSubmit = () => {
 
             <!-- Masa Berlaku -->
             <div class="space-y-2">
-                <Label for="expiry-date" class="text-base font-semibold">
+                <Label for="expired-at" class="text-base font-semibold">
                     Masa Berlaku
                 </Label>
                 <Input
-                    id="expiry-date"
-                    v-model="form.expiry_date"
+                    id="expired-at"
+                    v-model="form.expired_at"
                     type="date"
                     required
                 />
@@ -91,12 +95,12 @@ const handleSubmit = () => {
 
             <!-- Catatan (Opsional) -->
             <div class="space-y-2">
-                <Label for="notes" class="text-base font-semibold">
+                <Label for="note" class="text-base font-semibold">
                     Catatan (Opsional)
                 </Label>
                 <Input
-                    id="notes"
-                    v-model="form.notes"
+                    id="note"
+                    v-model="form.note"
                     type="text"
                     placeholder="Nama kelas/Institusi"
                 />

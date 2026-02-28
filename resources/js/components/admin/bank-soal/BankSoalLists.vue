@@ -8,9 +8,46 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { detail } from '@/routes/bankSoal';
-import { Link } from '@inertiajs/vue3';
+import { show, edit, destroy as destroyRoute } from '@/routes/bankSoal';
+import { Link, router } from '@inertiajs/vue3';
 import { Eye, Pencil, Trash } from 'lucide-vue-next';
+import { type PropType } from 'vue';
+
+export interface TestTokenBatch {
+    id: number;
+    test_type: string;
+    total_tokens: number;
+    expired_at: string;
+    note?: string;
+    tokens_count?: number;
+}
+
+const props = defineProps({
+    batches: {
+        type: Array as PropType<TestTokenBatch[]>,
+        required: true,
+    },
+});
+
+const handleDelete = (batch: TestTokenBatch) => {
+    if (confirm('Apakah Anda yakin ingin menghapus batch ini?')) {
+        router.delete(destroyRoute(batch).url);
+    }
+};
+
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('id-ID', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+};
+
+const testTypeLabel: Record<string, string> = {
+    'minat-bakat': 'Tes Minat Bakat',
+    'intelegensi': 'Tes Intelegensi',
+    'gaya-belajar': 'Tes Gaya Belajar',
+};
 </script>
 
 <template>
@@ -45,35 +82,47 @@ import { Eye, Pencil, Trash } from 'lucide-vue-next';
                 </TableHeader>
                 <TableBody>
                     <TableRow
+                        v-for="(batch, index) in batches"
+                        :key="batch.id"
                         class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     >
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
-                            >1
+                            >{{ index + 1 }}
                         </TableCell>
-                        <TableCell class="text-center"
-                            >Tes Minat Bakat
-                        </TableCell>
-                        <TableCell class="text-center"> 5</TableCell>
-                        <TableCell class="text-center"> 1 Bulan</TableCell>
                         <TableCell class="text-center">
-                            SMA IT Istiqamah
+                            {{ testTypeLabel[batch.test_type] || batch.test_type }}
+                        </TableCell>
+                        <TableCell class="text-center">
+                            {{ batch.total_tokens }}
+                        </TableCell>
+                        <TableCell class="text-center">
+                            {{ formatDate(batch.expired_at) }}
+                        </TableCell>
+                        <TableCell class="text-center">
+                            {{ batch.note || '-' }}
                         </TableCell>
                         <TableCell class="align-middle">
                             <div class="flex items-center justify-center gap-1">
-                                <Link :href="detail().url">
+                                <Link :href="show(batch).url">
                                     <Button variant="default" size="sm">
                                         <Eye class="h-4 w-4" />
                                     </Button>
                                 </Link>
+                                <Link :href="edit(batch).url">
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        class="bg-yellow-400 text-white hover:bg-yellow-400/80"
+                                    >
+                                        <Pencil class="h-4 w-4" />
+                                    </Button>
+                                </Link>
                                 <Button
-                                    variant="secondary"
+                                    variant="destructive"
                                     size="sm"
-                                    class="bg-yellow-400 text-white hover:bg-yellow-400/80"
+                                    @click="handleDelete(batch)"
                                 >
-                                    <Pencil class="h-4 w-4" />
-                                </Button>
-                                <Button variant="destructive" size="sm">
                                     <Trash class="h-4 w-4" />
                                 </Button>
                             </div>
@@ -81,6 +130,14 @@ import { Eye, Pencil, Trash } from 'lucide-vue-next';
                     </TableRow>
                 </TableBody>
             </Table>
+        </div>
+        <div
+            v-if="batches.length === 0"
+            class="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-700"
+        >
+            <p class="text-gray-500 dark:text-gray-400">
+                Tidak ada data batch token.
+            </p>
         </div>
     </div>
 </template>

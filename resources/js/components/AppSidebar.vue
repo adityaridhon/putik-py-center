@@ -15,12 +15,14 @@ import {
     gayaBelajar,
     intelegensi,
     konten,
+    laporanPsikologi,
     minatBakat,
     service,
 } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import {
     Archive,
+    BookCopy,
     BookOpenCheck,
     Brain,
     Building2,
@@ -28,6 +30,7 @@ import {
     GraduationCap,
     LayoutGrid,
     Stethoscope,
+    User,
 } from 'lucide-vue-next';
 
 import AppLogo from './AppLogo.vue';
@@ -83,6 +86,22 @@ const testNavItems = [
         icon: Archive,
     },
 ];
+
+const psychologyReport = [
+    {
+        title: 'Laporan Psikologi',
+        href: laporanPsikologi(),
+        icon: BookCopy,
+    },
+];
+
+const userManagementNavItems = [
+    {
+        title: 'Pengguna',
+        href: '#',
+        icon: User,
+    },
+];
 </script>
 
 <template>
@@ -108,6 +127,11 @@ const testNavItems = [
             <NavMain label="Manajemen Konten" :items="contentNavItems" />
             <NavMain label="Manajemen Layanan" :items="servicesNavItems" />
             <NavMain label="Manajemen Tes" :items="testNavItems" />
+            <NavMain label="Laporan Psikologi" :items="psychologyReport" />
+            <NavMain
+                label="Manajemen Pengguna"
+                :items="userManagementNavItems"
+            />
         </SidebarContent>
     </Sidebar>
     <slot />
