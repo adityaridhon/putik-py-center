@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Baby, ClipboardList, Heart } from 'lucide-vue-next';
+
 const kategori = defineModel<string>();
 
 const kategoriPilihan = [
@@ -6,59 +8,72 @@ const kategoriPilihan = [
         id: 'children_center',
         title: 'Children Center',
         description:
-            'Program khusus anak-anak dan remaja dengan pendekatan bermain dan edukatif untuk mendukung perkembangan yang sehat.',
+            'Layanan psikologi khusus untuk anak-anak dan remaja, termasuk asesmen perkembangan dan terapi bermain.',
+        icon: Baby,
     },
     {
         id: 'konseling_terapi',
-        title: 'Konseling & Terapi',
+        title: 'Konseling dan Terapi',
         description:
-            'Pendampingan konseling perorangan atau keluarga untuk mengatasi stres, kecemasan, atau tantangan hubungan.',
+            'Sesi konseling individual atau keluarga dengan psikolog berpengalaman untuk berbagai permasalahan psikologis.',
+        icon: Heart,
     },
     {
         id: 'pemeriksaan_psikologi',
         title: 'Pemeriksaan Psikologi',
         description:
-            'Assessment psikologis lengkap (intelegensi, kepribadian, minat-bakat) dengan laporan resmi dari tim profesional.',
+            'Tes dan asesmen psikologi komprehensif untuk keperluan klinis, pendidikan, atau pekerjaan.',
+        icon: ClipboardList,
     },
 ];
 </script>
 
 <template>
-    <div class="space-y-4 rounded border p-6">
+    <div class="space-y-6 rounded-xl border bg-white p-6 shadow-sm">
+        <!-- Header -->
         <div>
-            <p class="text-xs tracking-[0.4em] text-gray-500 uppercase">
-                Kategori Layanan
-            </p>
-            <h2 class="text-xl font-semibold text-gray-900">
-                Pilih layanan yang Anda butuhkan
+            <h2 class="text-xl font-semibold text-primary">
+                Pilih Kategori Layanan
             </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Pilih salah satu layanan yang sesuai dengan kebutuhan Anda
+            </p>
         </div>
 
-        <div class="grid gap-3 md:grid-cols-3">
+        <!-- List -->
+        <div class="space-y-4">
             <button
                 v-for="option in kategoriPilihan"
                 :key="option.id"
                 type="button"
                 @click="kategori = option.id"
                 :class="[
-                    'rounded-lg border p-4 text-left transition focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:outline-none',
+                    'flex w-full items-start gap-4 rounded-xl border p-5 text-left transition',
                     kategori === option.id
-                        ? 'border-green-600 bg-green-50 shadow-[0_10px_25px_rgba(16,185,129,0.25)]'
-                        : 'border-gray-200 hover:border-green-600',
+                        ? 'border-primary bg-green-50'
+                        : 'border-gray-200 hover:border-primary',
                 ]"
             >
-                <p class="text-base font-semibold text-gray-900">
-                    {{ option.title }}
-                </p>
-                <p class="mt-2 text-sm leading-relaxed text-gray-600">
-                    {{ option.description }}
-                </p>
+                <!-- Icon -->
+                <div
+                    class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100"
+                >
+                    <component
+                        :is="option.icon"
+                        class="h-6 w-6 text-primary"
+                    />
+                </div>
+
+                <!-- Text -->
+                <div>
+                    <p class="text-base font-semibold text-gray-900">
+                        {{ option.title }}
+                    </p>
+                    <p class="mt-1 text-sm leading-relaxed text-gray-600">
+                        {{ option.description }}
+                    </p>
+                </div>
             </button>
         </div>
-
-        <p class="text-sm text-gray-600">
-            Pilih satu kategori agar detail layanan lain seperti jadwal dan opsi
-            dapat ditampilkan.
-        </p>
     </div>
 </template>
