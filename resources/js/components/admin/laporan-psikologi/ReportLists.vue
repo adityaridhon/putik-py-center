@@ -29,23 +29,29 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { detail } from '@/routes/laporanPsikologi';
-import { Link } from '@inertiajs/vue3';
+import { laporanPsikologi } from '@/routes';
+import { router, Link } from '@inertiajs/vue3';
 import { SearchIcon, Trash, Upload } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { debounce } from 'lodash';
 
-const selectedFilter = ref('semua');
+// Props dari parent (backend)
+const props = defineProps<{
+    sessions?: any;
+    filters?: {
+        search?: string;
+        test_type?: string;
+        status?: string;
+    };
+}>();
 
-interface Report {
-    id: number;
-    nama: string;
-    token: string;
-    jenisTes: string;
-    tanggal: string;
-    status: 'Selesai' | 'Menunggu Analisis';
-}
+// Reactive search and filters
+const searchQuery = ref(props.filters?.search || '');
+const selectedTestType = ref(props.filters?.test_type || 'semua');
+const selectedStatus = ref(props.filters?.status || 'semua');
 
-const reports = ref<Report[]>([
+// Dummy data sebagai fallback
+const defaultReports = [
     {
         id: 1,
         nama: 'Ahmad Fauzi',
@@ -86,7 +92,54 @@ const reports = ref<Report[]>([
         tanggal: '25 Februari 2026',
         status: 'Selesai',
     },
-]);
+];
+
+// Use backend data if available
+const reports = computed(() => props.sessions?.data || defaultReports);
+
+// Debounced search function
+const performSearch = debounce(() => {
+    applyFilters();
+}, 500);
+
+// Apply filters to backend
+const applyFilters = () => {
+    router.get(
+        laporanPsikologi().url,
+        {
+            search: searchQuery.value || undefined,
+            test_type: selectedTestType.value !== 'semua' ? selectedTestType.value : undefined,
+            status: selectedStatus.value !== 'semua' ? selectedStatus.value : undefined,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
+
+// Watch untuk search (dengan debounce)
+watch(searchQuery, () => {
+    performSearch();
+});
+
+// Watch untuk filter dropdown (langsung apply)
+watch([selectedTestType, selectedStatus], () => {
+    applyFilters();
+});
+
+// Delete function
+const deleteReport = (id: number) => {
+    if (confirm('Apakah Anda yakin ingin menghapus data tes ini?')) {
+        router.delete(`/admin/laporan-psikologi/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Success handled by flash message
+            },
+        });
+    }
+};
+
 </script>
 
 <template>
@@ -95,59 +148,52 @@ const reports = ref<Report[]>([
             <!-- Search -->
             <div>
                 <InputGroup>
-                    <InputGroupInput placeholder="Cari pengguna..." />
+                    <InputGroupInput 
+                        v-model="searchQuery"
+                        placeholder="Cari pengguna..." 
+                    />
                     <InputGroupAddon>
                         <SearchIcon />
                     </InputGroupAddon>
                 </InputGroup>
             </div>
 
-            <!-- Filter -->
+            <!-- Filter Jenis Tes -->
             <div>
-                <Select v-model="selectedFilter">
+                <Select v-model="selectedTestType">
                     <SelectTrigger class="w-60">
-                        <SelectValue placeholder="Semua" />
+                        <SelectValue placeholder="Semua Jenis Tes" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectLabel>Urutkan</SelectLabel>
-                            <SelectItem value="semua">Semua</SelectItem>
-                            <SelectItem value="nama-az">Nama (A-Z)</SelectItem>
-                            <SelectItem value="jenis-tes-az"
-                                >Jenis Tes (A-Z)</SelectItem
-                            >
-                            <SelectItem value="tanggal-terbaru"
-                                >Tanggal Terbaru</SelectItem
-                            >
-                            <SelectItem value="tanggal-terlama"
-                                >Tanggal Terlama</SelectItem
-                            >
-                        </SelectGroup>
-                        <SelectGroup>
                             <SelectLabel>Jenis Tes</SelectLabel>
-                            <SelectItem value="tes-minat-bakat"
-                                >Tes Minat Bakat</SelectItem
-                            >
-                            <SelectItem value="tes-intelengensi"
-                                >Tes Intelengensi</SelectItem
-                            >
-                            <SelectItem value="tes-gaya-belajar"
-                                >Tes Gaya Belajar</SelectItem
-                            >
+                            <SelectItem value="semua">Semua</SelectItem>
+                            <SelectItem value="interest">Tes Minat Bakat</SelectItem>
+                            <SelectItem value="intelligence">Tes Intelegensi</SelectItem>
+                            <SelectItem value="learning_style">Tes Gaya Belajar</SelectItem>
                         </SelectGroup>
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <!-- Filter Status -->
+            <div>
+                <Select v-model="selectedStatus">
+                    <SelectTrigger class="w-60">
+                        <SelectValue placeholder="Semua Status" />
+                    </SelectTrigger>
+                    <SelectContent>
                         <SelectGroup>
                             <SelectLabel>Status</SelectLabel>
-                            <SelectItem value="status-selesai"
-                                >Status: Selesai</SelectItem
-                            >
-                            <SelectItem value="status-menunggu"
-                                >Status: Menunggu Analisis</SelectItem
-                            >
+                            <SelectItem value="semua">Semua</SelectItem>
+                            <SelectItem value="selesai">Selesai</SelectItem>
+                            <SelectItem value="menunggu_analisis">Menunggu Analisis</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
         </div>
+        
         <div
             class="overflow-hidden rounded-lg border border-gray-200 shadow-sm dark:border-gray-800"
         >
@@ -230,7 +276,7 @@ const reports = ref<Report[]>([
                                         "
                                     >
                                         <TooltipTrigger as-child>
-                                            <Link :href="detail(report.id).url">
+                                            <Link :href="`/admin/laporan-psikologi/${report.id}`">
                                                 <Button
                                                     variant="default"
                                                     size="sm"
@@ -250,11 +296,7 @@ const reports = ref<Report[]>([
                                             <Button
                                                 variant="destructive"
                                                 size="sm"
-                                                :class="
-                                                    report.status === 'Selesai'
-                                                        ? 'w-18'
-                                                        : ''
-                                                "
+                                                @click="deleteReport(report.id)"
                                             >
                                                 <Trash class="h-4 w-4" />
                                             </Button>
@@ -269,6 +311,24 @@ const reports = ref<Report[]>([
                     </TableRow>
                 </TableBody>
             </Table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="props.sessions?.links" class="mt-4 flex justify-center gap-1">
+            <Link
+                v-for="(link, index) in props.sessions.links"
+                :key="index"
+                :href="link.url || '#'"
+                :class="[
+                    'px-3 py-1 rounded border',
+                    link.active
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+                    !link.url && 'opacity-50 cursor-not-allowed pointer-events-none'
+                ]"
+                v-html="link.label"
+                preserve-scroll
+            />
         </div>
     </div>
 </template>

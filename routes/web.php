@@ -117,8 +117,11 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Laporan Psikologi
-    Route::get('/admin/laporan-psikologi', fn() => Inertia::render('admin/laporan-psikologi/Index'))->name('laporanPsikologi');
-    Route::get('/admin/laporan-psikologi/{id}/upload-laporan', fn($id) => Inertia::render('admin/laporan-psikologi/Upload', ['id' => $id]))->name('laporanPsikologi.detail');
+    Route::get('/admin/laporan-psikologi', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'index'])->name('laporanPsikologi');
+    Route::get('/admin/laporan-psikologi/{id}', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'show'])->name('laporanPsikologi.detail');
+    Route::post('/admin/laporan-psikologi/{id}/upload', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'uploadReport'])->name('laporanPsikologi.upload');
+    Route::get('/admin/laporan-psikologi/{id}/download', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'downloadReport'])->name('laporanPsikologi.download');
+    Route::delete('/admin/laporan-psikologi/{id}', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'destroy'])->name('laporanPsikologi.destroy');
 
 }); 
 require __DIR__.'/settings.php';
