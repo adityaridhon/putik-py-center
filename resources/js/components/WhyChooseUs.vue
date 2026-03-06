@@ -43,7 +43,7 @@ const benefits = [
                     class="rounded-xl border-2 border-[#7FB69E]/20 bg-[#F8FAF9] p-6 transition-all hover:border-[#2D5F4F]/40 hover:shadow-md"
                 >
                     <div
-                        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#2D5F4F]"
+                        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary"
                     >
                         <component
                             :is="benefit.icon"

@@ -20,7 +20,7 @@ const kontakItems = [
         >
             <div class="mb-4 flex items-center gap-3">
                 <div
-                    class="flex h-12 w-12 items-center justify-center rounded-lg bg-[#2D5F4F]"
+                    class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary"
                 >
                     <component :is="item.icon" class="h-6 w-6 text-white" />
                 </div>

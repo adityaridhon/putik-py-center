@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { bookingLayanan } from '@/routes';
+import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     Brain,
@@ -7,6 +9,8 @@ import {
     HeartHandshake,
     MessageCircle,
 } from 'lucide-vue-next';
+
+const bookingHref = bookingLayanan().url;
 
 const services = [
     {
@@ -103,12 +107,9 @@ const services = [
                 :class="service.id % 2 === 0 ? 'lg:order-2' : ''"
             >
                 <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100"
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary"
                 >
-                    <component
-                        :is="service.icon"
-                        class="h-6 w-6 text-emerald-600"
-                    />
+                    <component :is="service.icon" class="h-6 w-6 text-white" />
                 </div>
 
                 <h3 class="mb-4 text-2xl font-semibold">
@@ -120,11 +121,12 @@ const services = [
                 </p>
 
                 <div class="flex gap-4">
-                    <button
-                        class="rounded-xl bg-emerald-600 px-6 py-3 text-white hover:bg-emerald-700"
+                    <Link
+                        :href="bookingHref"
+                        class="rounded-xl bg-primary px-6 py-3 text-white hover:bg-[#22352A]"
                     >
                         {{ service.primaryAction }}
-                    </button>
+                    </Link>
                 </div>
             </div>
 

@@ -12,7 +12,7 @@ defineProps<{
     >
         <div class="flex items-start gap-4">
             <div
-                class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#2D5F4F] text-white"
+                class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white"
             >
                 <component :is="icon" class="h-6 w-6" />
             </div>
