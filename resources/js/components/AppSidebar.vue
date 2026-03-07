@@ -14,6 +14,7 @@ import {
     dashboard,
     gayaBelajar,
     intelegensi,
+    kelolaPengguna,
     konten,
     laporanPsikologi,
     minatBakat,
@@ -98,7 +99,7 @@ const psychologyReport = [
 const userManagementNavItems = [
     {
         title: 'Pengguna',
-        href: '#',
+        href: kelolaPengguna(),
         icon: User,
     },
 ];

@@ -111,10 +111,14 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'update'])->name('bankSoal.update');
     Route::delete('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'destroy'])->name('bankSoal.destroy');
 
-
     // Laporan Psikologi
     Route::get('/admin/laporan-psikologi', fn() => Inertia::render('admin/laporan-psikologi/Index'))->name('laporanPsikologi');
     Route::get('/admin/laporan-psikologi/{id}/upload-laporan', fn($id) => Inertia::render('admin/laporan-psikologi/Upload', ['id' => $id]))->name('laporanPsikologi.detail');
+
+
+    // Manajemen Pengguna
+    Route::get('/admin/kelola-pengguna', fn() => Inertia::render('admin/kelola-pengguna/Index'))->name('kelolaPengguna');
+    Route::get('/admin/kelola-pengguna/{id}', fn($id) => Inertia::render('admin/kelola-pengguna/Detail', ['id' => $id]))->name('kelolaPengguna.detail');
 
 }); 
 require __DIR__.'/settings.php';
