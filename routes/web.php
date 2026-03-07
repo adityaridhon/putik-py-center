@@ -115,13 +115,17 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'update'])->name('bankSoal.update');
     Route::delete('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'destroy'])->name('bankSoal.destroy');
 
-
     // Laporan Psikologi
     Route::get('/admin/laporan-psikologi', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'index'])->name('laporanPsikologi');
     Route::get('/admin/laporan-psikologi/{id}', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'show'])->name('laporanPsikologi.detail');
     Route::post('/admin/laporan-psikologi/{id}/upload', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'uploadReport'])->name('laporanPsikologi.upload');
     Route::get('/admin/laporan-psikologi/{id}/download', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'downloadReport'])->name('laporanPsikologi.download');
     Route::delete('/admin/laporan-psikologi/{id}', [App\Http\Controllers\Admin\PsychologicalReportController::class, 'destroy'])->name('laporanPsikologi.destroy');
+
+
+    // Manajemen Pengguna
+    Route::get('/admin/kelola-pengguna', fn() => Inertia::render('admin/kelola-pengguna/Index'))->name('kelolaPengguna');
+    Route::get('/admin/kelola-pengguna/{id}', fn($id) => Inertia::render('admin/kelola-pengguna/Detail', ['id' => $id]))->name('kelolaPengguna.detail');
 
 }); 
 require __DIR__.'/settings.php';
