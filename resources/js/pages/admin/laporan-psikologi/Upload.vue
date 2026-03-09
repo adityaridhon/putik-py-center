@@ -7,6 +7,17 @@ import { laporanPsikologi } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+const props = defineProps<{
+    sessionId: number;
+    report?: {
+        id: number;
+        file_name: string;
+        file_size: string;
+        uploaded_at: string;
+        uploaded_by: string;
+    } | null;
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manajemen Laporan Psikologi',
@@ -41,8 +52,12 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="mt-6 flex flex-col gap-4">
                 <h1 class="text-xl font-semibold">
                     Unggah Laporan Hasil Tes Psikologi
+                    <span class="text-red-500">*</span>
                 </h1>
-                <UploadReport />
+                <UploadReport
+                    :sessionId="props.sessionId"
+                    :existingReport="props.report"
+                />
             </div>
         </section>
     </AppLayout>
