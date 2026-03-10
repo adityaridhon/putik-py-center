@@ -123,7 +123,11 @@ const whatsappMessageUrl = computed(() => {
             >
                 <span class="font-semibold">Topik Permasalahan</span>
                 <span>:</span>
-                <span>{{ props.form.topik }}</span>
+                <span
+                    class="block min-w-0 leading-relaxed wrap-break-word whitespace-normal"
+                >
+                    {{ props.form.topik }}
+                </span>
             </div>
 
             <div v-if="namaLayanan" class="grid grid-cols-[200px_20px_1fr] p-2">
