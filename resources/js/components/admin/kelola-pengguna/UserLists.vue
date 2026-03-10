@@ -22,46 +22,91 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { detail } from '@/routes/kelolaPengguna';
-import { Link } from '@inertiajs/vue3';
+import { kelolaPengguna } from '@/routes';
+import { router, Link } from '@inertiajs/vue3';
 import { Eye, SearchIcon } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { debounce } from 'lodash';
 
-interface UsersReport {
-    id: number;
-    nama: string;
-    jumlah_tes: string;
-}
+// Props dari parent (backend)
+const props = defineProps<{
+    users?: any;
+    filters?: {
+        search?: string;
+        sort?: string;
+    };
+}>();
 
-const UserReports = ref<UsersReport[]>([
+// Reactive search and filters
+const searchQuery = ref(props.filters?.search || '');
+const selectedSort = ref(props.filters?.sort || 'semua');
+
+// Dummy data sebagai fallback
+const defaultUsers = [
     {
         id: 1,
         nama: 'Ahmad Fauzi',
-        jumlah_tes: '3',
+        email: 'ahmad@example.com',
+        jumlah_tes: 3,
     },
     {
         id: 2,
         nama: 'Siti Nurhaliza',
-        jumlah_tes: '2',
+        email: 'siti@example.com',
+        jumlah_tes: 2,
     },
     {
         id: 3,
         nama: 'Budi Santoso',
-        jumlah_tes: '1',
+        email: 'budi@example.com',
+        jumlah_tes: 1,
     },
     {
         id: 4,
         nama: 'Dewi Lestari',
-        jumlah_tes: '2',
+        email: 'dewi@example.com',
+        jumlah_tes: 2,
     },
     {
         id: 5,
         nama: 'Rizki Pratama',
-        jumlah_tes: '1',
+        email: 'rizki@example.com',
+        jumlah_tes: 1,
     },
-]);
+];
 
-const selectedFilter = ref('semua');
+// Use backend data if available
+const users = computed(() => props.users?.data || defaultUsers);
+
+// Debounced search function
+const performSearch = debounce(() => {
+    applyFilters();
+}, 500);
+
+// Apply filters to backend
+const applyFilters = () => {
+    router.get(
+        kelolaPengguna().url,
+        {
+            search: searchQuery.value || undefined,
+            sort: selectedSort.value !== 'semua' ? selectedSort.value : undefined,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
+
+// Watch untuk search (dengan debounce)
+watch(searchQuery, () => {
+    performSearch();
+});
+
+// Watch untuk filter dropdown (langsung apply)
+watch(selectedSort, () => {
+    applyFilters();
+});
 </script>
 
 <template>
@@ -70,7 +115,10 @@ const selectedFilter = ref('semua');
         <!-- Search -->
         <div>
             <InputGroup>
-                <InputGroupInput placeholder="Cari pengguna..." />
+                <InputGroupInput 
+                    v-model="searchQuery"
+                    placeholder="Cari pengguna..." 
+                />
                 <InputGroupAddon>
                     <SearchIcon />
                 </InputGroupAddon>
@@ -79,7 +127,7 @@ const selectedFilter = ref('semua');
 
         <!-- Filter -->
         <div>
-            <Select v-model="selectedFilter">
+            <Select v-model="selectedSort">
                 <SelectTrigger class="w-60">
                     <SelectValue placeholder="Semua" />
                 </SelectTrigger>
@@ -88,36 +136,11 @@ const selectedFilter = ref('semua');
                         <SelectLabel>Urutkan</SelectLabel>
                         <SelectItem value="semua">Semua</SelectItem>
                         <SelectItem value="nama-az">Nama (A-Z)</SelectItem>
-                        <SelectItem value="jenis-tes-az"
-                            >Jenis Tes (A-Z)</SelectItem
-                        >
-                        <SelectItem value="tanggal-terbaru"
-                            >Tanggal Terbaru</SelectItem
-                        >
-                        <SelectItem value="tanggal-terlama"
-                            >Tanggal Terlama</SelectItem
-                        >
-                    </SelectGroup>
-                    <SelectGroup>
-                        <SelectLabel>Jenis Tes</SelectLabel>
-                        <SelectItem value="tes-minat-bakat"
-                            >Tes Minat Bakat</SelectItem
-                        >
-                        <SelectItem value="tes-intelengensi"
-                            >Tes Intelengensi</SelectItem
-                        >
-                        <SelectItem value="tes-gaya-belajar"
-                            >Tes Gaya Belajar</SelectItem
-                        >
-                    </SelectGroup>
-                    <SelectGroup>
-                        <SelectLabel>Status</SelectLabel>
-                        <SelectItem value="status-selesai"
-                            >Status: Selesai</SelectItem
-                        >
-                        <SelectItem value="status-menunggu"
-                            >Status: Menunggu Analisis</SelectItem
-                        >
+                        <SelectItem value="nama-za">Nama (Z-A)</SelectItem>
+                        <SelectItem value="jumlah-tes-terbanyak">Jumlah Tes (Terbanyak)</SelectItem>
+                        <SelectItem value="jumlah-tes-tersedikit">Jumlah Tes (Tersedikit)</SelectItem>
+                        <SelectItem value="terbaru">Terdaftar Terbaru</SelectItem>
+                        <SelectItem value="terlama">Terdaftar Terlama</SelectItem>
                     </SelectGroup>
                 </SelectContent>
             </Select>
@@ -150,8 +173,8 @@ const selectedFilter = ref('semua');
             </TableHeader>
             <TableBody>
                 <TableRow
-                    v-for="(report, index) in UserReports"
-                    :key="report.id"
+                    v-for="(user, index) in users"
+                    :key="user.id"
                     class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 >
                     <TableCell
@@ -159,20 +182,38 @@ const selectedFilter = ref('semua');
                         >{{ index + 1 }}
                     </TableCell>
                     <TableCell class="text-center">
-                        {{ report.nama }}
+                        {{ user.nama }}
                     </TableCell>
                     <TableCell class="text-center">
-                        {{ report.jumlah_tes }}
+                        {{ user.jumlah_tes }}
                     </TableCell>
                     <TableCell class="w-32 text-center">
-                        <Link :href="detail(report.id).url">
-                            <Button
-                                ><Eye class="h-4 w-4" /> Lihat Detail</Button
-                            >
+                        <Link :href="`/admin/kelola-pengguna/${user.id}`">
+                            <Button>
+                                <Eye class="h-4 w-4" /> Lihat Detail
+                            </Button>
                         </Link>
                     </TableCell>
                 </TableRow>
             </TableBody>
         </Table>
+    </div>
+
+    <!-- Pagination -->
+    <div v-if="props.users?.links" class="mt-4 flex justify-center gap-1">
+        <Link
+            v-for="(link, index) in props.users.links"
+            :key="index"
+            :href="link.url || '#'"
+            :class="[
+                'px-3 py-1 rounded border',
+                link.active
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+                !link.url && 'opacity-50 cursor-not-allowed pointer-events-none'
+            ]"
+            v-html="link.label"
+            preserve-scroll
+        />
     </div>
 </template>

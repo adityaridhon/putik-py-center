@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             GayaBelajarSeeder::class,
             IntelligenceTestSeeder::class,
             TestTokenSeeder::class,
-            PsychologicalReportSeeder::class,
+            UserTestSeeder::class, // Create users dengan test sessions
         ]);
     }
 }

@@ -6,6 +6,17 @@ import { kelolaPengguna } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+// Terima props dari backend
+const props = defineProps<{
+    user: {
+        id: number;
+        nama: string;
+        email: string;
+        created_at: string;
+    };
+    testHistory: any[];
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Kelola Pengguna',
@@ -20,11 +31,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Detail Pengguna" />
+        <Head :title="`Detail Pengguna - ${user.nama}`" />
 
-        <PageHeader :back-url="kelolaPengguna.url()" title="Detail Pengguna" />
+        <PageHeader :back-url="kelolaPengguna().url" title="Detail Pengguna" />
         <div class="p-6">
-            <UserDetailReports />
+            <UserDetailReports :user="user" :testHistory="testHistory" />
         </div>
     </AppLayout>
 </template>
