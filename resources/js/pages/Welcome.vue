@@ -33,6 +33,7 @@ defineProps<{
     <Layanan />
     <TimKami />
     <LogoMitra />
-    <Artikel />
+    <Artikel :limit="3" :show-more-button="true" />
+
     <Footer :profile="companyProfile" />
 </template>

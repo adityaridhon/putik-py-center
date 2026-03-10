@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { tentangKami } from '@/routes';
+import { Link } from '@inertiajs/vue3';
 import Button from './ui/button/Button.vue';
 </script>
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-10 py-6 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-6 py-6 pt-10 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
     >
-        <div class="image">
+        <div class="overflow-hidden rounded-3xl shadow-lg image">
             <img
                 src="/images/Tim_Putik.png"
                 alt="hero"
@@ -26,11 +28,13 @@ import Button from './ui/button/Button.vue';
                 bersertifikasi SIPP & HIMPSI
             </p>
 
-            <Button
-                class="rounded border border-primary bg-transparent px-6 py-3 text-primary transition hover:bg-primary/10"
-            >
-                Lihat Profil Tim
-            </Button>
+            <Link :href="tentangKami().url" class="w-full">
+                <Button
+                    class="rounded border border-primary bg-transparent px-6 py-3 text-primary transition hover:bg-primary/10"
+                >
+                    Lihat Profil Tim
+                </Button>
+            </Link>
         </div>
     </div>
 </template>

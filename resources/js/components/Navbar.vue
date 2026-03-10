@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { getInitials } from '@/composables/useInitials';
 import {
+    artikel,
     daftarLayanan,
     dashboard,
     home,
@@ -193,10 +194,10 @@ const auth = computed(() => page.props.auth as Auth);
                         </DropdownMenu>
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            :href="artikel().url"
                             class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
-                            >Artikel</a
+                            >Artikel</Link
                         >
                     </li>
                     <li>

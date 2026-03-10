@@ -65,6 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="mt-6">
                 <h2 class="mb-4 text-xl font-bold">
                     Unggah Laporan Hasil Tes Psikologi
+                    <span class="text-red-500">*</span>
                 </h2>
 
                 <UploadReport

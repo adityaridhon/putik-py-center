@@ -44,6 +44,16 @@ Route::get('/', function () {
         return Inertia::render('user/booking-layanan/Index');
     })->name('booking-layanan');
 
+    Route::get('/artikel', function () {
+        return Inertia::render('user/artikel/Index');
+    })->name('artikel');
+
+    Route::get('/artikel/{slug}', function (string $slug) {
+        return Inertia::render('user/artikel/detail', [
+            'slug' => $slug,
+        ]);
+    })->name('artikel.detail');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
