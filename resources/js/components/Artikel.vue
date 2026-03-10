@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { artikel, artikelDetail } from '@/routes';
+import { artikel } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import { ArrowRight } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -65,7 +65,11 @@ const truncate = (text: string, limit = 80) => {
     return text.length > limit ? `${text.slice(0, limit).trimEnd()}...` : text;
 };
 
-const props = defineProps<{ limit?: number; showMoreButton?: boolean }>();
+const props = defineProps<{
+    limit?: number;
+    showMoreButton?: boolean;
+    hideHeader?: boolean;
+}>();
 const visibleCards = computed(() =>
     aboutcards.slice(0, props.limit ?? aboutcards.length),
 );
@@ -73,12 +77,14 @@ const visibleCards = computed(() =>
 
 <template>
     <section class="bg-white py-20">
-        <h1 class="font-title text-center text-4xl font-bold">ARTIKEL</h1>
+        <div v-if="!props.hideHeader">
+            <h1 class="font-title text-center text-4xl font-bold">ARTIKEL</h1>
 
-        <p class="mx-auto max-w-3xl py-6 text-center text-primary">
-            Baca artikel edukatif dari para psikolog profesional kami tentang
-            berbagai topik kesehatan mental dan psikologi.
-        </p>
+            <p class="mx-auto max-w-3xl py-6 text-center text-primary">
+                Baca artikel edukatif dari para psikolog profesional kami
+                tentang berbagai topik kesehatan mental dan psikologi.
+            </p>
+        </div>
 
         <div
             class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-3"
@@ -121,7 +127,7 @@ const visibleCards = computed(() =>
                         </div>
 
                         <Link
-                            :href="artikelDetail(card.slug).url"
+                            :href="`/artikel/${card.slug}`"
                             class="inline-flex items-center justify-center px-4 text-primary transition-colors focus:outline-none"
                             aria-label="Baca artikel"
                         >

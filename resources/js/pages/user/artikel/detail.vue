@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import ArtikelHero from "@/components/ArtikelHero.vue";
-import ArtikelContent from "@/components/ArtikelContent.vue"
-import ArtikelQuote from "@/components/ArtikelQuote.vue"
-import ArtikelTerkait from "@/components/ArtikelTerkait.vue"
+import ArtikelContent from '@/components/ArtikelContent.vue';
+import ArtikelHero from '@/components/ArtikelHero.vue';
+import ArtikelQuote from '@/components/ArtikelQuote.vue';
+import ArtikelTerkait from '@/components/ArtikelTerkait.vue';
 </script>
 
 <template>
-<div class="px-24 py-10">
+    <div class="px-24 py-10">
+        <ArtikelHero />
 
-    <ArtikelHero />
+        <ArtikelContent />
 
-    <ArtikelContent />
+        <ArtikelQuote />
 
-    <ArtikelQuote />
-
-    <ArtikelTerkait />
-
-</div>
+        <ArtikelTerkait />
+    </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AboutSection from '@/components/AboutSection.vue';
+import type { ArtikelCard } from '@/components/Artikel.vue';
 import Artikel from '@/components/Artikel.vue';
 import Footer from '@/components/Footer.vue';
 import HeroSection from '@/components/HeroSection.vue';
@@ -8,7 +9,7 @@ import LogoMitra from '@/components/LogoMitra.vue';
 import Navbar from '@/components/Navbar.vue';
 import TimKami from '@/components/TimKami.vue';
 
-defineProps<{
+const props = defineProps<{
     companyProfile?: {
         id?: number;
         company_name?: string;
@@ -23,17 +24,18 @@ defineProps<{
         logo_url?: string;
         landing_image_url?: string;
     };
+    articles: ArtikelCard[];
 }>();
 </script>
 
 <template>
-    <Navbar :profile="companyProfile" />
-    <HeroSection :profile="companyProfile" />
-    <AboutSection :profile="companyProfile" />
+    <Navbar :profile="props.companyProfile" />
+    <HeroSection :profile="props.companyProfile" />
+    <AboutSection :profile="props.companyProfile" />
     <Layanan />
     <TimKami />
     <LogoMitra />
-    <Artikel :limit="3" :show-more-button="true" />
+    <Artikel :limit="3" :show-more-button="true" :articles="props.articles" />
 
-    <Footer :profile="companyProfile" />
+    <Footer :profile="props.companyProfile" />
 </template>

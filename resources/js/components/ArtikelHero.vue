@@ -4,7 +4,7 @@
     <div class="space-y-6">
         <img
             src="/images/Artikel_1.jpg"
-            class="w-full h-72 rounded-2xl object-cover"
+            class="h-72 w-full rounded-2xl object-cover"
         />
 
         <div class="space-y-3">
