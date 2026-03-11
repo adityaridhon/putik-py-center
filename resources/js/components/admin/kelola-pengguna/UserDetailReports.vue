@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Badge from '@/components/ui/badge/Badge.vue';
 import { User } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed } from 'vue';
 
 import {
     Table,
@@ -12,37 +12,43 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-interface UserReportDetail {
-    id: number;
-    token: string;
-    jenisTes: string;
-    tanggal: string;
-    status: 'Selesai' | 'Menunggu Analisis';
-}
+// Props dari parent (backend)
+const props = defineProps<{
+    user: {
+        id: number;
+        nama: string;
+        email: string;
+        created_at: string;
+    };
+    testHistory: any[];
+}>();
 
-const reports = ref<UserReportDetail[]>([
+// Default data jika backend tidak ada
+const defaultHistory = [
     {
         id: 1,
         token: 'ABC123',
-        jenisTes: 'Tes Kepribadian',
+        jenis_tes: 'Tes Kepribadian',
         tanggal: '2024-06-01',
         status: 'Selesai',
     },
     {
         id: 2,
         token: 'DEF456',
-        jenisTes: 'Tes Kecerdasan Emosional',
+        jenis_tes: 'Tes Kecerdasan Emosional',
         tanggal: '2024-06-05',
         status: 'Menunggu Analisis',
     },
     {
         id: 3,
         token: 'GHI789',
-        jenisTes: 'Tes Minat Bakat',
+        jenis_tes: 'Tes Minat Bakat',
         tanggal: '2024-06-10',
         status: 'Selesai',
     },
-]);
+];
+
+const reports = computed(() => props.testHistory || defaultHistory);
 </script>
 
 <template>
@@ -55,8 +61,9 @@ const reports = ref<UserReportDetail[]>([
                 <User />
             </div>
             <div class="text-center">
-                <h1 class="text-2xl font-bold">Andi Fadhilah</h1>
-                <p class="text-gray-400">andifadhilah@example.com</p>
+                <h1 class="text-2xl font-bold">{{ user.nama }}</h1>
+                <p class="text-gray-400">{{ user.email }}</p>
+                <p class="mt-1 text-xs text-gray-500">Terdaftar sejak {{ user.created_at }}</p>
             </div>
         </div>
         <!-- Table riwayat -->
@@ -83,6 +90,14 @@ const reports = ref<UserReportDetail[]>([
                 </TableHeader>
                 <TableBody>
                     <TableRow
+                        v-if="reports.length === 0"
+                        class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    >
+                        <TableCell colspan="4" class="text-center text-gray-500 py-8">
+                            Belum ada riwayat tes
+                        </TableCell>
+                    </TableRow>
+                    <TableRow
                         v-for="(report, index) in reports"
                         :key="report.id"
                         class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -92,7 +107,7 @@ const reports = ref<UserReportDetail[]>([
                             >{{ index + 1 }}
                         </TableCell>
                         <TableCell class="text-center">
-                            {{ report.jenisTes }}
+                            {{ report.jenis_tes }}
                         </TableCell>
                         <TableCell class="text-center">
                             {{ report.tanggal }}
@@ -118,4 +133,5 @@ const reports = ref<UserReportDetail[]>([
             </Table>
         </div>
     </section>
+
 </template>

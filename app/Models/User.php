@@ -49,4 +49,12 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    /**
+     * Get the test sessions for the user.
+     */
+    public function testSessions()
+    {
+        return $this->hasMany(TestSession::class);
+    }
 }

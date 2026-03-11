@@ -5,6 +5,15 @@ import { kelolaPengguna } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
+// Terima props dari backend
+const props = defineProps<{
+    users?: any;
+    filters?: {
+        search?: string;
+        sort?: string;
+    };
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Kelola Pengguna',
@@ -22,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <p class="mb-4">
                 Daftar pengguna terdaftar dan riwayat tes online pengguna.
             </p>
-            <UserLists />
+            <UserLists :users="users" :filters="filters" />
         </div>
     </AppLayout>
 </template>

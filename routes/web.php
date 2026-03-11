@@ -134,8 +134,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Manajemen Pengguna
-    Route::get('/admin/kelola-pengguna', fn() => Inertia::render('admin/kelola-pengguna/Index'))->name('kelolaPengguna');
-    Route::get('/admin/kelola-pengguna/{id}', fn($id) => Inertia::render('admin/kelola-pengguna/Detail', ['id' => $id]))->name('kelolaPengguna.detail');
+    Route::get('/admin/kelola-pengguna', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('kelolaPengguna');
+    Route::get('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'show'])->name('kelolaPengguna.detail');
+    Route::delete('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('kelolaPengguna.destroy');
 
 }); 
 require __DIR__.'/settings.php';
