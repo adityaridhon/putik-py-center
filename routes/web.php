@@ -40,6 +40,18 @@ Route::get('/', function () {
         return Inertia::render('user/daftar-layanan/Index');
     })->name('daftar-layanan');
 
+    Route::get('/tes-online/minat-bakat', function () {
+        return Inertia::render('user/minat-bakat/Index');
+    })->name('tes-online.minat-bakat');
+
+    Route::get('/tes-online/inteligensi', function () {
+        return Inertia::render('user/inteligensi/Index');
+    })->name('tes-online.inteligensi');
+
+    Route::get('/tes-online/gaya-belajar', function () {
+        return Inertia::render('user/gaya-belajar/Index');
+    })->name('tes-online.gaya-belajar');
+
     Route::get('/booking-layanan', function () {
         return Inertia::render('user/booking-layanan/Index');
     })->name('booking-layanan');

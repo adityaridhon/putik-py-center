@@ -18,7 +18,6 @@ defineProps<{
             class="mx-auto w-full max-w-screen-xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
         >
             <div class="flex flex-wrap gap-6 md:gap-8 lg:gap-10">
-                <!-- Logo dan Deskripsi -->
                 <div
                     class="w-full text-center md:w-auto md:min-w-[250px] md:text-left"
                 >
@@ -35,9 +34,7 @@ defineProps<{
                     </a>
                 </div>
 
-                <!-- Grid Kontak dan Social Media -->
                 <div class="w-full md:w-auto md:max-w-[500px] md:min-w-[300px]">
-                    <!-- Kontak -->
                     <div class="text-center md:text-left">
                         <h2
                             class="text-heading mb-4 text-xl font-semibold uppercase md:mb-6"

@@ -4,11 +4,17 @@ defineProps<{
     description: string;
     icon: any;
 }>();
+
+defineEmits<{
+    (event: 'click'): void;
+}>();
 </script>
 
 <template>
-    <div
-        class="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-green-600 hover:shadow-md"
+    <button
+        type="button"
+        class="group flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:border-green-600 hover:shadow-md focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 focus-visible:outline-none"
+        @click="$emit('click')"
     >
         <div class="flex items-start gap-4">
             <div
@@ -27,5 +33,5 @@ defineProps<{
                 </p>
             </div>
         </div>
-    </div>
+    </button>
 </template>
