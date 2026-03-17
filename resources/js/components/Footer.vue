@@ -1,21 +1,28 @@
 <script setup lang="ts">
+import type { AppPageProps } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import { Instagram, Mail, MapPin, Phone } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-defineProps<{
-    profile?: {
-        phone?: string;
-        email?: string;
-        instagram?: string;
-        address?: string;
-        logo_url?: string;
-    };
-}>();
+const page = usePage<
+    AppPageProps<{
+        companyProfile?: {
+            phone?: string | null;
+            email?: string | null;
+            instagram?: string | null;
+            address?: string | null;
+            logo_url?: string | null;
+        };
+    }>
+>();
+
+const profile = computed(() => page.props.companyProfile);
 </script>
 
 <template>
     <footer class="bg-primary text-white">
         <div
-            class="mx-auto w-full max-w-screen-xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
+            class="mx-auto w-full max-w-7xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
         >
             <div class="flex flex-wrap gap-6 md:gap-8 lg:gap-10">
                 <!-- Logo dan Deskripsi -->
