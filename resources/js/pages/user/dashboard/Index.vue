@@ -1,0 +1,18 @@
+<script setup lang="ts">
+import Footer from '@/components/Footer.vue';
+import Navbar from '@/components/Navbar.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import UserDashboard from '@/components/UserDashboard.vue';
+import { home } from '@/routes';
+</script>
+
+<template>
+    <Navbar />
+
+    <section class="px-6 py-20">
+        <PageHeader title="Dashboard User" :back-url="home().url" />
+        <UserDashboard />
+    </section>
+
+    <Footer />
+</template>

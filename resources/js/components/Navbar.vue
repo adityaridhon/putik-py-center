@@ -12,12 +12,12 @@ import { getInitials } from '@/composables/useInitials';
 import {
     artikel,
     daftarLayanan,
-    dashboard,
     home,
     kontak,
     layananKami,
     logout,
     tentangKami,
+    userDashboard,
 } from '@/routes';
 import type { Auth } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -99,11 +99,8 @@ const auth = computed(() => page.props.auth as Auth);
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem as-child>
-                                <Link href="#">Pengaturan Akun</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem as-child>
-                                <Link :href="dashboard().url"
-                                    >Dashboard Admin</Link
+                                <Link :href="userDashboard().url"
+                                    >Dashboard User</Link
                                 >
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
