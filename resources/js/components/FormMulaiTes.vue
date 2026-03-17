@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
 interface FormData {
     nama: string;
     tanggalLahir: string;
@@ -6,6 +9,15 @@ interface FormData {
     jenisKelamin: string;
     token: string;
 }
+
+const props = withDefaults(
+    defineProps<{
+        redirectTo?: string;
+    }>(),
+    {
+        redirectTo: '',
+    },
+);
 
 const model = defineModel<FormData>({
     default: {
@@ -17,10 +29,36 @@ const model = defineModel<FormData>({
     },
 });
 
+const updateField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
+    model.value = {
+        ...model.value,
+        [key]: value,
+    };
+};
+
 const handleNama = (event: Event) => {
     const target = event.target as HTMLInputElement;
     target.value = target.value.replace(/[^a-zA-Z\s]/g, '');
-    model.value.nama = target.value;
+    updateField('nama', target.value);
+};
+
+const handleTanggalLahir = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    updateField('tanggalLahir', target.value);
+};
+
+const handleTanggalTes = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    updateField('tanggalTes', target.value);
+};
+
+const handleJenisKelamin = (value: string) => {
+    updateField('jenisKelamin', value);
+};
+
+const handleToken = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    updateField('token', target.value);
 };
 
 const today = new Date().toISOString().split('T')[0];
@@ -42,11 +80,29 @@ const blockManualDateInput = (event: KeyboardEvent) => {
 
     event.preventDefault();
 };
+
+const isFormComplete = computed(() => {
+    return (
+        model.value.nama.trim() !== '' &&
+        model.value.tanggalLahir !== '' &&
+        model.value.tanggalTes !== '' &&
+        model.value.jenisKelamin !== '' &&
+        model.value.token.trim() !== ''
+    );
+});
+
+const handleMulaiTes = () => {
+    if (!isFormComplete.value || !props.redirectTo.trim()) {
+        return;
+    }
+
+    router.visit(props.redirectTo);
+};
 </script>
 
 <template>
     <div
-        class="mx-auto mt-8 mb-20 max-w-3xl space-y-6 rounded-xl border bg-white p-8 shadow-sm"
+        class="mx-auto mt-20 mb-20 max-w-3xl space-y-6 rounded-xl border bg-white p-8 shadow-sm"
     >
         <h2 class="text-lg font-semibold text-primary">Informasi Peserta</h2>
 
@@ -64,9 +120,10 @@ const blockManualDateInput = (event: KeyboardEvent) => {
         <div class="space-y-2">
             <label class="text-sm font-medium"> Tanggal Lahir </label>
             <input
-                v-model="model.tanggalLahir"
+                :value="model.tanggalLahir"
                 type="date"
                 :max="today"
+                @input="handleTanggalLahir"
                 @click="openDatePicker"
                 @keydown="blockManualDateInput"
                 @paste.prevent
@@ -77,9 +134,10 @@ const blockManualDateInput = (event: KeyboardEvent) => {
         <div class="space-y-2">
             <label class="text-sm font-medium"> Tanggal Tes </label>
             <input
-                v-model="model.tanggalTes"
+                :value="model.tanggalTes"
                 type="date"
                 :min="today"
+                @input="handleTanggalTes"
                 @click="openDatePicker"
                 @keydown="blockManualDateInput"
                 @paste.prevent
@@ -96,7 +154,8 @@ const blockManualDateInput = (event: KeyboardEvent) => {
                         type="radio"
                         name="jenisKelamin"
                         value="Pria"
-                        v-model="model.jenisKelamin"
+                        :checked="model.jenisKelamin === 'Pria'"
+                        @change="handleJenisKelamin('Pria')"
                         class="accent-primary"
                     />
                     Pria
@@ -107,7 +166,8 @@ const blockManualDateInput = (event: KeyboardEvent) => {
                         type="radio"
                         name="jenisKelamin"
                         value="Wanita"
-                        v-model="model.jenisKelamin"
+                        :checked="model.jenisKelamin === 'Wanita'"
+                        @change="handleJenisKelamin('Wanita')"
                         class="accent-primary"
                     />
                     Wanita
@@ -118,15 +178,24 @@ const blockManualDateInput = (event: KeyboardEvent) => {
         <div class="space-y-2">
             <label class="text-sm font-medium"> Token </label>
             <input
-                v-model="model.token"
+                :value="model.token"
                 type="text"
+                @input="handleToken"
                 placeholder="Masukkan token tes"
                 class="w-full rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
             />
         </div>
 
         <button
-            class="mt-4 w-full rounded-lg bg-primary py-2 text-white transition hover:opacity-90"
+            type="button"
+            :disabled="!isFormComplete"
+            @click="handleMulaiTes"
+            :class="[
+                'mt-4 w-full rounded-lg py-2 text-white transition',
+                isFormComplete
+                    ? 'cursor-pointer bg-primary hover:bg-green-900'
+                    : 'cursor-not-allowed bg-gray-400',
+            ]"
         >
             Mulai Tes
         </button>

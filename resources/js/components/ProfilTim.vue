@@ -22,7 +22,7 @@
                 dan pelayanan yang akan diberikan kepada masyarakat.
             </p>
             <div
-                class="w-full rounded-2xl bg-gradient-to-r from-primary/80 to-emerald-600/70 px-6 py-4 text-center text-sm font-semibold text-white shadow-lg"
+                class="w-full rounded-2xl bg-linear-to-r from-primary/80 to-emerald-600/70 px-6 py-4 text-center text-sm font-semibold text-white shadow-lg"
             >
                 <p class="leading-tight">
                     Rr. Herjati Shofiastoeti, S.Psi., Psikolog

@@ -15,7 +15,7 @@ defineProps<{
 <template>
     <footer class="bg-primary text-white">
         <div
-            class="mx-auto w-full max-w-screen-xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
+            class="mx-auto w-full max-w-7xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
         >
             <div class="flex flex-wrap gap-6 md:gap-8 lg:gap-10">
                 <div
