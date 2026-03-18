@@ -18,6 +18,7 @@ import {
     logout,
     tentangKami,
     userDashboard,
+    dashboard,
 } from '@/routes';
 import type { Auth } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -98,10 +99,11 @@ const auth = computed(() => page.props.auth as Auth);
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem as-child>
-                                <Link :href="userDashboard().url"
-                                    >Dashboard User</Link
-                                >
+                            <DropdownMenuItem as-child v-if="auth?.user?.role === 'admin'">
+                                <Link :href="dashboard().url">Dashboard Admin</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem as-child v-else>
+                                <Link :href="userDashboard().url">Dashboard User</Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
