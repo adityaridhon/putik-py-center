@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Admin user tanpa 2FA
-        User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin',
@@ -20,14 +20,18 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $admin->forceFill(['role' => 'admin'])->save();
+
         // Test user
-        User::firstOrCreate(
+        $testUser = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
             ]
         );
+
+        $testUser->forceFill(['role' => 'user'])->save();
         
         // Panggil seeder lainnya
         $this->call([
