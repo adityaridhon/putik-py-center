@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
-const props = defineProps<{ isConfirmed?: boolean }>();
+interface BookedSlot {
+    booking_date: string;
+    booking_time: string;
+    status: string;
+}
+
+const props = defineProps<{ isConfirmed?: boolean; bookedSlots?: BookedSlot[] }>();
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string): void;
@@ -11,7 +17,14 @@ const emit = defineEmits<{
 const selected = ref<string>('');
 
 const currentDate = ref(new Date());
-const confirmedDates = ref<Record<string, boolean>>({});
+const availableTimes = ['09:30', '13:00', '15:00', '16:30'];
+
+const formatLocalDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 function prevMonth() {
     const d = new Date(currentDate.value);
@@ -47,7 +60,7 @@ function generateCalendar(date: Date) {
     for (let i = 0; i < startDay; i++) {
         const d = new Date(year, month, -startDay + i + 1);
         days.push({
-            value: d.toISOString().split('T')[0],
+            value: formatLocalDate(d),
             date: d.getDate(),
             currentMonth: false,
             tersedia: false,
@@ -57,7 +70,7 @@ function generateCalendar(date: Date) {
     for (let i = 1; i <= totalDays; i++) {
         const d = new Date(year, month, i);
         days.push({
-            value: d.toISOString().split('T')[0],
+            value: formatLocalDate(d),
             date: i,
             currentMonth: true,
             tersedia: true,
@@ -73,9 +86,22 @@ const calendarDays = computed(() =>
             return item;
         }
 
+        const confirmedTimes = new Set(
+            (props.bookedSlots || [])
+                .filter(
+                    (slot) =>
+                        (slot.status === 'confirmed' ||
+                            slot.status === 'completed') &&
+                        slot.booking_date === item.value,
+                )
+                .map((slot) => (slot.booking_time || '').substring(0, 5)),
+        );
+
+        const isFull = availableTimes.every((time) => confirmedTimes.has(time));
+
         return {
             ...item,
-            tersedia: !confirmedDates.value[item.value],
+            tersedia: !isFull,
         };
     }),
 );
@@ -85,21 +111,6 @@ function pilih(item: any) {
     selected.value = item.value;
     emit('update:modelValue', item.value);
 }
-
-watch(
-    () => props.isConfirmed,
-    (confirmed) => {
-        if (confirmed && selected.value) {
-            confirmedDates.value = {
-                ...confirmedDates.value,
-                [selected.value]: true,
-            };
-        } else if (!confirmed) {
-            confirmedDates.value = {};
-        }
-    },
-    { immediate: true },
-);
 </script>
 
 <template>

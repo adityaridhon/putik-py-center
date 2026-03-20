@@ -9,36 +9,24 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-const activities = [
-    {
-        id: 1,
-        nama_pengguna: 'Andi Fadillah',
-        aktivitas: 'Tes Minat Bakat',
-        tanggal: '14 Januari 2026',
-        status: 'Selesai',
-    },
-    {
-        id: 2,
-        nama_pengguna: 'Yuni Astuti',
-        aktivitas: 'Tes Intelegensi',
-        tanggal: '14 Januari 2026',
-        status: 'Proses',
-    },
-    {
-        id: 3,
-        nama_pengguna: 'Halim Setiawan',
-        aktivitas: 'Tes Minat Bakat',
-        tanggal: '14 Januari 2026',
-        status: 'Batal',
-    },
-];
+const props = defineProps<{
+    activities?: Array<{
+        id: number;
+        nama_pengguna: string;
+        aktivitas: string;
+        tanggal: string;
+        status: string;
+    }>;
+}>();
 
 const getStatusVariant = (status: string) => {
     switch (status) {
+        case 'Menunggu':
+            return 'secondary';
+        case 'Booked':
+            return 'outline';
         case 'Selesai':
             return 'default';
-        case 'Proses':
-            return 'secondary';
         case 'Batal':
             return 'destructive';
         default:
@@ -72,8 +60,13 @@ const getStatusVariant = (status: string) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
+                <TableRow v-if="(props.activities || []).length === 0">
+                    <TableCell colspan="5" class="h-20 text-center text-gray-500">
+                        Belum ada aktivitas booking.
+                    </TableCell>
+                </TableRow>
                 <TableRow
-                    v-for="activity in activities"
+                    v-for="activity in props.activities || []"
                     :key="activity.id"
                     class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 >
