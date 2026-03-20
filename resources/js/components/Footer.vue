@@ -1,15 +1,22 @@
 <script setup lang="ts">
+import type { AppPageProps } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import { Instagram, Mail, MapPin, Phone } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-defineProps<{
-    profile?: {
-        phone?: string;
-        email?: string;
-        instagram?: string;
-        address?: string;
-        logo_url?: string;
-    };
-}>();
+const page = usePage<
+    AppPageProps<{
+        companyProfile?: {
+            phone?: string | null;
+            email?: string | null;
+            instagram?: string | null;
+            address?: string | null;
+            logo_url?: string | null;
+        };
+    }>
+>();
+
+const profile = computed(() => page.props.companyProfile);
 </script>
 
 <template>

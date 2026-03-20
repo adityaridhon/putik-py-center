@@ -83,7 +83,14 @@ Route::get('/', function () {
     })->name('artikel.detail');
 
 Route::middleware(['auth'])->group(function () {
-    // Dashboard
+    // Dashboard user
+    Route::get('/user/dashboard', fn() => Inertia::render('user/dashboard/Index'))->name('userDashboard');
+
+});
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    
+    // Dashboard admin
     Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
 
     // Company Profile & Content Management

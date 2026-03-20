@@ -37,5 +37,5 @@ const props = defineProps<{
     <LogoMitra />
     <Artikel :limit="3" :show-more-button="true" :articles="props.articles" />
 
-    <Footer :profile="props.companyProfile" />
+    <Footer />
 </template>
