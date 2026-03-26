@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -37,18 +38,26 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Google account tidak memiliki email.');
             }
 
-            $user = User::firstOrNew(['email' => $googleUser->getEmail()]);
-            Log::info('User found or created', ['user_id' => $user->id, 'exists' => $user->exists]);
+            // First try to find by google_id (most reliable)
+            $user = User::where('google_id', $googleUser->getId())->first();
+            
+            // If not found, try to find by email
+            if (! $user) {
+                $user = User::where('email', $googleUser->getEmail())->first();
+            }
+            
+            // If still not found, create new user
+            if (! $user) {
+                $user = new User();
+                $user->email = $googleUser->getEmail();
+                $user->password = Hash::make(Str::random(24));
+                $user->role = 'user';
+                Log::info('Creating new user');
+            }
 
             $user->name = $user->name ?: $googleUser->getName() ?: $googleUser->getNickname() ?: 'Google User';
             $user->google_id = $googleUser->getId();
-            $user->role = $user->role ?: 'user';
             $user->email_verified_at = $user->email_verified_at ?: now();
-
-            if (! $user->exists) {
-                $user->password = Hash::make(Str::random(24));
-                Log::info('New user password set');
-            }
 
             $user->save();
             Log::info('User saved', ['user_id' => $user->id]);
@@ -70,9 +79,12 @@ class AuthController extends Controller
     /**
      * Logout user.
      */
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/');
     }

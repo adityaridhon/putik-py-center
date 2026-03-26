@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
 use App\Http\Controllers\Admin\TestTokenController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\UserProfileController;
 
 
 Route::get('/', function () {
@@ -61,7 +62,33 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard user
-    Route::get('/user/dashboard', fn() => Inertia::render('user/dashboard/Index'))->name('userDashboard');
+    Route::get('/user/dashboard', function () {
+        $user = auth()->user();
+        $testSessions = \App\Models\TestSession::with(['report'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(function ($session) {
+                return [
+                    'id' => $session->id,
+                    'test_type' => ucwords(str_replace('_', ' ', $session->test_type)),
+                    'date' => $session->created_at->format('j F Y'),
+                    'status' => $session->status_badge ?? $session->status,
+                    'raw_status' => $session->status,
+                    'has_pdf' => $session->has_report,
+                ];
+            });
+
+        return Inertia::render('user/dashboard/Index', [
+            'user' => $user,
+            'riwayat' => $testSessions,
+        ]);
+    })->name('userDashboard');
+
+    // User profile management (named distinctly to avoid clashing with settings profile routes)
+    Route::get('/user/profile/edit', [UserProfileController::class, 'edit'])->name('user.profile.edit');
+    Route::put('/user/profile', [UserProfileController::class, 'update'])->name('user.profile.update');
+    Route::delete('/user/profile', [UserProfileController::class, 'destroy'])->name('user.profile.destroy');
 
 });
 
@@ -149,6 +176,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Manajemen Pengguna
     Route::get('/admin/kelola-pengguna', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('kelolaPengguna');
     Route::get('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'show'])->name('kelolaPengguna.detail');
+    Route::put('/admin/kelola-pengguna/{id}/role', [App\Http\Controllers\Admin\UserManagementController::class, 'updateRole'])->name('kelolaPengguna.updateRole');
     Route::delete('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('kelolaPengguna.destroy');
 
 }); 

@@ -15,8 +15,8 @@
      - `http://localhost:8000/auth/google/callback`
      - (tambahkan production URL nanti)
 5. Salin:
-   - `Client ID`
-   - `Client secret`
+   - `Client ID` = [YOUR-GOOGLE-CLIENT-ID]
+   - `Client secret`= [YOUR-GOOGLE-CLIENT-SECRET]
 
 ---
 
