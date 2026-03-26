@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
@@ -53,6 +54,10 @@ Route::get('/', function () {
             'slug' => $slug,
         ]);
     })->name('artikel.detail');
+
+    // Google OAuth routes
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard user
