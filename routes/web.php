@@ -13,6 +13,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
 use App\Http\Controllers\Admin\TestTokenController;
+use App\Http\Controllers\Admin\DashboardController;
 
 
 Route::get('/', function () {
@@ -40,9 +41,8 @@ Route::get('/', function () {
         return Inertia::render('user/daftar-layanan/Index');
     })->name('daftar-layanan');
 
-    Route::get('/booking-layanan', function () {
-        return Inertia::render('user/booking-layanan/Index');
-    })->name('booking-layanan');
+    Route::get('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking-layanan');
+    Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 
     Route::get('/artikel', function () {
         return Inertia::render('user/artikel/Index');
@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     
     // Dashboard admin
-    Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Company Profile & Content Management
     Route::get('/admin/konten', [CompanyProfileController::class, 'index'])->name('konten');
@@ -90,6 +90,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Bookings
     Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::put('/admin/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update-status');
 
     // Assessment Modules
 
