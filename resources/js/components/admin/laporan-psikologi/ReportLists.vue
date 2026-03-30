@@ -7,6 +7,14 @@ import {
     InputGroupInput,
 } from '@/components/ui/input-group';
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
     Select,
     SelectContent,
     SelectGroup,
@@ -30,10 +38,10 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { laporanPsikologi } from '@/routes';
-import { router, Link } from '@inertiajs/vue3';
-import { SearchIcon, Trash, Upload } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
+import { SearchIcon, Trash, Upload } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 // Props dari parent (backend)
 const props = defineProps<{
@@ -99,22 +107,29 @@ const reports = computed(() => props.sessions?.data || defaultReports);
 
 // Debounced search function
 const performSearch = debounce(() => {
-    applyFilters();
+    applyFilters(1);
 }, 500);
 
 // Apply filters to backend
-const applyFilters = () => {
+const applyFilters = (page = 1) => {
     router.get(
         laporanPsikologi().url,
         {
             search: searchQuery.value || undefined,
-            test_type: selectedTestType.value !== 'semua' ? selectedTestType.value : undefined,
-            status: selectedStatus.value !== 'semua' ? selectedStatus.value : undefined,
+            test_type:
+                selectedTestType.value !== 'semua'
+                    ? selectedTestType.value
+                    : undefined,
+            status:
+                selectedStatus.value !== 'semua'
+                    ? selectedStatus.value
+                    : undefined,
+            page,
         },
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 
@@ -125,8 +140,12 @@ watch(searchQuery, () => {
 
 // Watch untuk filter dropdown (langsung apply)
 watch([selectedTestType, selectedStatus], () => {
-    applyFilters();
+    applyFilters(1);
 });
+
+const goToReportsPage = (page: number) => {
+    applyFilters(page);
+};
 
 // Delete function
 const deleteReport = (id: number) => {
@@ -139,7 +158,6 @@ const deleteReport = (id: number) => {
         });
     }
 };
-
 </script>
 
 <template>
@@ -148,9 +166,9 @@ const deleteReport = (id: number) => {
             <!-- Search -->
             <div>
                 <InputGroup>
-                    <InputGroupInput 
+                    <InputGroupInput
                         v-model="searchQuery"
-                        placeholder="Cari pengguna..." 
+                        placeholder="Cari pengguna..."
                     />
                     <InputGroupAddon>
                         <SearchIcon />
@@ -168,9 +186,15 @@ const deleteReport = (id: number) => {
                         <SelectGroup>
                             <SelectLabel>Jenis Tes</SelectLabel>
                             <SelectItem value="semua">Semua</SelectItem>
-                            <SelectItem value="interest">Tes Minat Bakat</SelectItem>
-                            <SelectItem value="intelligence">Tes Intelegensi</SelectItem>
-                            <SelectItem value="learning_style">Tes Gaya Belajar</SelectItem>
+                            <SelectItem value="interest"
+                                >Tes Minat Bakat</SelectItem
+                            >
+                            <SelectItem value="intelligence"
+                                >Tes Intelegensi</SelectItem
+                            >
+                            <SelectItem value="learning_style"
+                                >Tes Gaya Belajar</SelectItem
+                            >
                         </SelectGroup>
                     </SelectContent>
                 </Select>
@@ -187,13 +211,15 @@ const deleteReport = (id: number) => {
                             <SelectLabel>Status</SelectLabel>
                             <SelectItem value="semua">Semua</SelectItem>
                             <SelectItem value="selesai">Selesai</SelectItem>
-                            <SelectItem value="menunggu_analisis">Menunggu Analisis</SelectItem>
+                            <SelectItem value="menunggu_analisis"
+                                >Menunggu Analisis</SelectItem
+                            >
                         </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
         </div>
-        
+
         <div
             class="overflow-hidden rounded-lg border border-gray-200 shadow-sm dark:border-gray-800"
         >
@@ -233,7 +259,7 @@ const deleteReport = (id: number) => {
                     >
                         <TableCell
                             class="text-center font-semibold text-gray-600 dark:text-gray-400"
-                            >{{ index + 1 }}
+                            >{{ (props.sessions?.from || 0) + index }}
                         </TableCell>
                         <TableCell class="text-center">
                             {{ report.nama }}
@@ -276,7 +302,9 @@ const deleteReport = (id: number) => {
                                         "
                                     >
                                         <TooltipTrigger as-child>
-                                            <Link :href="`/admin/laporan-psikologi/${report.id}`">
+                                            <Link
+                                                :href="`/admin/laporan-psikologi/${report.id}`"
+                                            >
                                                 <Button
                                                     variant="default"
                                                     size="sm"
@@ -314,21 +342,55 @@ const deleteReport = (id: number) => {
         </div>
 
         <!-- Pagination -->
-        <div v-if="props.sessions?.links" class="mt-4 flex justify-center gap-1">
-            <Link
-                v-for="(link, index) in props.sessions.links"
-                :key="index"
-                :href="link.url || '#'"
-                :class="[
-                    'px-3 py-1 rounded border',
-                    link.active
-                        ? 'bg-primary text-white border-primary'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-                    !link.url && 'opacity-50 cursor-not-allowed pointer-events-none'
-                ]"
-                v-html="link.label"
-                preserve-scroll
-            />
+        <div v-if="props.sessions && props.sessions.last_page > 1" class="mt-4">
+            <div class="w-full flex-col items-center justify-between">
+                <div class="mb-2 text-center text-sm text-gray-600">
+                    Menampilkan {{ props.sessions.from }} -
+                    {{ props.sessions.to }} dari
+                    {{ props.sessions.total }} laporan
+                </div>
+
+                <Pagination
+                    :total="props.sessions.total"
+                    :items-per-page="props.sessions.per_page"
+                    :default-page="props.sessions.current_page"
+                    v-slot="{ page }"
+                >
+                    <PaginationContent v-slot="{ items }">
+                        <PaginationPrevious
+                            :disabled="props.sessions.current_page === 1"
+                            @click="
+                                goToReportsPage(props.sessions.current_page - 1)
+                            "
+                        />
+
+                        <template v-for="(item, index) in items" :key="index">
+                            <PaginationItem
+                                v-if="item.type === 'page'"
+                                :value="item.value"
+                                :is-active="
+                                    item.value === props.sessions.current_page
+                                "
+                                @click="goToReportsPage(item.value)"
+                            >
+                                {{ item.value }}
+                            </PaginationItem>
+
+                            <PaginationEllipsis v-else />
+                        </template>
+
+                        <PaginationNext
+                            :disabled="
+                                props.sessions.current_page ===
+                                props.sessions.last_page
+                            "
+                            @click="
+                                goToReportsPage(props.sessions.current_page + 1)
+                            "
+                        />
+                    </PaginationContent>
+                </Pagination>
+            </div>
         </div>
     </div>
 </template>
