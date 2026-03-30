@@ -9,6 +9,14 @@ import RingkasanBooking from '@/components/RingkasanBooking.vue';
 import { Check } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
+const props = defineProps<{
+    bookedSlots?: Array<{
+        booking_date: string;
+        booking_time: string;
+        status: string;
+    }>;
+}>();
+
 const dataForm = ref({
     nama: '',
     hp: '',
@@ -66,12 +74,13 @@ const handleConfirm = () => {
                 v-model:jumlahPeserta="jumlahPeserta"
             />
 
-            <Jadwal
-                v-if="kategori"
-                v-model:tanggal="tanggal"
-                v-model:jam="jam"
-                :is-confirmed="konfirmasi"
-            />
+        <Jadwal
+            v-if="kategori"
+            v-model:tanggal="tanggal"
+            v-model:jam="jam"
+            :is-confirmed="konfirmasi"
+            :booked-slots="props.bookedSlots || []"
+        />
 
             <button
                 v-if="kategori"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -7,29 +8,64 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { BookOpen, Calendar, FileText } from 'lucide-vue-next';
 
-const datacard = [
-    {
-        title: 'Janji Minggu ini',
-        value: '24',
-        icon: Calendar,
-    },
-    {
-        title: 'Laporan Psikologi',
-        value: '12',
-        icon: FileText,
-    },
-    {
-        title: 'Artikel Terbit',
-        value: '58',
-        icon: BookOpen,
-    },
-];
+const props = defineProps<{
+    stats?: {
+        janjiMingguIni: number;
+        laporanPsikologi: number;
+        artikelTerbit: number;
+    };
+    trends?: {
+        janjiMingguIni: number;
+        laporanPsikologi: number;
+        artikelTerbit: number;
+    };
+}>();
+
+const datacard = computed(() => {
+    const stats = props.stats || {
+        janjiMingguIni: 0,
+        laporanPsikologi: 0,
+        artikelTerbit: 0,
+    };
+
+    return [
+        {
+            title: 'Janji Minggu ini',
+            value: stats.janjiMingguIni,
+            trend: props.trends?.janjiMingguIni ?? 0,
+            icon: Calendar,
+        },
+        {
+            title: 'Laporan Psikologi',
+            value: stats.laporanPsikologi,
+            trend: props.trends?.laporanPsikologi ?? 0,
+            icon: FileText,
+        },
+        {
+            title: 'Artikel Terbit',
+            value: stats.artikelTerbit,
+            trend: props.trends?.artikelTerbit ?? 0,
+            icon: BookOpen,
+        },
+    ];
+});
+
+const formatTrend = (trend: number) => {
+    const sign = trend >= 0 ? '+' : '';
+    return `${sign}${trend.toFixed(1)}%`;
+};
 </script>
 
 <template>
-    <Card class="@container/card" v-for="value in datacard" key="value.title">
+    <Card class="@container/card" v-for="value in datacard" :key="value.title">
         <CardHeader>
             <div class="flex items-start gap-4">
                 <div class="rounded-lg bg-primary/5 p-2">
@@ -45,7 +81,16 @@ const datacard = [
                 </div>
             </div>
             <CardAction>
-                <Badge variant="outline"> +12.5% </Badge>
+                <TooltipProvider :delay-duration="0">
+                    <Tooltip>
+                        <TooltipTrigger as-child>
+                            <Badge variant="outline"> {{ formatTrend(value.trend) }} </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Dibanding minggu lalu</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </CardAction>
         </CardHeader>
     </Card>

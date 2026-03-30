@@ -9,10 +9,12 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
 use App\Http\Controllers\Admin\TestTokenController;
+use App\Http\Controllers\Admin\DashboardController;
 
 
 Route::get('/', function () {
@@ -76,9 +78,8 @@ Route::get('/', function () {
         return Inertia::render('user/gaya-belajar/Selesai');
     })->name('tes-online.gaya-belajar.selesai');
 
-    Route::get('/booking-layanan', function () {
-        return Inertia::render('user/booking-layanan/Index');
-    })->name('booking-layanan');
+    Route::get('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking-layanan');
+    Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 
     Route::get('/artikel', function () {
         return Inertia::render('user/artikel/Index');
@@ -90,6 +91,10 @@ Route::get('/', function () {
         ]);
     })->name('artikel.detail');
 
+    // Google OAuth routes
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard user
     Route::get('/user/dashboard', fn() => Inertia::render('user/dashboard/Index'))->name('userDashboard');
@@ -99,7 +104,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     
     // Dashboard admin
-    Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Company Profile & Content Management
     Route::get('/admin/konten', [CompanyProfileController::class, 'index'])->name('konten');
@@ -126,6 +131,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Bookings
     Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::put('/admin/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update-status');
 
     // Assessment Modules
 

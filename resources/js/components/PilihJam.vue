@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 
-const props = defineProps<{ isConfirmed?: boolean }>();
+interface BookedSlot {
+    booking_date: string;
+    booking_time: string;
+    status: string;
+}
+
+const props = defineProps<{
+    isConfirmed?: boolean;
+    selectedDate?: string;
+    bookedSlots?: BookedSlot[];
+}>();
 const emit = defineEmits(['update:modelValue']);
 
 const jam = defineModel<string>('modelValue');
@@ -18,31 +28,46 @@ const defaultJamList: JamItem[] = [
     { waktu: '16:30', tersedia: true },
 ];
 
-const jamList = ref<JamItem[]>(defaultJamList.map((slot) => ({ ...slot })));
+const bookedTimes = computed(() => {
+    const date = props.selectedDate;
 
-const resetAvailability = () => {
-    jamList.value = defaultJamList.map((slot) => ({ ...slot }));
-};
-
-const disableSlot = (selectedTime: string) => {
-    const index = jamList.value.findIndex(
-        (slot) => slot.waktu === selectedTime,
-    );
-    if (index !== -1) {
-        jamList.value[index] = {
-            ...jamList.value[index],
-            tersedia: false,
-        };
+    if (!date) {
+        return new Set<string>();
     }
-};
+
+    return new Set(
+        (props.bookedSlots || [])
+            .filter(
+                (slot) =>
+                    (slot.status === 'confirmed' ||
+                        slot.status === 'completed') &&
+                    slot.booking_date === date,
+            )
+            .map((slot) => (slot.booking_time || '').substring(0, 5)),
+    );
+});
+
+const jamList = computed<JamItem[]>(() =>
+    defaultJamList.map((slot) => ({
+        ...slot,
+        tersedia: !bookedTimes.value.has(slot.waktu),
+    })),
+);
 
 watch(
-    () => props.isConfirmed,
-    (confirmed) => {
-        if (confirmed && jam.value) {
-            disableSlot(jam.value);
-        } else if (!confirmed) {
-            resetAvailability();
+    [() => props.selectedDate, jamList],
+    () => {
+        if (!jam.value) {
+            return;
+        }
+
+        const selectedStillAvailable = jamList.value.some(
+            (slot) => slot.waktu === jam.value && slot.tersedia,
+        );
+
+        if (!selectedStillAvailable) {
+            jam.value = '';
+            emit('update:modelValue', '');
         }
     },
     { immediate: true },

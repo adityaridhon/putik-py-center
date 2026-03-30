@@ -4,17 +4,63 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\Booking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
+    private function growthPercent(int $current, int $previous): float
+    {
+        if ($previous === 0) {
+            return $current === 0 ? 0.0 : 100.0;
+        }
+
+        return (($current - $previous) / $previous) * 100;
+    }
+
     public function index()
     {
         $services = Service::all();
+        // Tarik data booking terbaru
+        $bookings = Booking::orderBy('booking_date', 'asc')->orderBy('booking_time', 'asc')->get();
+
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        $previousStartOfWeek = Carbon::now()->subWeek()->startOfWeek();
+        $previousEndOfWeek = Carbon::now()->subWeek()->endOfWeek();
+
+        $upcomingCurrentWeek = Booking::query()
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->count();
+
+        $upcomingPreviousWeek = Booking::query()
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereBetween('created_at', [$previousStartOfWeek, $previousEndOfWeek])
+            ->count();
+
+        $completedCurrentWeek = Booking::query()
+            ->where('status', 'completed')
+            ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
+            ->count();
+
+        $completedPreviousWeek = Booking::query()
+            ->where('status', 'completed')
+            ->whereBetween('updated_at', [$previousStartOfWeek, $previousEndOfWeek])
+            ->count();
+
+        $serviceTrends = [
+            'janjiMendatang' => $this->growthPercent($upcomingCurrentWeek, $upcomingPreviousWeek),
+            'janjiSelesai' => $this->growthPercent($completedCurrentWeek, $completedPreviousWeek),
+        ];
+
         return Inertia::render('admin/manajemen-layanan/Index', [
-            'services' => $services 
+            'services' => $services,
+            'bookings' => $bookings,
+            'serviceTrends' => $serviceTrends,
         ]);
     }
 

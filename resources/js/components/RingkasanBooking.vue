@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 interface FormData {
     nama: string;
@@ -18,6 +19,8 @@ const props = defineProps<{
     tanggal: string;
     jam: string;
 }>();
+
+const isLoading = ref(false);
 
 const tanggalLengkap = computed(() => {
     if (!props.tanggal) return '';
@@ -87,6 +90,35 @@ const whatsappMessageUrl = computed(() => {
 
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
 });
+
+const handleWhatsAppClick = () => {
+    isLoading.value = true;
+    
+    router.post('/booking-layanan', {
+        nama: props.form.nama,
+        hp: props.form.hp,
+        email: props.form.email,
+        topik: props.form.topik,
+        kategori: props.kategori,
+        layanan: props.layanan,
+        opsi: props.opsi,
+        perusahaan: props.perusahaan,
+        jumlahOrang: props.jumlahOrang,
+        tanggal: props.tanggal,
+        jam: props.jam,
+    }, {
+        onSuccess: () => {
+            isLoading.value = false;
+            window.open(whatsappMessageUrl.value, '_blank');
+        },
+        onError: () => {
+            isLoading.value = false;
+        },
+        onFinish: () => {
+            isLoading.value = false;
+        },
+    });
+};
 </script>
 
 <template>
@@ -193,14 +225,15 @@ const whatsappMessageUrl = computed(() => {
         </div>
 
         <div class="mt-8 flex justify-center">
-            <a
-                :href="whatsappMessageUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm text-white shadow transition hover:bg-green-900 sm:w-auto sm:text-base"
+            <button
+                type="button"
+                @click="handleWhatsAppClick"
+                :disabled="isLoading"
+                class="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white shadow transition hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                WhatsApp
-            </a>
+                <span v-if="isLoading">Menyimpan Jadwal...</span>
+                <span v-else>Konfirmasi & WhatsApp</span>
+            </button>
         </div>
     </div>
 </template>
