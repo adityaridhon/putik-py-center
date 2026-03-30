@@ -42,6 +42,42 @@ Route::get('/', function () {
         return Inertia::render('user/daftar-layanan/Index');
     })->name('daftar-layanan');
 
+    Route::get('/tes-online/minat-bakat', function () {
+        return Inertia::render('user/minat-bakat/Index');
+    })->name('tes-online.minat-bakat');
+
+    Route::get('/tes-online/minat-bakat/tes', function () {
+        return Inertia::render('user/minat-bakat/Tes');
+    })->name('tes-online.minat-bakat.tes');
+
+    Route::get('/tes-online/minat-bakat/selesai', function () {
+        return Inertia::render('user/minat-bakat/Selesai');
+    })->name('tes-online.minat-bakat.selesai');
+
+    Route::get('/tes-online/inteligensi', function () {
+        return Inertia::render('user/inteligensi/Index');
+    })->name('tes-online.inteligensi');
+
+    Route::get('/tes-online/inteligensi/tes', function () {
+        return Inertia::render('user/inteligensi/Tes');
+    })->name('tes-online.inteligensi.tes');
+
+    Route::get('/tes-online/inteligensi/selesai', function () {
+        return Inertia::render('user/inteligensi/Selesai');
+    })->name('tes-online.inteligensi.selesai');
+
+    Route::get('/tes-online/gaya-belajar', function () {
+        return Inertia::render('user/gaya-belajar/Index');
+    })->name('tes-online.gaya-belajar');
+
+    Route::get('/tes-online/gaya-belajar/tes', function () {
+        return Inertia::render('user/gaya-belajar/Tes');
+    })->name('tes-online.gaya-belajar.tes');
+
+    Route::get('/tes-online/gaya-belajar/selesai', function () {
+        return Inertia::render('user/gaya-belajar/Selesai');
+    })->name('tes-online.gaya-belajar.selesai');
+
     Route::get('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking-layanan');
     Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 

@@ -9,50 +9,79 @@ defineProps<{
 </script>
 
 <template>
-    <div class="h-screen bg-primary">
+    <section class="relative isolate overflow-hidden bg-primary">
         <div
-            class="wrapper mx-auto flex max-w-3xl flex-col items-center justify-between px-8 pt-32 md:max-w-4xl md:gap-10 lg:max-w-5xl lg:flex-row-reverse lg:items-center"
+            class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.24),transparent_54%)]"
+        ></div>
+        <div
+            class="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-white/10 blur-3xl"
+        ></div>
+        <div
+            class="absolute -right-24 bottom-10 h-64 w-64 rounded-full bg-emerald-200/20 blur-3xl"
+        ></div>
+        <div
+            class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/10 to-transparent"
+        ></div>
+
+        <div
+            class="wrapper relative mx-auto flex min-h-[500px] max-w-7xl items-center justify-center px-4 pt-20 pb-12 sm:px-6 sm:pt-24 sm:pb-14 md:min-h-[560px] md:px-8 md:pt-24 md:pb-16 lg:min-h-[600px] lg:px-10"
         >
-            <div class="image flex items-center">
-                <img
-                    :src="
-                        profile?.landing_image_url
-                            ? `/storage/${profile.landing_image_url}`
-                            : '/images/Hero_1.png'
-                    "
-                    alt="hero"
-                    class="mb-5 w-50 md:mb-0 md:w-90"
-                />
-            </div>
             <div
-                class="caption flex max-w-lg flex-col gap-2 text-center lg:text-left"
+                class="caption flex w-full max-w-4xl flex-col items-center gap-5 rounded-3xl border border-white/20 bg-white/[0.07] px-5 py-8 text-center shadow-[0_22px_70px_rgba(0,0,0,0.2)] backdrop-blur-[3px] sm:px-8 sm:py-10 md:gap-6 md:px-10"
             >
-                <h1
-                    class="font-title text-4xl font-bold text-white md:text-5xl"
+                <span
+                    class="inline-flex items-center rounded-full border border-white/35 bg-white/15 px-4 py-1 text-xs font-semibold tracking-[0.18em] text-white/95"
                 >
-                    {{ profile?.company_name || 'PUTIK PSYCHOLOGY CENTER' }} :
-                    <span class="text-white"
-                        >Solusi Psikologi Terpadu & Terpercaya</span
-                    >
+                    PUTIK PSYCHOLOGY CENTER
+                </span>
+
+                <p
+                    class="text-xs font-medium tracking-[0.2em] text-emerald-100/90 uppercase"
+                >
+                    Layanan Psikologi Terintegrasi
+                </p>
+
+                <h1
+                    class="font-title text-[30px] leading-tight font-bold text-balance text-white sm:text-4xl md:text-5xl lg:text-[56px]"
+                >
+                    <span class="block text-emerald-100">
+                        Solusi Psikologi Terpadu &amp; Terpercaya
+                    </span>
                 </h1>
-                <p class="mb-20 text-base text-white">
+
+                <div
+                    class="h-px w-28 bg-gradient-to-r from-transparent via-emerald-100/80 to-transparent"
+                ></div>
+
+                <p
+                    class="max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base md:text-lg"
+                >
                     {{
                         profile?.headline ||
                         'Mitra terpercaya dalam pemecahan masalah psikologis untuk individu, pendidikan, dan perusahaan di Balikpapan sejak 2006'
                     }}
                 </p>
+
+                <div
+                    class="mt-1 flex flex-wrap items-center justify-center gap-2"
+                >
+                    <span
+                        class="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white"
+                    >
+                        Sejak 2006
+                    </span>
+                    <span
+                        class="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white"
+                    >
+                        Humanis &amp; Profesional
+                    </span>
+                    <span
+                        class="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white"
+                    >
+                        Individu, Sekolah, Perusahaan
+                    </span>
+                </div>
             </div>
         </div>
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1440 320"
-            class="absolute -bottom-15"
-        >
-            <path
-                fill="#ffffff"
-                fill-opacity="1"
-                d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,192C1120,203,1280,149,1360,122.7L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"
-            ></path>
-        </svg>
-    </div>
+    </section>
 </template>

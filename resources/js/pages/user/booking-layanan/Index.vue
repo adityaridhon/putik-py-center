@@ -56,20 +56,23 @@ const handleConfirm = () => {
 </script>
 
 <template>
-    <section class="mx-auto max-w-5xl space-y-8 p-8">
+    <div class="overflow-x-hidden">
         <Navbar />
 
-        <FormInformasi v-model="dataForm" />
+        <section
+            class="mx-auto max-w-5xl space-y-6 px-4 pt-24 pb-10 sm:space-y-8 sm:px-6 md:px-8 lg:px-10"
+        >
+            <FormInformasi v-model="dataForm" />
 
-        <PilihKategori v-model="kategori" />
+            <PilihKategori v-model="kategori" />
 
-        <LayananPsikologi
-            v-if="isPsikologi"
-            v-model:layanan="layanan"
-            v-model:opsi="opsi"
-            v-model:perusahaan="perusahaan"
-            v-model:jumlahPeserta="jumlahPeserta"
-        />
+            <LayananPsikologi
+                v-if="isPsikologi"
+                v-model:layanan="layanan"
+                v-model:opsi="opsi"
+                v-model:perusahaan="perusahaan"
+                v-model:jumlahPeserta="jumlahPeserta"
+            />
 
         <Jadwal
             v-if="kategori"
@@ -79,33 +82,34 @@ const handleConfirm = () => {
             :booked-slots="props.bookedSlots || []"
         />
 
-        <button
-            v-if="kategori"
-            type="button"
-            :disabled="!canConfirm"
-            @click="handleConfirm"
-            class="flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 font-medium transition"
-            :class="
-                canConfirm
-                    ? 'bg-primary text-white'
-                    : 'cursor-not-allowed bg-gray-300 text-gray-600'
-            "
-        >
-            <Check class="h-5 w-5" />
-            Konfirmasi Pendaftaran
-        </button>
+            <button
+                v-if="kategori"
+                type="button"
+                :disabled="!canConfirm"
+                @click="handleConfirm"
+                class="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition sm:px-6 sm:text-base"
+                :class="
+                    canConfirm
+                        ? 'bg-primary text-white'
+                        : 'cursor-not-allowed bg-gray-300 text-gray-600'
+                "
+            >
+                <Check class="h-5 w-5" />
+                Konfirmasi Pendaftaran
+            </button>
 
-        <RingkasanBooking
-            v-if="konfirmasi"
-            :form="dataForm"
-            :kategori="kategori"
-            :layanan="layanan"
-            :opsi="opsi"
-            :perusahaan="perusahaan"
-            :jumlah-orang="jumlahPeserta"
-            :tanggal="tanggal"
-            :jam="jam"
-        />
-    </section>
-    <Footer />
+            <RingkasanBooking
+                v-if="konfirmasi"
+                :form="dataForm"
+                :kategori="kategori"
+                :layanan="layanan"
+                :opsi="opsi"
+                :perusahaan="perusahaan"
+                :jumlah-orang="jumlahPeserta"
+                :tanggal="tanggal"
+                :jam="jam"
+            />
+        </section>
+        <Footer />
+    </div>
 </template>

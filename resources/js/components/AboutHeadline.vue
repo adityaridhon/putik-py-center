@@ -2,18 +2,20 @@
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-5 py-20 pt-32 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-6xl flex-col gap-8 px-4 pt-28 pb-12 sm:px-6 md:px-8 md:pt-32 md:pb-14 lg:flex-row lg:items-start lg:px-10"
     >
-        <div class="image">
+        <div class="image flex justify-center lg:justify-start">
             <img
                 src="/images/logo_putik.webp"
                 alt="hero"
-                class="w-100 md:w-100"
+                class="w-full max-w-60 sm:max-w-72"
             />
         </div>
 
-        <div class="caption max-w-lg text-center lg:text-left">
-            <h1 class="font-title mb-4 text-4xl font-bold md:text-5xl">
+        <div class="caption max-w-2xl text-center lg:text-left">
+            <h1
+                class="font-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl"
+            >
                 ABOUT PUTIK
             </h1>
 

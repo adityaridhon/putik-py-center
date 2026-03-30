@@ -29,11 +29,13 @@ const handleHp = (event: Event) => {
 </script>
 
 <template>
-    <h2 class="mt-24 text-center text-2xl font-semibold text-primary">
+    <h2 class="text-center text-xl font-semibold text-primary sm:text-2xl">
         DAFTAR LAYANAN
     </h2>
 
-    <div class="space-y-6 rounded-xl border bg-white p-8 shadow-sm">
+    <div
+        class="space-y-6 rounded-xl border bg-white p-5 shadow-sm sm:p-6 md:p-8"
+    >
         <h2 class="text-lg font-semibold text-primary">Informasi Pribadi</h2>
 
         <div class="space-y-2">

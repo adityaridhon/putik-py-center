@@ -34,7 +34,7 @@ watch(layanan, () => {
 </script>
 
 <template>
-    <div class="space-y-6 rounded border p-6">
+    <div class="space-y-6 rounded-xl border bg-white p-5 shadow-sm sm:p-6">
         <div>
             <p class="font-semibold text-primary">Layanan yang Dibutuhkan</p>
 
@@ -68,7 +68,7 @@ watch(layanan, () => {
         <div v-if="layanan">
             <p class="font-semibold text-primary">Pilih Opsi</p>
 
-            <div class="mt-3 flex gap-4">
+            <div class="mt-3 flex flex-wrap gap-3 sm:gap-4">
                 <button
                     @click="opsi = 'Personal'"
                     :class="btn(opsi === 'Personal')"

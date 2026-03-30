@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AboutSection from '@/components/AboutSection.vue';
-import type { ArtikelCard } from '@/components/Artikel.vue';
 import Artikel from '@/components/Artikel.vue';
 import Footer from '@/components/Footer.vue';
 import HeroSection from '@/components/HeroSection.vue';
@@ -24,18 +23,31 @@ const props = defineProps<{
         logo_url?: string;
         landing_image_url?: string;
     };
-    articles: ArtikelCard[];
+    articles: {
+        judul: string;
+        deskripsi: string;
+        gambar: string;
+        kategori: string;
+        tanggal: string;
+        slug: string;
+    }[];
 }>();
 </script>
 
 <template>
-    <Navbar :profile="props.companyProfile" />
-    <HeroSection :profile="props.companyProfile" />
-    <AboutSection :profile="props.companyProfile" />
-    <Layanan />
-    <TimKami />
-    <LogoMitra />
-    <Artikel :limit="3" :show-more-button="true" :articles="props.articles" />
+    <div class="overflow-x-hidden">
+        <Navbar :profile="props.companyProfile" />
+        <HeroSection :profile="props.companyProfile" />
+        <AboutSection :profile="props.companyProfile" />
+        <Layanan />
+        <TimKami />
+        <LogoMitra />
+        <Artikel
+            :limit="3"
+            :show-more-button="true"
+            :articles="props.articles"
+        />
 
-    <Footer />
+        <Footer />
+    </div>
 </template>
