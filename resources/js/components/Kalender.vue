@@ -103,25 +103,25 @@ watch(
 </script>
 
 <template>
-    <div class="space-y-4 rounded-xl border bg-white p-6">
+    <div class="space-y-4 rounded-xl border bg-white p-4 sm:p-5 md:p-6">
         <h2 class="font-semibold text-green-800">Pilih Jadwal</h2>
 
         <div class="flex items-center justify-between">
-            <button @click="prevMonth">
+            <button class="rounded p-1 hover:bg-slate-100" @click="prevMonth">
                 <ChevronLeft class="h-5 w-5" />
             </button>
 
-            <p class="font-medium capitalize">
+            <p class="text-sm font-medium capitalize sm:text-base">
                 {{ monthYear }}
             </p>
 
-            <button @click="nextMonth">
+            <button class="rounded p-1 hover:bg-slate-100" @click="nextMonth">
                 <ChevronRight class="h-5 w-5" />
             </button>
         </div>
 
         <div
-            class="grid grid-cols-7 text-center text-sm font-medium text-gray-600"
+            class="grid grid-cols-7 text-center text-[10px] font-medium text-gray-600 sm:text-xs md:text-sm"
         >
             <div>Sen</div>
             <div>Sel</div>
@@ -132,13 +132,13 @@ watch(
             <div>Min</div>
         </div>
 
-        <div class="grid grid-cols-7 text-center text-sm">
+        <div class="grid grid-cols-7 text-center text-xs sm:text-sm">
             <div
                 v-for="item in calendarDays"
                 :key="item.value"
                 @click="pilih(item)"
                 :class="[
-                    'border p-2 text-sm',
+                    'flex aspect-square items-center justify-center border p-1 text-xs sm:p-2 sm:text-sm',
                     !item.currentMonth && 'bg-gray-50 text-gray-300',
                     item.currentMonth && item.tersedia && 'cursor-pointer',
                     item.currentMonth &&
@@ -153,7 +153,7 @@ watch(
             </div>
         </div>
 
-        <div class="flex gap-6 pt-2 text-sm">
+        <div class="flex flex-wrap gap-4 pt-2 text-xs sm:gap-6 sm:text-sm">
             <span class="flex items-center gap-2">
                 <span class="h-3 w-3 rounded-full bg-primary"></span>
                 Tersedia

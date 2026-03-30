@@ -7,8 +7,10 @@ import Navbar from '@/components/Navbar.vue';
 </script>
 
 <template>
-    <Navbar />
-    <KontakCard />
-    <LokasiCard />
-    <Footer />
+    <div class="overflow-x-hidden">
+        <Navbar />
+        <KontakCard />
+        <LokasiCard />
+        <Footer />
+    </div>
 </template>

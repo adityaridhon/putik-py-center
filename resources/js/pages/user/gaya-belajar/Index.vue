@@ -5,7 +5,13 @@ import NavbarTes from '@/components/NavbarTes.vue';
 </script>
 
 <template>
-    <NavbarTes judul="TES GAYA BELAJAR" />
-    <FormMulaiTes redirect-to="/tes-online/gaya-belajar/tes" />
-    <Footer />
+    <div class="flex min-h-screen flex-col bg-slate-50">
+        <NavbarTes judul="TES GAYA BELAJAR" />
+
+        <main class="flex-1 py-4 sm:py-6 md:py-8">
+            <FormMulaiTes redirect-to="/tes-online/gaya-belajar/tes" />
+        </main>
+
+        <Footer />
+    </div>
 </template>

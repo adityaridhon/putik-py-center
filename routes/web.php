@@ -56,6 +56,14 @@ Route::get('/', function () {
         return Inertia::render('user/inteligensi/Index');
     })->name('tes-online.inteligensi');
 
+    Route::get('/tes-online/inteligensi/tes', function () {
+        return Inertia::render('user/inteligensi/Tes');
+    })->name('tes-online.inteligensi.tes');
+
+    Route::get('/tes-online/inteligensi/selesai', function () {
+        return Inertia::render('user/inteligensi/Selesai');
+    })->name('tes-online.inteligensi.selesai');
+
     Route::get('/tes-online/gaya-belajar', function () {
         return Inertia::render('user/gaya-belajar/Index');
     })->name('tes-online.gaya-belajar');

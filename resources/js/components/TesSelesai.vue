@@ -18,9 +18,11 @@ const handleHubungiPsikolog = () => {
 </script>
 
 <template>
-    <div class="flex min-h-screen items-center justify-center bg-slate-100 p-6">
+    <div
+        class="flex min-h-[calc(100vh-56px)] items-center justify-center bg-slate-100 p-4 sm:min-h-[calc(100vh-64px)] sm:p-6"
+    >
         <div
-            class="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-lg"
+            class="w-full max-w-md rounded-2xl bg-white p-5 text-center shadow-lg sm:p-8"
         >
             <!-- Icon -->
             <div
@@ -30,7 +32,7 @@ const handleHubungiPsikolog = () => {
             </div>
 
             <!-- Judul -->
-            <h2 class="text-xl font-semibold text-gray-800">
+            <h2 class="text-lg font-semibold text-gray-800 sm:text-xl">
                 Tes {{ judulTes }} Selesai
             </h2>
 

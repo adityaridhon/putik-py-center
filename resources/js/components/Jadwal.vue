@@ -8,7 +8,7 @@ const jam = defineModel<string>('jam');
 </script>
 
 <template>
-    <div class="space-y-6 rounded border p-6">
+    <div class="space-y-6 rounded-xl border bg-white p-5 shadow-sm sm:p-6">
         <Kalender v-model="tanggal" :is-confirmed="props.isConfirmed" />
         <PilihJam v-model="jam" :is-confirmed="props.isConfirmed" />
     </div>

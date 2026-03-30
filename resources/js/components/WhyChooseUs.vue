@@ -24,13 +24,15 @@ const benefits = [
 </script>
 
 <template>
-    <section class="bg-white px-14 py-8">
-        <div class="mx-auto max-w-7xl px-6">
+    <section class="bg-white px-4 py-10 sm:px-6 md:px-8 lg:px-10">
+        <div class="mx-auto max-w-7xl">
             <div class="mb-12 text-center">
-                <h2 class="mb-4 text-3xl font-bold text-[#2C3E3A]">
+                <h2 class="mb-4 text-2xl font-bold text-[#2C3E3A] sm:text-3xl">
                     MENGAPA MEMILIH KAMI?
                 </h2>
-                <p class="mx-auto max-w-2xl text-[#6B8E6F]">
+                <p
+                    class="mx-auto max-w-2xl text-sm text-[#6B8E6F] sm:text-base"
+                >
                     Komitmen kami dalam memberikan layanan kesehatan mental
                     terbaik dengan standar profesional tertinggi
                 </p>

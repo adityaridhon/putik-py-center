@@ -5,7 +5,7 @@ import TesSelesai from '@/components/TesSelesai.vue';
 
 <template>
     <div class="min-h-screen bg-slate-100">
-        <NavbarTes judul="TES GAYA BELAJAR" />
-        <TesSelesai judulTes="Gaya Belajar" />
+        <NavbarTes judul="TES INTELIGENSI" />
+        <TesSelesai judulTes="Inteligensi" />
     </div>
 </template>

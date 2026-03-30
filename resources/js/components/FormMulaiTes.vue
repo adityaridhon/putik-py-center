@@ -102,9 +102,11 @@ const handleMulaiTes = () => {
 
 <template>
     <div
-        class="mx-auto mt-20 mb-20 max-w-3xl space-y-6 rounded-xl border bg-white p-8 shadow-sm"
+        class="mx-4 mt-8 mb-10 w-auto max-w-3xl space-y-5 rounded-xl border bg-white p-4 shadow-sm sm:mx-6 sm:mt-12 sm:mb-14 sm:space-y-6 sm:p-6 md:mx-auto md:mt-14 md:mb-16 md:w-full md:p-8"
     >
-        <h2 class="text-lg font-semibold text-primary">Informasi Peserta</h2>
+        <h2 class="text-base font-semibold text-primary sm:text-lg">
+            Informasi Peserta
+        </h2>
 
         <div class="space-y-2">
             <label class="text-sm font-medium"> Nama Lengkap </label>
@@ -113,7 +115,7 @@ const handleMulaiTes = () => {
                 @input="handleNama"
                 type="text"
                 placeholder="Masukkan nama lengkap Anda"
-                class="w-full rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+                class="w-full rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
             />
         </div>
 
@@ -127,7 +129,7 @@ const handleMulaiTes = () => {
                 @click="openDatePicker"
                 @keydown="blockManualDateInput"
                 @paste.prevent
-                class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+                class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
             />
         </div>
 
@@ -141,15 +143,17 @@ const handleMulaiTes = () => {
                 @click="openDatePicker"
                 @keydown="blockManualDateInput"
                 @paste.prevent
-                class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+                class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
             />
         </div>
 
         <div class="space-y-2">
             <label class="text-sm font-medium">Jenis Kelamin</label>
 
-            <div class="flex items-center gap-6">
-                <label class="flex cursor-pointer items-center gap-2">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+                <label
+                    class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
+                >
                     <input
                         type="radio"
                         name="jenisKelamin"
@@ -161,7 +165,9 @@ const handleMulaiTes = () => {
                     Pria
                 </label>
 
-                <label class="flex cursor-pointer items-center gap-2">
+                <label
+                    class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
+                >
                     <input
                         type="radio"
                         name="jenisKelamin"
@@ -182,7 +188,7 @@ const handleMulaiTes = () => {
                 type="text"
                 @input="handleToken"
                 placeholder="Masukkan token tes"
-                class="w-full rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+                class="w-full rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
             />
         </div>
 
@@ -191,7 +197,7 @@ const handleMulaiTes = () => {
             :disabled="!isFormComplete"
             @click="handleMulaiTes"
             :class="[
-                'mt-4 w-full rounded-lg py-2 text-white transition',
+                'mt-4 w-full rounded-lg px-4 py-2.5 text-sm text-white transition sm:text-base',
                 isFormComplete
                     ? 'cursor-pointer bg-primary hover:bg-green-900'
                     : 'cursor-not-allowed bg-gray-400',

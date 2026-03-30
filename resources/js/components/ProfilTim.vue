@@ -2,16 +2,20 @@
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-3xl flex-col gap-8 px-6 py-6 pt-10 md:max-w-4xl lg:max-w-5xl lg:flex-row lg:items-start"
+        class="wrapper mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 md:gap-10 md:px-8 lg:flex-row lg:items-start lg:px-10"
     >
-        <div class="image">
-            <img src="/images/Direktur.png" alt="hero" class="overflow-hidden rounded-3xl shadow-lg w-100 md:w-100" />
+        <div class="image flex justify-center lg:justify-start">
+            <img
+                src="/images/Direktur.png"
+                alt="hero"
+                class="w-full max-w-xs overflow-hidden rounded-3xl shadow-lg sm:max-w-sm"
+            />
         </div>
 
         <div
-            class="caption flex max-w-lg flex-col items-center gap-4 text-center lg:items-start lg:text-left"
+            class="caption flex max-w-2xl flex-col items-center gap-4 text-center lg:items-start lg:text-left"
         >
-            <h1 class="font-title mb-4 text-4xl font-bold md:text-4xl">
+            <h1 class="font-title mb-4 text-3xl font-bold sm:text-4xl">
                 TIM KAMI
             </h1>
 
@@ -35,8 +39,10 @@
     </div>
 
     <!-- PARAGRAF TAMBAHAN -->
-    <div class="mx-auto max-w-5xl px-6">
-        <p class="text-base leading-relaxed text-primary">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10">
+        <p
+            class="mx-auto max-w-4xl text-center text-base leading-relaxed text-primary lg:text-left"
+        >
             Selain memiliki tenaga tetap, Putik juga merekrut tenaga lepasan
             (Associates) yang telah dilatih dan memiliki pengalaman dalam
             memberikan pelayanan psikologi yang dibutuhkan dibawah koordinasi
@@ -48,13 +54,13 @@
 
     <!-- FOTO TIM -->
     <div
-        class="pb-10 mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-8 px-6 md:grid-cols-2"
+        class="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-6 px-4 pb-10 sm:px-6 md:px-8 lg:grid-cols-2 lg:px-10"
     >
         <div class="overflow-hidden rounded-3xl shadow-lg">
             <img
                 src="/images/Tim_Putik.png"
                 alt="Tim Putik"
-                class="h-80 w-full object-cover"
+                class="h-64 w-full object-cover sm:h-72 md:h-80"
             />
         </div>
 
@@ -62,7 +68,7 @@
             <img
                 src="/images/Tim_Putik2.png"
                 alt="Tim Putik"
-                class="h-80 w-full object-cover"
+                class="h-64 w-full object-cover sm:h-72 md:h-80"
             />
         </div>
     </div>

@@ -4,6 +4,8 @@ import TesGayaBelajar from '@/components/TesGayaBelajar.vue';
 </script>
 
 <template>
-    <NavbarTes judul="TES GAYA BELAJAR" />
-    <TesGayaBelajar />
+    <div class="min-h-screen bg-slate-50">
+        <NavbarTes judul="TES GAYA BELAJAR" />
+        <TesGayaBelajar />
+    </div>
 </template>

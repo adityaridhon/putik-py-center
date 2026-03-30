@@ -33,7 +33,7 @@ const goToTest = (url: string) => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-5 md:space-y-6">
         <TestCard
             v-for="(test, index) in tests"
             :key="index"

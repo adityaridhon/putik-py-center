@@ -5,7 +5,9 @@ import NavbarTes from '@/components/NavbarTes.vue';
 </script>
 
 <template>
-    <NavbarTes judul="TES MINAT BAKAT" />
-    <FormMulaiTes redirect-to="/tes-online/minat-bakat/tes" />
-    <Footer />
+    <div class="overflow-x-hidden">
+        <NavbarTes judul="TES MINAT BAKAT" />
+        <FormMulaiTes redirect-to="/tes-online/minat-bakat/tes" />
+        <Footer />
+    </div>
 </template>

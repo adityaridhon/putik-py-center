@@ -30,26 +30,28 @@ const kontakItems = [
 </script>
 
 <template>
-    <section class="bg-white px-14 pt-32">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="mb-12 text-center">
-                <h2 class="mb-4 text-3xl font-bold text-[#2C3E3A]">
+    <section class="bg-white px-4 pt-28 pb-8 sm:px-6 md:px-8 md:pt-32 lg:px-10">
+        <div class="mx-auto max-w-7xl">
+            <div class="mb-10 text-center md:mb-12">
+                <h2 class="mb-4 text-2xl font-bold text-[#2C3E3A] sm:text-3xl">
                     Hubungi Kami
                 </h2>
-                <p class="mx-auto max-w-2xl text-[#6B8E6F]">
+                <p
+                    class="mx-auto max-w-2xl text-sm text-[#6B8E6F] sm:text-base"
+                >
                     Kami siap membantu Anda dalam perjalanan menuju kesehatan
                     mental yang lebih baik. Jangan ragu untuk menghubungi kami
                     kapan saja.
                 </p>
             </div>
 
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+            <div class="grid gap-4 sm:gap-5 md:grid-cols-2 md:gap-6">
                 <div v-for="(benefit, index) in kontakItems" :key="index">
                     <a
                         v-if="benefit.link"
                         :href="benefit.link"
                         target="_blank"
-                        class="block rounded-xl border-2 border-[#7FB69E]/20 bg-[#F8FAF9] p-6 transition-all hover:border-[#2D5F4F]/40 hover:shadow-md"
+                        class="block rounded-xl border-2 border-[#7FB69E]/20 bg-[#F8FAF9] p-5 transition-all hover:border-[#2D5F4F]/40 hover:shadow-md sm:p-6"
                     >
                         <div
                             class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary"
@@ -60,7 +62,9 @@ const kontakItems = [
                             />
                         </div>
 
-                        <h4 class="mb-2 font-semibold text-[#2C3E3A]">
+                        <h4
+                            class="mb-2 text-base font-semibold text-[#2C3E3A] sm:text-lg"
+                        >
                             {{ benefit.title }}
                         </h4>
 
@@ -71,7 +75,7 @@ const kontakItems = [
 
                     <div
                         v-else
-                        class="rounded-xl border-2 border-[#7FB69E]/20 bg-[#F8FAF9] p-6"
+                        class="rounded-xl border-2 border-[#7FB69E]/20 bg-[#F8FAF9] p-5 sm:p-6"
                     >
                         <div
                             class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary"
@@ -82,7 +86,9 @@ const kontakItems = [
                             />
                         </div>
 
-                        <h4 class="mb-2 font-semibold text-[#2C3E3A]">
+                        <h4
+                            class="mb-2 text-base font-semibold text-[#2C3E3A] sm:text-lg"
+                        >
                             {{ benefit.title }}
                         </h4>
 

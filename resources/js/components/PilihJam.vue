@@ -56,24 +56,28 @@ function pilih(j: JamItem) {
 </script>
 
 <template>
-    <div class="flex gap-4">
-        <button
-            v-for="j in jamList"
-            :key="j.waktu"
-            @click="pilih(j)"
-            :class="[
-                'rounded border px-4 py-2 text-sm font-medium transition',
+    <div class="space-y-3">
+        <p class="text-sm font-semibold text-primary">Pilih Jam</p>
 
-                // kalau tidak tersedia FULL (abu-abu)
-                !j.tersedia
-                    ? 'cursor-not-allowed border-gray-200 bg-gray-200 text-gray-500'
-                    : // Kalau tersedia dan sedang dipilih
-                      j.waktu === jam
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-green-200 bg-white text-primary hover:border-green-400 hover:text-green-800',
-            ]"
-        >
-            {{ j.tersedia ? j.waktu : 'FULL' }}
-        </button>
+        <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+            <button
+                v-for="j in jamList"
+                :key="j.waktu"
+                @click="pilih(j)"
+                :class="[
+                    'w-full rounded border px-3 py-2 text-sm font-medium transition sm:w-auto sm:px-4',
+
+                    // kalau tidak tersedia FULL (abu-abu)
+                    !j.tersedia
+                        ? 'cursor-not-allowed border-gray-200 bg-gray-200 text-gray-500'
+                        : // Kalau tersedia dan sedang dipilih
+                          j.waktu === jam
+                          ? 'border-primary bg-primary text-white'
+                          : 'border-green-200 bg-white text-primary hover:border-green-400 hover:text-green-800',
+                ]"
+            >
+                {{ j.tersedia ? j.waktu : 'FULL' }}
+            </button>
+        </div>
     </div>
 </template>
