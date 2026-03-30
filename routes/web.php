@@ -9,10 +9,13 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
 use App\Http\Controllers\Admin\TestTokenController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\UserProfileController;
 
 
 Route::get('/', function () {
@@ -40,9 +43,44 @@ Route::get('/', function () {
         return Inertia::render('user/daftar-layanan/Index');
     })->name('daftar-layanan');
 
-    Route::get('/booking-layanan', function () {
-        return Inertia::render('user/booking-layanan/Index');
-    })->name('booking-layanan');
+    Route::get('/tes-online/minat-bakat', function () {
+        return Inertia::render('user/minat-bakat/Index');
+    })->name('tes-online.minat-bakat');
+
+    Route::get('/tes-online/minat-bakat/tes', function () {
+        return Inertia::render('user/minat-bakat/Tes');
+    })->name('tes-online.minat-bakat.tes');
+
+    Route::get('/tes-online/minat-bakat/selesai', function () {
+        return Inertia::render('user/minat-bakat/Selesai');
+    })->name('tes-online.minat-bakat.selesai');
+
+    Route::get('/tes-online/inteligensi', function () {
+        return Inertia::render('user/inteligensi/Index');
+    })->name('tes-online.inteligensi');
+
+    Route::get('/tes-online/inteligensi/tes', function () {
+        return Inertia::render('user/inteligensi/Tes');
+    })->name('tes-online.inteligensi.tes');
+
+    Route::get('/tes-online/inteligensi/selesai', function () {
+        return Inertia::render('user/inteligensi/Selesai');
+    })->name('tes-online.inteligensi.selesai');
+
+    Route::get('/tes-online/gaya-belajar', function () {
+        return Inertia::render('user/gaya-belajar/Index');
+    })->name('tes-online.gaya-belajar');
+
+    Route::get('/tes-online/gaya-belajar/tes', function () {
+        return Inertia::render('user/gaya-belajar/Tes');
+    })->name('tes-online.gaya-belajar.tes');
+
+    Route::get('/tes-online/gaya-belajar/selesai', function () {
+        return Inertia::render('user/gaya-belajar/Selesai');
+    })->name('tes-online.gaya-belajar.selesai');
+
+    Route::get('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking-layanan');
+    Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 
     Route::get('/artikel', function () {
         return Inertia::render('user/artikel/Index');
@@ -54,16 +92,46 @@ Route::get('/', function () {
         ]);
     })->name('artikel.detail');
 
+    // Google OAuth routes
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard user
-    Route::get('/user/dashboard', fn() => Inertia::render('user/dashboard/Index'))->name('userDashboard');
+    Route::get('/user/dashboard', function () {
+        $user = auth()->user();
+        $testSessions = \App\Models\TestSession::with(['report'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(function ($session) {
+                return [
+                    'id' => $session->id,
+                    'test_type' => ucwords(str_replace('_', ' ', $session->test_type)),
+                    'date' => $session->created_at->format('j F Y'),
+                    'status' => $session->status_badge ?? $session->status,
+                    'raw_status' => $session->status,
+                    'has_pdf' => $session->has_report,
+                ];
+            });
+
+        return Inertia::render('user/dashboard/Index', [
+            'user' => $user,
+            'riwayat' => $testSessions,
+        ]);
+    })->name('userDashboard');
+
+    // User profile management (named distinctly to avoid clashing with settings profile routes)
+    Route::get('/user/profile/edit', [UserProfileController::class, 'edit'])->name('user.profile.edit');
+    Route::put('/user/profile', [UserProfileController::class, 'update'])->name('user.profile.update');
+    Route::delete('/user/profile', [UserProfileController::class, 'destroy'])->name('user.profile.destroy');
 
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
     
     // Dashboard admin
-    Route::get('/admin/dashboard', fn() => Inertia::render('admin/dashboard/Index'))->name('dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Company Profile & Content Management
     Route::get('/admin/konten', [CompanyProfileController::class, 'index'])->name('konten');
@@ -90,6 +158,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Bookings
     Route::post('/admin/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::put('/admin/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.update-status');
 
     // Assessment Modules
 
@@ -143,6 +212,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Manajemen Pengguna
     Route::get('/admin/kelola-pengguna', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('kelolaPengguna');
     Route::get('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'show'])->name('kelolaPengguna.detail');
+    Route::put('/admin/kelola-pengguna/{id}/role', [App\Http\Controllers\Admin\UserManagementController::class, 'updateRole'])->name('kelolaPengguna.updateRole');
     Route::delete('/admin/kelola-pengguna/{id}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('kelolaPengguna.destroy');
 
 }); 

@@ -29,7 +29,7 @@ const kategoriPilihan = [
 </script>
 
 <template>
-    <div class="space-y-6 rounded-xl border bg-white p-6 shadow-sm">
+    <div class="space-y-6 rounded-xl border bg-white p-5 shadow-sm sm:p-6">
         <!-- Header -->
         <div>
             <h2 class="text-xl font-semibold text-primary">
@@ -49,6 +49,7 @@ const kategoriPilihan = [
                 @click="kategori = option.id"
                 :class="[
                     'flex w-full items-start gap-4 rounded-xl border p-5 text-left transition',
+                    'flex w-full items-start gap-4 rounded-xl border p-4 text-left transition sm:p-5',
                     kategori === option.id
                         ? 'border-primary bg-green-50'
                         : 'border-gray-200 hover:border-primary',
@@ -56,11 +57,11 @@ const kategoriPilihan = [
             >
                 <!-- Icon -->
                 <div
-                    class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 sm:h-12 sm:w-12"
                 >
                     <component
                         :is="option.icon"
-                        class="h-6 w-6 text-primary"
+                        class="h-5 w-5 text-primary sm:h-6 sm:w-6"
                     />
                 </div>
 

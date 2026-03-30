@@ -61,6 +61,7 @@ class UserManagementController extends Controller
                     'id' => $user->id,
                     'nama' => $user->name,
                     'email' => $user->email,
+                    'role' => $user->role,
                     'jumlah_tes' => $user->jumlah_tes ?? 0,
                 ];
             });
@@ -123,6 +124,25 @@ class UserManagementController extends Controller
         $user->delete();
 
         return redirect()->back()->with('success', 'Pengguna berhasil dihapus!');
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('access-superadmin');
+
+        $validated = $request->validate([
+            'role' => 'required|in:user,admin'
+        ]);
+
+        $user = User::findOrFail($id);
+        
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Tidak dapat mengubah role sendiri!');
+        }
+
+        $user->update(['role' => $validated['role']]);
+
+        return redirect()->back()->with('success', "Role pengguna berhasil diubah menjadi {$validated['role']}.");
     }
 
     // Helper methods

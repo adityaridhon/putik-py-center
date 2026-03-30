@@ -12,6 +12,15 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: service().url,
     },
 ];
+
+const props = defineProps<{
+    services?: any[];
+    bookings?: any[];
+    serviceTrends?: {
+        janjiMendatang: number;
+        janjiSelesai: number;
+    };
+}>();
 </script>
 
 <template>
@@ -22,9 +31,12 @@ const breadcrumbs: BreadcrumbItem[] = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <ManageServiceCard />
+                <ManageServiceCard
+                    :bookings="props.bookings"
+                    :trends="props.serviceTrends"
+                />
             </div>
-            <ServiceDate />
+            <ServiceDate :bookings="props.bookings" />
         </div>
     </AppLayout>
 </template>

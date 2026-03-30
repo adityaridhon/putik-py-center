@@ -12,18 +12,18 @@ import { getInitials } from '@/composables/useInitials';
 import {
     artikel,
     daftarLayanan,
+    dashboard,
     home,
     kontak,
     layananKami,
     logout,
     tentangKami,
     userDashboard,
-    dashboard,
 } from '@/routes';
 import type { Auth } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 defineProps<{
     profile?: {
@@ -32,7 +32,72 @@ defineProps<{
 }>();
 
 const page = usePage();
-const auth = computed(() => page.props.auth as Auth);
+const auth = computed(
+    () =>
+        page.props.auth as Auth & {
+            user?: Auth['user'] & {
+                role?: string;
+            };
+        },
+);
+const menuOpen = ref(false);
+
+const normalizePath = (url: string) => {
+    const [path] = url.split('?');
+
+    if (!path) {
+        return '/';
+    }
+
+    return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+};
+
+const currentPath = computed(() => normalizePath(page.url || '/'));
+
+const isRouteActive = (url: string, exact = true) => {
+    const targetPath = normalizePath(url);
+
+    if (exact) {
+        return currentPath.value === targetPath;
+    }
+
+    if (targetPath === '/') {
+        return currentPath.value === '/';
+    }
+
+    return (
+        currentPath.value === targetPath ||
+        currentPath.value.startsWith(`${targetPath}/`)
+    );
+};
+
+const isLayananActive = computed(
+    () =>
+        isRouteActive(layananKami().url, false) ||
+        isRouteActive(daftarLayanan().url, false) ||
+        currentPath.value.startsWith('/booking-layanan'),
+);
+
+const linkClasses = (active: boolean) => [
+    'block rounded px-3 py-2 transition-colors md:border-0 md:bg-transparent md:p-0',
+    active
+        ? 'text-emerald-200'
+        : 'text-white hover:bg-neutral-tertiary hover:text-emerald-200 md:hover:bg-transparent',
+];
+
+const layananTriggerClasses = computed(() => [
+    'flex items-center gap-1 rounded px-3 py-2 transition-colors md:border-0 md:p-0',
+    isLayananActive.value
+        ? 'text-emerald-200'
+        : 'text-white hover:bg-neutral-tertiary hover:text-emerald-200 md:hover:bg-transparent',
+]);
+
+const layananItemClasses = (active: boolean) =>
+    active ? 'text-primary font-semibold' : 'text-slate-700';
+
+const closeMenu = () => {
+    menuOpen.value = false;
+};
 </script>
 
 <template>
@@ -99,11 +164,18 @@ const auth = computed(() => page.props.auth as Auth);
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem as-child v-if="auth?.user?.role === 'admin'">
-                                <Link :href="dashboard().url">Dashboard Admin</Link>
+                            <DropdownMenuItem
+                                as-child
+                                v-if="auth?.user?.role === 'admin'"
+                            >
+                                <Link :href="dashboard().url"
+                                    >Dashboard Admin</Link
+                                >
                             </DropdownMenuItem>
                             <DropdownMenuItem as-child v-else>
-                                <Link :href="userDashboard().url">Dashboard User</Link>
+                                <Link :href="userDashboard().url"
+                                    >Dashboard User</Link
+                                >
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
@@ -119,11 +191,11 @@ const auth = computed(() => page.props.auth as Auth);
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <button
-                    data-collapse-toggle="navbar-user"
                     type="button"
                     class="text-body rounded-base hover:bg-neutral-secondary-soft hover:text-heading focus:ring-neutral-tertiary inline-flex h-10 w-10 items-center justify-center p-2 text-sm focus:ring-2 focus:outline-none md:hidden"
-                    aria-controls="navbar-user"
-                    aria-expanded="false"
+                    aria-controls="navbar-cta"
+                    :aria-expanded="menuOpen"
+                    @click="menuOpen = !menuOpen"
                 >
                     <span class="sr-only">Open main menu</span>
                     <svg
@@ -145,33 +217,40 @@ const auth = computed(() => page.props.auth as Auth);
                 </button>
             </div>
             <div
-                class="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto"
+                class="w-full items-center justify-between md:order-1 md:flex md:w-auto"
+                :class="menuOpen ? 'mt-4 flex' : 'hidden md:flex'"
                 id="navbar-cta"
             >
                 <ul
-                    class="border-default rounded-base bg-neutral-secondary-soft md:bg-neutral-primary mt-4 flex flex-col border p-4 font-medium text-white md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse"
+                    class="border-default rounded-base bg-neutral-secondary-soft md:bg-neutral-primary w-full flex-col border p-4 font-medium text-white md:mt-0 md:flex md:w-auto md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse"
                 >
                     <li>
                         <Link
                             :href="home().url"
-                            class="bg-brand md:text-fg-brand block rounded px-3 py-2 md:bg-transparent md:p-0"
-                            aria-current="page"
+                            :class="linkClasses(isRouteActive(home().url))"
+                            :aria-current="
+                                isRouteActive(home().url) ? 'page' : undefined
+                            "
+                            @click="closeMenu"
                             >Beranda</Link
                         >
                     </li>
                     <li>
                         <Link
                             :href="tentangKami().url"
-                            class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
+                            :class="
+                                linkClasses(
+                                    isRouteActive(tentangKami().url, false),
+                                )
+                            "
+                            @click="closeMenu"
                             >Tentang Kami</Link
                         >
                     </li>
                     <li>
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
-                                <button
-                                    class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand flex items-center gap-1 rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent"
-                                >
+                                <button :class="layananTriggerClasses">
                                     Layanan
                                     <ChevronDown class="h-4 w-4" />
                                 </button>
@@ -179,12 +258,32 @@ const auth = computed(() => page.props.auth as Auth);
                             <DropdownMenuContent align="start" :side-offset="8">
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem as-child>
-                                        <Link :href="layananKami().url"
+                                        <Link
+                                            :href="layananKami().url"
+                                            :class="
+                                                layananItemClasses(
+                                                    isRouteActive(
+                                                        layananKami().url,
+                                                        false,
+                                                    ),
+                                                )
+                                            "
+                                            @click="closeMenu"
                                             >Layanan Kami</Link
                                         >
                                     </DropdownMenuItem>
                                     <DropdownMenuItem as-child>
-                                        <Link :href="daftarLayanan().url"
+                                        <Link
+                                            :href="daftarLayanan().url"
+                                            :class="
+                                                layananItemClasses(
+                                                    isRouteActive(
+                                                        daftarLayanan().url,
+                                                        false,
+                                                    ),
+                                                )
+                                            "
+                                            @click="closeMenu"
                                             >Tes Online</Link
                                         >
                                     </DropdownMenuItem>
@@ -195,14 +294,20 @@ const auth = computed(() => page.props.auth as Auth);
                     <li>
                         <Link
                             :href="artikel().url"
-                            class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
+                            :class="
+                                linkClasses(isRouteActive(artikel().url, false))
+                            "
+                            @click="closeMenu"
                             >Artikel</Link
                         >
                     </li>
                     <li>
                         <Link
                             :href="kontak().url"
-                            class="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
+                            :class="
+                                linkClasses(isRouteActive(kontak().url, false))
+                            "
+                            @click="closeMenu"
                             >Kontak</Link
                         >
                     </li>

@@ -76,18 +76,24 @@ const visibleCards = computed(() =>
 </script>
 
 <template>
-    <section class="bg-white py-20">
+    <section class="bg-white py-14 sm:py-16 md:py-20">
         <div v-if="!props.hideHeader">
-            <h1 class="font-title text-center text-4xl font-bold">ARTIKEL</h1>
+            <h1
+                class="font-title px-4 text-center text-3xl font-bold sm:text-4xl"
+            >
+                ARTIKEL
+            </h1>
 
-            <p class="mx-auto max-w-3xl py-6 text-center text-primary">
+            <p
+                class="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-primary sm:text-base"
+            >
                 Baca artikel edukatif dari para psikolog profesional kami
                 tentang berbagai topik kesehatan mental dan psikologi.
             </p>
         </div>
 
         <div
-            class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-3"
+            class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-3"
         >
             <div
                 v-for="card in visibleCards"

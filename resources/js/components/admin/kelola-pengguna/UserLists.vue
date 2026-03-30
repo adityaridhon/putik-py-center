@@ -31,10 +31,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { kelolaPengguna } from '@/routes';
-import { Link, router } from '@inertiajs/vue3';
+import { router, Link, usePage } from '@inertiajs/vue3';
+import { Eye, SearchIcon, ShieldAlert, ShieldCheck } from 'lucide-vue-next';
+import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash';
 import { Eye, SearchIcon } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+
+// Ambil data admin login saat ini (is_superadmin) dari props
+const page = usePage();
+const isSuperAdmin = computed(() => !!page.props.auth?.user?.is_superadmin);
 
 // Props dari parent (backend)
 const props = defineProps<{
@@ -106,6 +112,28 @@ const applyFilters = (page = 1) => {
             preserveScroll: true,
         },
     );
+};
+
+// Switch role function
+const toggleRole = (user: any) => {
+    if (!isSuperAdmin.value) return;
+
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
+    const konfirmasi = confirm(
+        `Apakah Anda yakin ingin mengubah role "${user.nama}" menjadi ${newRole.toUpperCase()}?`
+    );
+
+    if (konfirmasi) {
+        router.put(`/admin/kelola-pengguna/${user.id}/role`, {
+            role: newRole,
+        }, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                // Notifikasi sukses otomatis dari flash session (opsional)
+            }
+        });
+    }
 };
 
 // Watch untuk search (dengan debounce)
@@ -184,10 +212,13 @@ const goToUsersPage = (page: number) => {
                         Nama
                     </TableHead>
                     <TableHead class="text-center font-semibold text-white">
+                        Role
+                    </TableHead>
+                    <TableHead class="text-center font-semibold text-white">
                         Jumlah Tes
                     </TableHead>
                     <TableHead
-                        class="w-40 text-center font-semibold text-white"
+                        class="w-64 text-center font-semibold text-white"
                     >
                         Aksi
                     </TableHead>
@@ -205,16 +236,38 @@ const goToUsersPage = (page: number) => {
                     </TableCell>
                     <TableCell class="text-center">
                         {{ user.nama }}
+                        <div class="text-xs text-gray-500">{{ user.email }}</div>
+                    </TableCell>
+                    <TableCell class="text-center">
+                        <span :class="[
+                            'px-2 py-1 text-xs font-semibold rounded-full',
+                            user.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                        ]">
+                            {{ (user.role || 'user').toUpperCase() }}
+                        </span>
                     </TableCell>
                     <TableCell class="text-center">
                         {{ user.jumlah_tes }}
                     </TableCell>
-                    <TableCell class="w-32 text-center">
-                        <Link :href="`/admin/kelola-pengguna/${user.id}`">
-                            <Button>
-                                <Eye class="h-4 w-4" /> Lihat Detail
+                    <TableCell class="text-center">
+                        <div class="flex justify-center gap-2">
+                            <Link :href="`/admin/kelola-pengguna/${user.id}`">
+                                <Button size="sm" variant="outline">
+                                    <Eye class="h-4 w-4 mr-1" /> Detail
+                                </Button>
+                            </Link>
+
+                            <Button 
+                                v-if="isSuperAdmin"
+                                size="sm" 
+                                variant="outline"
+                                @click="toggleRole(user)"
+                            >
+                                <ShieldAlert v-if="user.role === 'admin'" class="h-4 w-4 mr-1" />
+                                <ShieldCheck v-else class="h-4 w-4 mr-1" />
+                                {{ user.role === 'admin' ? 'Cabut Admin' : 'Jadikan Admin' }}
                             </Button>
-                        </Link>
+                        </div>
                     </TableCell>
                 </TableRow>
             </TableBody>

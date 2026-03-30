@@ -32,16 +32,18 @@ const items = [
 
 <template>
     <section class="bg-gray-50 py-12 text-center">
-        <h1 class="font-title text-4xl font-bold md:text-4xl">
+        <h1 class="font-title px-4 text-3xl font-bold sm:text-4xl">
             LAYANAN KAMI
         </h1>
-        <p class="mx-auto grid max-w-5xl grid-cols-1 gap-12 px-6 py-8 sm:px-8 md:gap-8 lg:px-4 text-primary">
-            Layanan Psikologi untuk Berbagai Kebutuhan. 
-            Kami menyediakan berbagai layanan psikologi dengan pendekatan
-            yang disesuaikan dengan kebutuhan unik setiap klien.
+        <p
+            class="mx-auto max-w-5xl px-4 py-6 text-sm text-primary sm:px-8 sm:text-base lg:px-4"
+        >
+            Layanan Psikologi untuk Berbagai Kebutuhan. Kami menyediakan
+            berbagai layanan psikologi dengan pendekatan yang disesuaikan dengan
+            kebutuhan unik setiap klien.
         </p>
         <div
-            class="mx-auto grid max-w-5xl grid-cols-1 gap-12 px-6 sm:px-8 md:gap-8 lg:px-4"
+            class="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 sm:px-8 md:gap-8 lg:px-4"
         >
             <div
                 v-for="item in items"

@@ -22,12 +22,12 @@ const items = [
 <template>
     <section class="py-14 text-center">
         <div
-            class="mx-auto grid max-w-5xl grid-cols-1 gap-12 px-6 md:px-8 md:grid-cols-2 md:gap-24"
+            class="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-4 sm:px-6 md:grid-cols-2 md:gap-8 md:px-8"
         >
             <div
                 v-for="item in items"
                 :key="item.judul"
-                class="flex min-h-[360px] flex-col rounded-2xl bg-primary p-6 shadow-lg transition hover:-translate-y-2 hover:shadow-2xl"
+                class="flex min-h-80 flex-col rounded-2xl bg-primary p-5 shadow-lg transition hover:-translate-y-1 hover:shadow-2xl sm:p-6"
             >
                 <img
                     :src="item.logo"
@@ -48,10 +48,7 @@ const items = [
                     </li>
                 </ul>
 
-                <p
-                    v-else
-                    class="flex-1 text-center text-white"
-                >
+                <p v-else class="flex-1 text-center text-white">
                     {{ item.deskripsi }}
                 </p>
             </div>

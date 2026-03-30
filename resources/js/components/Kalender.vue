@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
-const props = defineProps<{ isConfirmed?: boolean }>();
+interface BookedSlot {
+    booking_date: string;
+    booking_time: string;
+    status: string;
+}
+
+const props = defineProps<{ isConfirmed?: boolean; bookedSlots?: BookedSlot[] }>();
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string): void;
@@ -11,7 +17,14 @@ const emit = defineEmits<{
 const selected = ref<string>('');
 
 const currentDate = ref(new Date());
-const confirmedDates = ref<Record<string, boolean>>({});
+const availableTimes = ['09:30', '13:00', '15:00', '16:30'];
+
+const formatLocalDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 function prevMonth() {
     const d = new Date(currentDate.value);
@@ -47,7 +60,7 @@ function generateCalendar(date: Date) {
     for (let i = 0; i < startDay; i++) {
         const d = new Date(year, month, -startDay + i + 1);
         days.push({
-            value: d.toISOString().split('T')[0],
+            value: formatLocalDate(d),
             date: d.getDate(),
             currentMonth: false,
             tersedia: false,
@@ -57,7 +70,7 @@ function generateCalendar(date: Date) {
     for (let i = 1; i <= totalDays; i++) {
         const d = new Date(year, month, i);
         days.push({
-            value: d.toISOString().split('T')[0],
+            value: formatLocalDate(d),
             date: i,
             currentMonth: true,
             tersedia: true,
@@ -73,9 +86,22 @@ const calendarDays = computed(() =>
             return item;
         }
 
+        const confirmedTimes = new Set(
+            (props.bookedSlots || [])
+                .filter(
+                    (slot) =>
+                        (slot.status === 'confirmed' ||
+                            slot.status === 'completed') &&
+                        slot.booking_date === item.value,
+                )
+                .map((slot) => (slot.booking_time || '').substring(0, 5)),
+        );
+
+        const isFull = availableTimes.every((time) => confirmedTimes.has(time));
+
         return {
             ...item,
-            tersedia: !confirmedDates.value[item.value],
+            tersedia: !isFull,
         };
     }),
 );
@@ -85,43 +111,28 @@ function pilih(item: any) {
     selected.value = item.value;
     emit('update:modelValue', item.value);
 }
-
-watch(
-    () => props.isConfirmed,
-    (confirmed) => {
-        if (confirmed && selected.value) {
-            confirmedDates.value = {
-                ...confirmedDates.value,
-                [selected.value]: true,
-            };
-        } else if (!confirmed) {
-            confirmedDates.value = {};
-        }
-    },
-    { immediate: true },
-);
 </script>
 
 <template>
-    <div class="space-y-4 rounded-xl border bg-white p-6">
+    <div class="space-y-4 rounded-xl border bg-white p-4 sm:p-5 md:p-6">
         <h2 class="font-semibold text-green-800">Pilih Jadwal</h2>
 
         <div class="flex items-center justify-between">
-            <button @click="prevMonth">
+            <button class="rounded p-1 hover:bg-slate-100" @click="prevMonth">
                 <ChevronLeft class="h-5 w-5" />
             </button>
 
-            <p class="font-medium capitalize">
+            <p class="text-sm font-medium capitalize sm:text-base">
                 {{ monthYear }}
             </p>
 
-            <button @click="nextMonth">
+            <button class="rounded p-1 hover:bg-slate-100" @click="nextMonth">
                 <ChevronRight class="h-5 w-5" />
             </button>
         </div>
 
         <div
-            class="grid grid-cols-7 text-center text-sm font-medium text-gray-600"
+            class="grid grid-cols-7 text-center text-[10px] font-medium text-gray-600 sm:text-xs md:text-sm"
         >
             <div>Sen</div>
             <div>Sel</div>
@@ -132,13 +143,13 @@ watch(
             <div>Min</div>
         </div>
 
-        <div class="grid grid-cols-7 text-center text-sm">
+        <div class="grid grid-cols-7 text-center text-xs sm:text-sm">
             <div
                 v-for="item in calendarDays"
                 :key="item.value"
                 @click="pilih(item)"
                 :class="[
-                    'border p-2 text-sm',
+                    'flex aspect-square items-center justify-center border p-1 text-xs sm:p-2 sm:text-sm',
                     !item.currentMonth && 'bg-gray-50 text-gray-300',
                     item.currentMonth && item.tersedia && 'cursor-pointer',
                     item.currentMonth &&
@@ -153,7 +164,7 @@ watch(
             </div>
         </div>
 
-        <div class="flex gap-6 pt-2 text-sm">
+        <div class="flex flex-wrap gap-4 pt-2 text-xs sm:gap-6 sm:text-sm">
             <span class="flex items-center gap-2">
                 <span class="h-3 w-3 rounded-full bg-primary"></span>
                 Tersedia
