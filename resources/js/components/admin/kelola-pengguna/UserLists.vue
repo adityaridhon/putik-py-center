@@ -6,6 +6,14 @@ import {
     InputGroupInput,
 } from '@/components/ui/input-group';
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
     Select,
     SelectContent,
     SelectGroup,
@@ -27,6 +35,8 @@ import { router, Link, usePage } from '@inertiajs/vue3';
 import { Eye, SearchIcon, ShieldAlert, ShieldCheck } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash';
+import { Eye, SearchIcon } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 // Ambil data admin login saat ini (is_superadmin) dari props
 const page = usePage();
@@ -84,21 +94,23 @@ const users = computed(() => props.users?.data || defaultUsers);
 
 // Debounced search function
 const performSearch = debounce(() => {
-    applyFilters();
+    applyFilters(1);
 }, 500);
 
 // Apply filters to backend
-const applyFilters = () => {
+const applyFilters = (page = 1) => {
     router.get(
         kelolaPengguna().url,
         {
             search: searchQuery.value || undefined,
-            sort: selectedSort.value !== 'semua' ? selectedSort.value : undefined,
+            sort:
+                selectedSort.value !== 'semua' ? selectedSort.value : undefined,
+            page,
         },
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 
@@ -131,8 +143,12 @@ watch(searchQuery, () => {
 
 // Watch untuk filter dropdown (langsung apply)
 watch(selectedSort, () => {
-    applyFilters();
+    applyFilters(1);
 });
+
+const goToUsersPage = (page: number) => {
+    applyFilters(page);
+};
 </script>
 
 <template>
@@ -141,9 +157,9 @@ watch(selectedSort, () => {
         <!-- Search -->
         <div>
             <InputGroup>
-                <InputGroupInput 
+                <InputGroupInput
                     v-model="searchQuery"
-                    placeholder="Cari pengguna..." 
+                    placeholder="Cari pengguna..."
                 />
                 <InputGroupAddon>
                     <SearchIcon />
@@ -163,10 +179,18 @@ watch(selectedSort, () => {
                         <SelectItem value="semua">Semua</SelectItem>
                         <SelectItem value="nama-az">Nama (A-Z)</SelectItem>
                         <SelectItem value="nama-za">Nama (Z-A)</SelectItem>
-                        <SelectItem value="jumlah-tes-terbanyak">Jumlah Tes (Terbanyak)</SelectItem>
-                        <SelectItem value="jumlah-tes-tersedikit">Jumlah Tes (Tersedikit)</SelectItem>
-                        <SelectItem value="terbaru">Terdaftar Terbaru</SelectItem>
-                        <SelectItem value="terlama">Terdaftar Terlama</SelectItem>
+                        <SelectItem value="jumlah-tes-terbanyak"
+                            >Jumlah Tes (Terbanyak)</SelectItem
+                        >
+                        <SelectItem value="jumlah-tes-tersedikit"
+                            >Jumlah Tes (Tersedikit)</SelectItem
+                        >
+                        <SelectItem value="terbaru"
+                            >Terdaftar Terbaru</SelectItem
+                        >
+                        <SelectItem value="terlama"
+                            >Terdaftar Terlama</SelectItem
+                        >
                     </SelectGroup>
                 </SelectContent>
             </Select>
@@ -208,7 +232,7 @@ watch(selectedSort, () => {
                 >
                     <TableCell
                         class="text-center font-semibold text-gray-600 dark:text-gray-400"
-                        >{{ index + 1 }}
+                        >{{ (props.users?.from || 0) + index }}
                     </TableCell>
                     <TableCell class="text-center">
                         {{ user.nama }}
@@ -251,20 +275,46 @@ watch(selectedSort, () => {
     </div>
 
     <!-- Pagination -->
-    <div v-if="props.users?.links" class="mt-4 flex justify-center gap-1">
-        <Link
-            v-for="(link, index) in props.users.links"
-            :key="index"
-            :href="link.url || '#'"
-            :class="[
-                'px-3 py-1 rounded border',
-                link.active
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-                !link.url && 'opacity-50 cursor-not-allowed pointer-events-none'
-            ]"
-            v-html="link.label"
-            preserve-scroll
-        />
+    <div v-if="props.users && props.users.last_page > 1" class="mt-4">
+        <div class="w-full flex-col items-center justify-between">
+            <div class="mb-2 text-center text-sm text-gray-600">
+                Menampilkan {{ props.users.from }} - {{ props.users.to }} dari
+                {{ props.users.total }} pengguna
+            </div>
+
+            <Pagination
+                :total="props.users.total"
+                :items-per-page="props.users.per_page"
+                :default-page="props.users.current_page"
+                v-slot="{ page }"
+            >
+                <PaginationContent v-slot="{ items }">
+                    <PaginationPrevious
+                        :disabled="props.users.current_page === 1"
+                        @click="goToUsersPage(props.users.current_page - 1)"
+                    />
+
+                    <template v-for="(item, index) in items" :key="index">
+                        <PaginationItem
+                            v-if="item.type === 'page'"
+                            :value="item.value"
+                            :is-active="item.value === props.users.current_page"
+                            @click="goToUsersPage(item.value)"
+                        >
+                            {{ item.value }}
+                        </PaginationItem>
+
+                        <PaginationEllipsis v-else />
+                    </template>
+
+                    <PaginationNext
+                        :disabled="
+                            props.users.current_page === props.users.last_page
+                        "
+                        @click="goToUsersPage(props.users.current_page + 1)"
+                    />
+                </PaginationContent>
+            </Pagination>
+        </div>
     </div>
 </template>

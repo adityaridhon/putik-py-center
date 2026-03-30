@@ -1,10 +1,11 @@
+z
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useForm } from '@inertiajs/vue3';
 import { store } from '@/routes/bankSoal';
+import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     test_type: '',
