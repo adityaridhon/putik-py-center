@@ -24,5 +24,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-admin', function (User $user): bool {
             return $user->role === 'admin';
         });
+
+        Gate::define('access-superadmin', function (User $user): bool {
+            $superAdmins = explode(',', env('SUPERADMIN_EMAILS', ''));
+            return in_array($user->email, array_map('trim', $superAdmins));
+        });
     }
 }

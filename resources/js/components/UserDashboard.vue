@@ -9,6 +9,20 @@ import {
     User,
     UserRound,
 } from 'lucide-vue-next';
+import { useForm } from '@inertiajs/vue3';
+
+defineProps<{
+    user: any;
+    riwayat: any[];
+}>();
+
+const form = useForm({});
+
+const deleteProfile = () => {
+    if (confirm('Apakah Anda yakin ingin menghapus profil? Tindakan ini tidak dapat dibatalkan.')) {
+        form.delete('/user/profile');
+    }
+};
 </script>
 
 <template>
@@ -48,7 +62,7 @@ import {
                             <p
                                 class="mt-1 text-base font-semibold text-gray-900"
                             >
-                                Ambatukam
+                                {{ user.name || 'Pengguna' }}
                             </p>
                         </div>
                     </div>
@@ -69,7 +83,7 @@ import {
                             <p
                                 class="mt-1 text-base font-semibold text-gray-900"
                             >
-                                ambatukam@rusdi.com
+                                {{ user.email }}
                             </p>
                         </div>
                     </div>
@@ -90,18 +104,24 @@ import {
                             <p
                                 class="mt-1 text-base font-semibold text-gray-900"
                             >
-                                080810102020
+                                {{ user.phone_number || '-' }}
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-4 flex gap-2">
-                    <Button>
-                        <Pencil />
-                        Edit Profil
-                    </Button>
-                    <Button variant="destructive">
+                    <a href="/user/profile/edit">
+                        <Button>
+                            <Pencil />
+                            Edit Profil
+                        </Button>
+                    </a>
+                    <Button 
+                        variant="destructive"
+                        @click="deleteProfile"
+                        :disabled="form.processing"
+                    >
                         <Trash />
                         Hapus Profil
                     </Button>
@@ -118,72 +138,36 @@ import {
             </h1>
 
             <div class="flex flex-col divide-y divide-gray-100">
-                <!-- Item: Selesai + ada PDF -->
-                <div class="flex items-center justify-between gap-4 py-4">
+                <div v-if="!riwayat || riwayat.length === 0" class="py-10 text-center text-gray-500">
+                    Belum ada riwayat tes.
+                </div>
+
+                <div v-for="item in riwayat" :key="item.id" class="flex items-center justify-between gap-4 py-4">      
                     <div class="min-w-0">
                         <p
                             class="truncate text-base font-semibold text-gray-900"
                         >
-                            Tes Minat Bakat
+                            {{ item.test_type }}
                         </p>
                         <p class="mt-0.5 text-sm text-gray-400">
-                            4 Januari 2026
+                            {{ item.date }}
                         </p>
                     </div>
-                    <div class="flex shrink-0 flex-col items-end gap-2">
+                    <div class="flex shrink-0 flex-col items-end gap-2">        
                         <span
-                            class="rounded-full bg-green-100 px-3 py-0.5 text-xs font-semibold text-green-700"
-                            >Selesai</span
-                        >
-                        <Button size="sm" class="gap-1.5 text-xs">
+                            :class="[
+                                'rounded-full px-3 py-0.5 text-xs font-semibold',
+                                item.raw_status === 'completed' || item.raw_status === 'reported' 
+                                    ? 'bg-green-100 text-green-700' 
+                                    : 'bg-yellow-100 text-yellow-700'
+                            ]"
+                        >{{ item.status }}</span>
+                        <!-- Kalau report sudah ada, mungkin download link bisa diaktifkan -->
+                        <Button v-if="item.has_pdf" size="sm" class="gap-1.5 text-xs">
                             <FileDown class="size-4" />
                             Unduh Hasil (PDF)
                         </Button>
-                    </div>
-                </div>
-
-                <!-- Item: Selesai + ada PDF -->
-                <div class="flex items-center justify-between gap-4 py-4">
-                    <div class="min-w-0">
-                        <p
-                            class="truncate text-base font-semibold text-gray-900"
-                        >
-                            Tes Inteligensi
-                        </p>
-                        <p class="mt-0.5 text-sm text-gray-400">
-                            6 Januari 2026
-                        </p>
-                    </div>
-                    <div class="flex shrink-0 flex-col items-end gap-2">
-                        <span
-                            class="rounded-full bg-green-100 px-3 py-0.5 text-xs font-semibold text-green-700"
-                            >Selesai</span
-                        >
-                        <Button size="sm" class="gap-1.5 text-xs">
-                            <FileDown class="size-4" />
-                            Unduh Hasil (PDF)
-                        </Button>
-                    </div>
-                </div>
-
-                <!-- Item: Menunggu Review -->
-                <div class="flex items-center justify-between gap-4 py-4">
-                    <div class="min-w-0">
-                        <p
-                            class="truncate text-base font-semibold text-gray-900"
-                        >
-                            Tes Gaya Belajar
-                        </p>
-                        <p class="mt-0.5 text-sm text-gray-400">
-                            6 Januari 2026
-                        </p>
-                    </div>
-                    <div class="flex shrink-0 flex-col items-end gap-2">
-                        <span
-                            class="rounded-full bg-yellow-100 px-3 py-0.5 text-xs font-semibold text-yellow-700"
-                            >Menunggu Review Psikolog</span
-                        >
-                        <Button size="sm" variant="outline" class="text-xs">
+                        <Button v-else-if="item.raw_status !== 'completed' && item.raw_status !== 'reported'" size="sm" variant="outline" class="text-xs">    
                             Proses
                         </Button>
                     </div>
