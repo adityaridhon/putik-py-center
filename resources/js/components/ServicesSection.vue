@@ -95,11 +95,13 @@ const services = [
 </script>
 
 <template>
-    <section class="space-y-32 px-20 py-8">
+    <section
+        class="space-y-16 px-4 py-8 sm:px-6 md:space-y-20 md:px-8 lg:space-y-24 lg:px-10"
+    >
         <div
             v-for="service in services"
             :key="service.id"
-            class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2"
+            class="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:gap-10 lg:grid-cols-2 lg:gap-12"
             :class="service.id % 2 === 0 ? '' : 'lg:auto-cols-max'"
         >
             <div
@@ -112,18 +114,20 @@ const services = [
                     <component :is="service.icon" class="h-6 w-6 text-white" />
                 </div>
 
-                <h3 class="mb-4 text-2xl font-semibold">
+                <h3 class="mb-4 text-xl font-semibold sm:text-2xl">
                     {{ service.title }}
                 </h3>
 
-                <p class="mb-8 max-w-xl text-slate-600">
+                <p
+                    class="mb-6 max-w-xl text-sm text-slate-600 sm:mb-8 sm:text-base"
+                >
                     {{ service.description }}
                 </p>
 
                 <div class="flex gap-4">
                     <Link
                         :href="bookingHref"
-                        class="rounded-xl bg-primary px-6 py-3 text-white hover:bg-[#22352A]"
+                        class="rounded-xl bg-primary px-5 py-3 text-sm text-white transition hover:bg-[#22352A] sm:px-6 sm:text-base"
                     >
                         {{ service.primaryAction }}
                     </Link>
@@ -131,20 +135,20 @@ const services = [
             </div>
 
             <div
-                class="grid grid-cols-2 gap-4"
+                class="grid grid-cols-1 gap-4 md:grid-cols-2"
                 :class="service.id % 2 === 0 ? 'lg:order-1' : ''"
             >
                 <img
                     :src="service.images[0]"
-                    class="col-span-2 h-64 w-full rounded-2xl object-cover"
+                    class="h-52 w-full rounded-2xl object-cover sm:h-60 md:col-span-2 md:h-64"
                 />
                 <img
                     :src="service.images[1]"
-                    class="h-56 w-full rounded-2xl object-cover"
+                    class="hidden h-44 w-full rounded-2xl object-cover md:block md:h-56"
                 />
                 <img
                     :src="service.images[2]"
-                    class="h-56 w-full rounded-2xl object-cover"
+                    class="hidden h-44 w-full rounded-2xl object-cover md:block md:h-56"
                 />
             </div>
         </div>
