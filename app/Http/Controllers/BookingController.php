@@ -24,6 +24,12 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->withErrors([
+                'auth' => 'Silakan login terlebih dahulu untuk melakukan booking.',
+            ]);
+        }
+
         // 1. Validasi input dari Vue
         $request->validate([
             'nama'       => 'required|string|max:100',
@@ -58,9 +64,16 @@ class BookingController extends Controller
             ]);
         }
 
+        $userId = Auth::id();
+        if ($userId === null) {
+            return back()->withErrors([
+                'auth' => 'User tidak valid. Silakan login ulang lalu coba lagi.',
+            ]);
+        }
+
         // 3. Simpan ke Database
         Booking::create([
-            'user_id'          => Auth::id() ?? 1, // Fallback ke user 1 (superadmin) jika belum login
+            'user_id'          => $userId,
             'service_id'       => $serviceId,
             'customer_name'    => $request->nama,
             'customer_phone'   => $request->hp,

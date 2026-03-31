@@ -66,8 +66,12 @@ class AuthController extends Controller
             Auth::login($user, true);
             Log::info('Auth::check after login', ['check' => Auth::check(), 'user_id' => Auth::id()]);
 
-            $redirectRoute = $user->isAdmin() ? route('dashboard') : route('userDashboard');
+            $redirectRoute = $user->canAccessAdminPanel() ? route('dashboard') : route('userDashboard');
             Log::info('Redirecting to', ['route' => $redirectRoute]);
+
+            if ($user->canAccessAdminPanel()) {
+                return redirect()->to($redirectRoute);
+            }
 
             return redirect()->intended($redirectRoute);
         } catch (\Exception $e) {

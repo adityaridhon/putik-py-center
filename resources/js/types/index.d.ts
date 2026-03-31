@@ -30,6 +30,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    is_superadmin?: boolean;
     role?: string;
     avatar?: string;
     email_verified_at: string | null;
