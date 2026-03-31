@@ -3,12 +3,14 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {
     soal: string[];
+    kategori: string;
     waktu: number;
     modelValue: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
     soal: () => [],
+    kategori: '',
     waktu: 0,
     modelValue: () => [],
 });
@@ -50,9 +52,14 @@ const update = (index: number, value: string) => {
             class="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl"
         ></div>
 
-        <div class="relative mb-6 flex items-center justify-end">
+        <div class="relative mb-6 flex items-center justify-between gap-3">
             <div
-                class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary"
+                class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium whitespace-nowrap text-primary"
+            >
+                Kategori Soal: {{ kategori }}
+            </div>
+            <div
+                class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium whitespace-nowrap text-primary"
             >
                 <span>Waktu</span>
                 <span>{{ formattedTime }}</span>

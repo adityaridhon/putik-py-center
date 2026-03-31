@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import NavbarTes from '@/components/NavbarTes.vue';
+import Navbar from '@/components/Navbar.vue';
 import HalamanInstruksi from '@/components/HalamanInstruksi.vue';
-import NavigasiInteligensi from '@/components/NavigasiInteligensi.vue';
 import SoalIsian from '@/components/SoalInteligensiIsian.vue';
 import SoalPilihan from '@/components/SoalInteligensiPilihan.vue';
 import { router } from '@inertiajs/vue3';
-
-const kategoriList = ['SE', 'WA', 'AN', 'GE', 'RA', 'ZR', 'FA', 'WU', 'ME'];
 
 // DATA TES
 const kategoriTes = [
@@ -174,6 +171,10 @@ const jawaban: any = ref({});
 // kategori aktif
 const kategoriAktif = computed(() => kategoriTes[kategoriIndex.value]);
 const kodeKategoriAktif = computed(() => kategoriAktif.value.kode);
+const labelKategoriAktif = computed(() => kodeKategoriAktif.value);
+const isLastKategori = computed(
+    () => kategoriIndex.value === kategoriTes.length - 1,
+);
 const jawabanKategoriAktif = computed<string[]>(() => {
     return jawaban.value[kodeKategoriAktif.value] ?? [];
 });
@@ -212,31 +213,13 @@ const nextKategori = () => {
         return;
     }
 
-    if (kategoriIndex.value < kategoriTes.length - 1) {
+    if (!isLastKategori.value) {
         kategoriIndex.value++;
         mode.value = 'instruksi';
+        return;
     }
-};
 
-// prev kategori
-const prevKategori = () => {
-    if (kategoriIndex.value > 0) {
-        kategoriIndex.value--;
-        mode.value = 'instruksi';
-    }
-};
-
-const ubahKategori = (kode: string) => {
-    const indexTujuan = kategoriTes.findIndex((item) => item.kode === kode);
-
-    if (indexTujuan !== -1) {
-        if (indexTujuan > kategoriIndex.value && !bisaLanjut.value) {
-            return;
-        }
-
-        kategoriIndex.value = indexTujuan;
-        mode.value = 'instruksi';
-    }
+    selesaiTes();
 };
 
 const selesaiTes = () => {
@@ -250,7 +233,7 @@ const selesaiTes = () => {
 
 <template>
     <div class="min-h-screen bg-slate-50">
-        <NavbarTes judul="TES INTELIGENSI" />
+        <Navbar title="TES INTELIGENSI" />
 
         <main
             class="mx-auto mt-4 mb-6 w-full max-w-5xl px-3 sm:mt-6 sm:px-5 md:mt-8 md:px-6"
@@ -258,18 +241,11 @@ const selesaiTes = () => {
             <!-- INSTRUKSI -->
             <HalamanInstruksi
                 v-if="mode === 'instruksi'"
-                :kategori="kodeKategoriAktif"
+                :kategori="labelKategoriAktif"
                 :instruksi="kategoriAktif.instruksi"
                 :waktu="kategoriAktif.waktuInstruksi"
                 @mulai="mulaiTes"
             />
-
-            <div
-                v-if="mode === 'soal'"
-                class="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:px-4 sm:py-2 sm:text-sm"
-            >
-                Kategori Soal: {{ kodeKategoriAktif }}
-            </div>
 
             <!-- SOAL PILIHAN -->
             <SoalPilihan
@@ -280,6 +256,7 @@ const selesaiTes = () => {
                         opsi: string[];
                     }[]
                 "
+                :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"
             />
@@ -288,21 +265,26 @@ const selesaiTes = () => {
             <SoalIsian
                 v-if="mode === 'soal' && kategoriAktif.tipe === 'isian'"
                 :soal="kategoriAktif.soal as string[]"
+                :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"
             />
 
-            <!-- NAVIGASI -->
-            <NavigasiInteligensi
-                v-if="mode === 'soal'"
-                :kategori-aktif="kodeKategoriAktif"
-                :kategori="kategoriList"
-                :disable-next="!bisaLanjut"
-                @ubah-kategori="ubahKategori"
-                @selanjutnya="nextKategori"
-                @sebelumnya="prevKategori"
-                @selesai="selesaiTes"
-            />
+            <div v-if="mode === 'soal'" class="mt-6 flex justify-end">
+                <button
+                    type="button"
+                    class="rounded-lg px-5 py-2.5 text-sm font-medium text-white"
+                    :class="
+                        !bisaLanjut
+                            ? 'cursor-not-allowed bg-gray-400'
+                            : 'bg-primary hover:bg-green-900'
+                    "
+                    :disabled="!bisaLanjut"
+                    @click="nextKategori"
+                >
+                    {{ isLastKategori ? 'Selesai' : 'Selanjutnya' }}
+                </button>
+            </div>
         </main>
     </div>
 </template>

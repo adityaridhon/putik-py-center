@@ -32,37 +32,39 @@ const items = [
 
 <template>
     <section class="bg-gray-50 py-12 text-center">
-        <h1 class="font-title px-4 text-3xl font-bold sm:text-4xl">
-            LAYANAN KAMI
-        </h1>
-        <p
-            class="mx-auto max-w-5xl px-4 py-6 text-sm text-primary sm:px-8 sm:text-base lg:px-4"
-        >
-            Layanan Psikologi untuk Berbagai Kebutuhan. Kami menyediakan
-            berbagai layanan psikologi dengan pendekatan yang disesuaikan dengan
-            kebutuhan unik setiap klien.
-        </p>
-        <div
-            class="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 sm:px-8 md:gap-8 lg:px-4"
-        >
-            <div
-                v-for="item in items"
-                :key="item.judul"
-                :class="`rounded-2xl p-7 shadow-lg ${item.color} transform cursor-pointer transition duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl`"
+        <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10">
+            <h1 class="font-title text-3xl font-bold sm:text-4xl">
+                LAYANAN KAMI
+            </h1>
+            <p
+                class="mx-auto max-w-3xl py-6 text-sm leading-relaxed text-primary sm:text-base"
             >
-                <img
-                    :src="item.logo"
-                    :alt="item.judul"
-                    class="mx-auto mb-1 w-8"
-                />
-                <h3 class="font-primary mb-1 text-xl font-bold text-primary">
-                    {{ item.judul }}
-                </h3>
-                <p
-                    class="mx-auto max-w-md text-center whitespace-pre-line text-primary"
+                Layanan Psikologi untuk Berbagai Kebutuhan. Kami menyediakan
+                berbagai layanan psikologi dengan pendekatan yang disesuaikan
+                dengan kebutuhan unik setiap klien.
+            </p>
+            <div class="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:gap-8">
+                <div
+                    v-for="item in items"
+                    :key="item.judul"
+                    :class="`rounded-2xl p-7 shadow-lg ${item.color} transform cursor-pointer transition duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl`"
                 >
-                    {{ item.deskripsi }}
-                </p>
+                    <img
+                        :src="item.logo"
+                        :alt="item.judul"
+                        class="mx-auto mb-1 w-8"
+                    />
+                    <h3
+                        class="font-primary mb-1 text-xl font-bold text-primary"
+                    >
+                        {{ item.judul }}
+                    </h3>
+                    <p
+                        class="mx-auto max-w-md text-center whitespace-pre-line text-primary"
+                    >
+                        {{ item.deskripsi }}
+                    </p>
+                </div>
             </div>
         </div>
     </section>

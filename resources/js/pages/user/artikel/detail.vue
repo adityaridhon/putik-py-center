@@ -6,7 +6,9 @@ import ArtikelTerkait from '@/components/ArtikelTerkait.vue';
 </script>
 
 <template>
-    <div class="px-24 py-10">
+    <div
+        class="mx-auto w-full max-w-5xl px-6 py-8 sm:px-8 sm:py-10 md:px-10 lg:px-14"
+    >
         <ArtikelHero />
 
         <ArtikelContent />

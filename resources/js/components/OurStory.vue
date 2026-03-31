@@ -41,7 +41,7 @@
                                         Awal Berdiri
                                     </h4>
                                     <p
-                                        class="text-sm leading-relaxed text-[#6B8E6F]"
+                                        class="max-w-prose text-justify text-sm leading-relaxed text-[#6B8E6F]"
                                     >
                                         Putik Psychology Center didirikan pada 2
                                         Juni 2006 sebagai Biro Psikologi di Kota
@@ -66,7 +66,7 @@
                                         Pengembangan Layanan Psikologi
                                     </h4>
                                     <p
-                                        class="text-sm leading-relaxed text-[#6B8E6F]"
+                                        class="max-w-prose text-justify text-sm leading-relaxed text-[#6B8E6F]"
                                     >
                                         Sejak awal berdiri, Putik berkomitmen
                                         memberikan layanan psikologi yang
@@ -92,7 +92,7 @@
                                         Komitmen untuk Tumbuh dan Memberdayakan
                                     </h4>
                                     <p
-                                        class="text-sm leading-relaxed text-[#6B8E6F]"
+                                        class="max-w-prose text-justify text-sm leading-relaxed text-[#6B8E6F]"
                                     >
                                         Sebagai bagian dari kontribusi nyata
                                         bagi masyarakat, Putik juga
