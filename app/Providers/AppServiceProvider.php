@@ -22,12 +22,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('access-admin', function (User $user): bool {
-            return $user->role === 'admin';
+            return $user->canAccessAdminPanel();
         });
 
         Gate::define('access-superadmin', function (User $user): bool {
-            $superAdmins = explode(',', env('SUPERADMIN_EMAILS', ''));
-            return in_array($user->email, array_map('trim', $superAdmins));
+            return $user->isSuperAdmin();
         });
     }
 }

@@ -31,11 +31,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { kelolaPengguna } from '@/routes';
-import { router, Link, usePage } from '@inertiajs/vue3';
-import { Eye, SearchIcon, ShieldAlert, ShieldCheck } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
-import { Eye, SearchIcon } from 'lucide-vue-next';
+import { Eye, SearchIcon, ShieldAlert, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 // Ambil data admin login saat ini (is_superadmin) dari props
@@ -120,19 +118,23 @@ const toggleRole = (user: any) => {
 
     const newRole = user.role === 'admin' ? 'user' : 'admin';
     const konfirmasi = confirm(
-        `Apakah Anda yakin ingin mengubah role "${user.nama}" menjadi ${newRole.toUpperCase()}?`
+        `Apakah Anda yakin ingin mengubah role "${user.nama}" menjadi ${newRole.toUpperCase()}?`,
     );
 
     if (konfirmasi) {
-        router.put(`/admin/kelola-pengguna/${user.id}/role`, {
-            role: newRole,
-        }, {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                // Notifikasi sukses otomatis dari flash session (opsional)
-            }
-        });
+        router.put(
+            `/admin/kelola-pengguna/${user.id}/role`,
+            {
+                role: newRole,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    // Notifikasi sukses otomatis dari flash session (opsional)
+                },
+            },
+        );
     }
 };
 
@@ -236,13 +238,19 @@ const goToUsersPage = (page: number) => {
                     </TableCell>
                     <TableCell class="text-center">
                         {{ user.nama }}
-                        <div class="text-xs text-gray-500">{{ user.email }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ user.email }}
+                        </div>
                     </TableCell>
                     <TableCell class="text-center">
-                        <span :class="[
-                            'px-2 py-1 text-xs font-semibold rounded-full',
-                            user.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
-                        ]">
+                        <span
+                            :class="[
+                                'rounded-full px-2 py-1 text-xs font-semibold',
+                                user.role === 'admin'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-gray-100 text-gray-700',
+                            ]"
+                        >
                             {{ (user.role || 'user').toUpperCase() }}
                         </span>
                     </TableCell>
@@ -253,19 +261,26 @@ const goToUsersPage = (page: number) => {
                         <div class="flex justify-center gap-2">
                             <Link :href="`/admin/kelola-pengguna/${user.id}`">
                                 <Button size="sm" variant="outline">
-                                    <Eye class="h-4 w-4 mr-1" /> Detail
+                                    <Eye class="mr-1 h-4 w-4" /> Detail
                                 </Button>
                             </Link>
 
-                            <Button 
+                            <Button
                                 v-if="isSuperAdmin"
-                                size="sm" 
+                                size="sm"
                                 variant="outline"
                                 @click="toggleRole(user)"
                             >
-                                <ShieldAlert v-if="user.role === 'admin'" class="h-4 w-4 mr-1" />
-                                <ShieldCheck v-else class="h-4 w-4 mr-1" />
-                                {{ user.role === 'admin' ? 'Cabut Admin' : 'Jadikan Admin' }}
+                                <ShieldAlert
+                                    v-if="user.role === 'admin'"
+                                    class="mr-1 h-4 w-4"
+                                />
+                                <ShieldCheck v-else class="mr-1 h-4 w-4" />
+                                {{
+                                    user.role === 'admin'
+                                        ? 'Cabut Admin'
+                                        : 'Jadikan Admin'
+                                }}
                             </Button>
                         </div>
                     </TableCell>

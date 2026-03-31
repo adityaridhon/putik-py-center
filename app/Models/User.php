@@ -64,4 +64,16 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function isSuperAdmin(): bool
+    {
+        $superAdmins = array_filter(array_map('trim', explode(',', (string) env('SUPERADMIN_EMAILS', ''))));
+
+        return in_array($this->email, $superAdmins, true);
+    }
+
+    public function canAccessAdminPanel(): bool
+    {
+        return $this->isAdmin() || $this->isSuperAdmin();
+    }
 }

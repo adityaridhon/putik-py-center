@@ -52,7 +52,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
-                    'is_superadmin' => in_array($user->email, array_map('trim', explode(',', env('SUPERADMIN_EMAILS', '')))),
+                    'is_superadmin' => $user->isSuperAdmin(),
                 ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

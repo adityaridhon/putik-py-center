@@ -14,10 +14,10 @@ class LoginResponse implements LoginResponseContract
 
         // Use paths (not absolute URLs) to keep redirects consistent
         // and easier to assert in tests.
-        $defaultPath = ($user && $user->role === 'admin')
-            ? route('dashboard', absolute: false)
-            : route('userDashboard', absolute: false);
+        if ($user && $user->canAccessAdminPanel()) {
+            return redirect()->to(route('dashboard', absolute: false));
+        }
 
-        return redirect()->intended($defaultPath);
+        return redirect()->intended(route('userDashboard', absolute: false));
     }
 }
