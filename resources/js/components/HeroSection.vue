@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <section class="relative isolate overflow-hidden bg-primary">
+    <section class="relative isolate overflow-hidden bg-primary pt-10">
         <div
             class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.24),transparent_54%)]"
         ></div>
@@ -20,7 +20,7 @@ defineProps<{
             class="absolute -right-24 bottom-10 h-64 w-64 rounded-full bg-emerald-200/20 blur-3xl"
         ></div>
         <div
-            class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/10 to-transparent"
+            class="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/10 to-transparent"
         ></div>
 
         <div
@@ -50,7 +50,7 @@ defineProps<{
                 </h1>
 
                 <div
-                    class="h-px w-28 bg-gradient-to-r from-transparent via-emerald-100/80 to-transparent"
+                    class="h-px w-28 bg-linear-to-r from-transparent via-emerald-100/80 to-transparent"
                 ></div>
 
                 <p

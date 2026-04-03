@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { Vue3Marquee } from 'vue3-marquee';
 
-const companyClients = [
-    '/images/Logo_1.png',
-    '/images/Logo_2.png',
-    '/images/Logo_3.png',
-    '/images/Logo_4.png',
-    '/images/Logo_5.png',
-    '/images/Logo_6.png',
-];
+const props = defineProps<{
+    partnerLogos?: string[];
+}>();
 </script>
 <template>
     <div class="mt-10 pb-10 text-center">
@@ -17,10 +12,10 @@ const companyClients = [
                 Klien Partner Kami
             </h1>
         </div>
-        <Vue3Marquee :pause-on-hover="true">
+        <Vue3Marquee v-if="props.partnerLogos?.length" :pause-on-hover="true">
             <div
                 class="card"
-                v-for="companyClient in companyClients"
+                v-for="companyClient in props.partnerLogos"
                 :key="companyClient"
             >
                 <img
@@ -31,5 +26,6 @@ const companyClients = [
                 />
             </div>
         </Vue3Marquee>
+        <p v-else class="text-sm text-gray-500">Belum ada logo partner.</p>
     </div>
 </template>
