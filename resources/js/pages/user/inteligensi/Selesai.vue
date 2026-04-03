@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import NavbarTes from '@/components/NavbarTes.vue';
+import Navbar from '@/components/Navbar.vue';
 import TesSelesai from '@/components/TesSelesai.vue';
 </script>
 
 <template>
     <div class="min-h-screen bg-slate-100">
-        <NavbarTes judul="TES INTELIGENSI" />
+        <Navbar title="TES INTELIGENSI" />
         <TesSelesai judulTes="Inteligensi" />
     </div>
 </template>

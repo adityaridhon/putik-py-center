@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NavbarTes from '@/components/NavbarTes.vue';
+import Navbar from '@/components/Navbar.vue';
 import NavigasiKategori from '@/components/NavigasiKategori.vue';
 import TabelIsian from '@/components/TabelIsian.vue';
 import TabelRangking from '@/components/TabelRangking.vue';
@@ -157,7 +157,7 @@ const selesaiTes = () => {
 </script>
 
 <template>
-    <NavbarTes judul="TES MINAT BAKAT" />
+    <Navbar title="TES MINAT BAKAT" />
     <div
         class="mx-auto mt-6 max-w-5xl px-4 sm:mt-8 sm:px-6 md:mt-10 md:px-8 lg:px-10"
     >

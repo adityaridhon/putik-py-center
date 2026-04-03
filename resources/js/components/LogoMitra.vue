@@ -12,9 +12,11 @@ const companyClients = [
 </script>
 <template>
     <div class="mt-10 pb-10 text-center">
-        <h1 class="font-title mb-4 px-4 text-3xl font-bold sm:text-4xl">
-            Klien Partner Kami
-        </h1>
+        <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10">
+            <h1 class="font-title mb-4 text-3xl font-bold sm:text-4xl">
+                Klien Partner Kami
+            </h1>
+        </div>
         <Vue3Marquee :pause-on-hover="true">
             <div
                 class="card"

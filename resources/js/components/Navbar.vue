@@ -25,13 +25,14 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-defineProps<{
+const page = usePage();
+const props = defineProps<{
     profile?: {
-        logo_url?: string;
+        logo_url?: string | null;
     };
+    title?: string;
 }>();
 
-const page = usePage();
 const auth = computed(
     () =>
         page.props.auth as Auth & {
@@ -41,6 +42,27 @@ const auth = computed(
         },
 );
 const menuOpen = ref(false);
+
+const companyProfile = computed(
+    () =>
+        (
+            page.props as {
+                companyProfile?: {
+                    logo_url?: string | null;
+                };
+            }
+        ).companyProfile,
+);
+
+const logoUrl = computed(
+    () => props.profile?.logo_url ?? companyProfile.value?.logo_url,
+);
+
+const logoSrc = computed(() =>
+    logoUrl.value ? `/storage/${logoUrl.value}` : '/images/logo_putik.webp',
+);
+
+const isTitleMode = computed(() => Boolean(props.title));
 
 const normalizePath = (url: string) => {
     const [path] = url.split('?');
@@ -101,22 +123,30 @@ const closeMenu = () => {
 </script>
 
 <template>
+    <nav v-if="isTitleMode" class="w-full bg-primary px-3 py-3 sm:px-6">
+        <div class="mx-auto flex w-full max-w-5xl items-center gap-2 sm:gap-3">
+            <img
+                :src="logoSrc"
+                alt="Putik Psychology Center"
+                class="h-7 w-auto shrink-0 sm:h-8"
+            />
+
+            <h1
+                class="flex-1 pr-7 text-center text-sm font-bold tracking-wide text-white sm:pr-8 sm:text-xl md:text-2xl"
+            >
+                {{ props.title }}
+            </h1>
+        </div>
+    </nav>
     <nav
+        v-else
         class="border-default fixed start-0 top-0 z-20 w-full border-b bg-primary"
     >
         <div
             class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4"
         >
             <div class="logo">
-                <img
-                    :src="
-                        profile?.logo_url
-                            ? `/storage/${profile.logo_url}`
-                            : '/images/logo_putik.webp'
-                    "
-                    width="50"
-                    alt="Logo"
-                />
+                <img :src="logoSrc" width="50" alt="Logo" />
             </div>
 
             <div
@@ -126,7 +156,7 @@ const closeMenu = () => {
                     <DropdownMenuTrigger as-child>
                         <button
                             type="button"
-                            class="focus:ring-neutral-tertiary flex rounded-full bg-white text-sm focus:ring-4 md:me-0"
+                            class="focus:ring-neutral-tertiary hidden rounded-full bg-white text-sm focus:ring-4 focus:outline-none md:me-0 md:flex"
                         >
                             <span class="sr-only">Open user menu</span>
                             <div
@@ -192,7 +222,7 @@ const closeMenu = () => {
                 </DropdownMenu>
                 <button
                     type="button"
-                    class="text-body rounded-base hover:bg-neutral-secondary-soft hover:text-heading focus:ring-neutral-tertiary inline-flex h-10 w-10 items-center justify-center p-2 text-sm focus:ring-2 focus:outline-none md:hidden"
+                    class="rounded-base inline-flex h-10 w-10 items-center justify-center p-2 text-sm text-white hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-white/40 focus:outline-none md:hidden"
                     aria-controls="navbar-cta"
                     :aria-expanded="menuOpen"
                     @click="menuOpen = !menuOpen"
@@ -224,6 +254,38 @@ const closeMenu = () => {
                 <ul
                     class="border-default rounded-base bg-neutral-secondary-soft md:bg-neutral-primary w-full flex-col border p-4 font-medium text-white md:mt-0 md:flex md:w-auto md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse"
                 >
+                    <li v-if="auth?.user" class="mb-3 md:hidden">
+                        <div
+                            class="border-default flex items-center gap-3 border-b pb-3"
+                        >
+                            <div
+                                v-if="auth?.user?.avatar"
+                                class="h-8 w-8 overflow-hidden rounded-full"
+                            >
+                                <img
+                                    class="h-full w-full object-cover"
+                                    :src="auth.user.avatar"
+                                    :alt="auth.user.name"
+                                />
+                            </div>
+                            <div
+                                v-else
+                                class="bg-neutral-tertiary text-heading flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold"
+                            >
+                                {{ getInitials(auth?.user?.name || 'User') }}
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="truncate text-sm font-semibold text-white"
+                                >
+                                    {{ auth?.user?.name || 'User' }}
+                                </p>
+                                <p class="truncate text-xs text-white/80">
+                                    {{ auth?.user?.email || '' }}
+                                </p>
+                            </div>
+                        </div>
+                    </li>
                     <li>
                         <Link
                             :href="home().url"

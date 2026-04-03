@@ -5,7 +5,7 @@ import PopupPeringatanRanking from '@/components/PopupPeringatanRanking.vue';
 
 interface Props {
     pekerjaan: string[];
-    modelValue: number[];
+    modelValue: Array<number | null>;
 }
 
 const props = defineProps<Props>();
@@ -14,11 +14,30 @@ const emit = defineEmits(['update:modelValue']);
 
 const isPopupOpen = ref(false);
 
-const updateValue = (index: number, value: number) => {
+const parseRankingValue = (rawValue: string): number | null => {
+    if (rawValue === '') {
+        return null;
+    }
+
+    const parsed = Number(rawValue);
+
+    if (!Number.isInteger(parsed) || parsed < 1 || parsed > 12) {
+        return null;
+    }
+
+    return parsed;
+};
+
+const updateValue = (index: number, value: number | null) => {
     const newValue = [...props.modelValue];
 
-    // cek duplikat ranking
-    if (newValue.includes(value) && newValue[index] !== value) {
+    // Cek duplikat hanya untuk nilai ranking yang terisi.
+    if (
+        value !== null &&
+        newValue.some(
+            (item, itemIndex) => itemIndex !== index && item === value,
+        )
+    ) {
         isPopupOpen.value = true;
         return;
     }
@@ -49,11 +68,11 @@ const closePopup = () => {
 
                     <select
                         class="shrink-0 rounded border px-2 py-1 text-sm"
-                        :value="modelValue[index]"
+                        :value="modelValue[index] ?? ''"
                         @change="
                             updateValue(
                                 index,
-                                Number(
+                                parseRankingValue(
                                     ($event.target as HTMLSelectElement).value,
                                 ),
                             )
@@ -89,11 +108,11 @@ const closePopup = () => {
                         <td class="border text-center">
                             <select
                                 class="rounded border px-2 py-1 text-xs sm:text-sm"
-                                :value="modelValue[index]"
+                                :value="modelValue[index] ?? ''"
                                 @change="
                                     updateValue(
                                         index,
-                                        Number(
+                                        parseRankingValue(
                                             ($event.target as HTMLSelectElement)
                                                 .value,
                                         ),

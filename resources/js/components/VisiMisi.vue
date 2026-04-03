@@ -41,14 +41,17 @@ const items = [
 
                 <ul
                     v-if="Array.isArray(item.deskripsi)"
-                    class="flex-1 list-disc space-y-4 pl-5 text-left text-white"
+                    class="mx-auto max-w-prose flex-1 list-disc space-y-4 pl-5 text-left leading-relaxed text-white"
                 >
                     <li v-for="(point, i) in item.deskripsi" :key="i">
                         {{ point }}
                     </li>
                 </ul>
 
-                <p v-else class="flex-1 text-center text-white">
+                <p
+                    v-else
+                    class="mx-auto max-w-prose flex-1 text-justify leading-relaxed text-white"
+                >
                     {{ item.deskripsi }}
                 </p>
             </div>

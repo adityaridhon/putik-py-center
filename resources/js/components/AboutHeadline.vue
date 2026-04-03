@@ -2,7 +2,7 @@
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-6xl flex-col gap-8 px-4 pt-28 pb-12 sm:px-6 md:px-8 md:pt-32 md:pb-14 lg:flex-row lg:items-start lg:px-10"
+        class="wrapper mx-auto flex max-w-7xl flex-col gap-8 px-4 pt-28 pb-12 sm:px-6 md:px-8 md:pt-32 md:pb-14 lg:flex-row lg:items-start lg:px-10"
     >
         <div class="image flex justify-center lg:justify-start">
             <img
@@ -19,7 +19,9 @@
                 ABOUT PUTIK
             </h1>
 
-            <p class="text-base text-primary">
+            <p
+                class="mx-auto max-w-prose text-justify text-base leading-relaxed text-primary lg:mx-0"
+            >
                 Putik hadir sebagai wadah yang mempertemukan para lulusan
                 psikologi untuk berbagi gagasan, ilmu, dan kontribusi nyata bagi
                 masyarakat Balikpapan. Sebagai pusat layanan terpadu, Putik

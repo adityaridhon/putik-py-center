@@ -6,7 +6,7 @@ import Button from './ui/button/Button.vue';
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 md:px-8 lg:flex-row lg:items-start lg:px-10"
+        class="wrapper mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:px-8 lg:flex-row lg:items-start lg:px-10"
     >
         <div class="image overflow-hidden rounded-3xl shadow-lg">
             <img
@@ -23,7 +23,7 @@ import Button from './ui/button/Button.vue';
                 TIM KAMI
             </h1>
 
-            <p class="text-base text-primary">
+            <p class="max-w-prose text-base leading-relaxed text-primary">
                 Layanan psikologi terpadu di bawah pengawasan Psikolog Senior
                 bersertifikasi SIPP & HIMPSI
             </p>

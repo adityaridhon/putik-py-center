@@ -2,7 +2,7 @@
 
 <template>
     <div
-        class="wrapper mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 md:gap-10 md:px-8 lg:flex-row lg:items-start lg:px-10"
+        class="wrapper mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:gap-10 md:px-8 lg:flex-row lg:items-start lg:px-10"
     >
         <div class="image flex justify-center lg:justify-start">
             <img
@@ -19,7 +19,9 @@
                 TIM KAMI
             </h1>
 
-            <p class="text-base text-primary">
+            <p
+                class="mx-auto max-w-prose text-justify text-base leading-relaxed text-primary lg:mx-0"
+            >
                 Putik Psychology Center memiliki Sumber Daya Manusia dengan
                 latar belakang pendidikan psikologi dan memiliki kompetensi
                 serta pengalaman yang beragam, sesuai dengan berbagai jenis jasa
@@ -39,10 +41,8 @@
     </div>
 
     <!-- PARAGRAF TAMBAHAN -->
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10">
-        <p
-            class="mx-auto max-w-4xl text-center text-base leading-relaxed text-primary lg:text-left"
-        >
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10">
+        <p class="w-full text-justify text-base leading-relaxed text-primary">
             Selain memiliki tenaga tetap, Putik juga merekrut tenaga lepasan
             (Associates) yang telah dilatih dan memiliki pengalaman dalam
             memberikan pelayanan psikologi yang dibutuhkan dibawah koordinasi
@@ -54,7 +54,7 @@
 
     <!-- FOTO TIM -->
     <div
-        class="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-6 px-4 pb-10 sm:px-6 md:px-8 lg:grid-cols-2 lg:px-10"
+        class="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-6 px-4 pb-10 sm:px-6 md:px-8 lg:grid-cols-2 lg:px-10"
     >
         <div class="overflow-hidden rounded-3xl shadow-lg">
             <img

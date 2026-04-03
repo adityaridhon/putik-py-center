@@ -55,7 +55,9 @@ const benefits = [
                     <h4 class="mb-2 font-semibold text-[#2C3E3A]">
                         {{ benefit.title }}
                     </h4>
-                    <p class="text-sm leading-relaxed text-[#6B8E6F]">
+                    <p
+                        class="text-justify text-sm leading-relaxed text-[#6B8E6F]"
+                    >
                         {{ benefit.description }}
                     </p>
                 </div>
