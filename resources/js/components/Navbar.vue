@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,6 +17,7 @@ import {
     home,
     kontak,
     layananKami,
+    login,
     logout,
     tentangKami,
     userDashboard,
@@ -152,7 +154,7 @@ const closeMenu = () => {
             <div
                 class="flex items-center space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse"
             >
-                <DropdownMenu>
+                <DropdownMenu v-if="auth?.user">
                     <DropdownMenuTrigger as-child>
                         <button
                             type="button"
@@ -220,6 +222,14 @@ const closeMenu = () => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Button
+                    v-else
+                    as-child
+                    variant="secondary"
+                    class="hidden md:inline-flex"
+                >
+                    <Link :href="login().url">Login</Link>
+                </Button>
                 <button
                     type="button"
                     class="rounded-base inline-flex h-10 w-10 items-center justify-center p-2 text-sm text-white hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-white/40 focus:outline-none md:hidden"
@@ -371,6 +381,14 @@ const closeMenu = () => {
                             "
                             @click="closeMenu"
                             >Kontak</Link
+                        >
+                    </li>
+                    <li v-if="!auth?.user" class="md:hidden">
+                        <Link
+                            :href="login().url"
+                            :class="linkClasses(isRouteActive(login().url))"
+                            @click="closeMenu"
+                            >Login</Link
                         >
                     </li>
                 </ul>

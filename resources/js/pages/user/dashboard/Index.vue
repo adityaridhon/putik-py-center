@@ -14,7 +14,7 @@ defineProps<{
 <template>
     <Navbar />
 
-    <section class="px-6 py-20">
+    <section class="px-6 py-24">
         <PageHeader title="Dashboard User" :back-url="home().url" />
         <UserDashboard :user="user" :riwayat="riwayat" />
     </section>

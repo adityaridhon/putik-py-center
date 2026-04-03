@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\CompanyProfile;
+use App\Models\Article;
+use App\Models\Client;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
@@ -20,10 +22,39 @@ use App\Http\Controllers\UserProfileController;
 
 Route::get('/', function () {
    $profile = CompanyProfile::first();
+   $partnerLogos = Client::query()
+        ->whereNotNull('logo')
+        ->latest()
+        ->get()
+        ->map(function (Client $client) {
+            return $client->logo_url;
+        })
+        ->values();
+
+   $articles = Article::query()
+        ->with('category:id,name')
+        ->where('status', 'published')
+        ->latest('published_at')
+        ->latest('created_at')
+        ->limit(6)
+        ->get()
+        ->map(function (Article $article) {
+            return [
+                'judul' => $article->title,
+                'deskripsi' => $article->description,
+                'gambar' => $article->cover_image_url ?? '/images/Artikel_1.jpg',
+                'kategori' => $article->category?->name ?? 'Umum',
+                'tanggal' => $article->published_at?->translatedFormat('d F Y')
+                    ?? $article->created_at->translatedFormat('d F Y'),
+                'slug' => $article->slug,
+            ];
+        });
 
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
-        'companyProfile' => $profile 
+        'companyProfile' => $profile,
+        'partnerLogos' => $partnerLogos,
+        'articles' => $articles,
     ]);
     })->name('home');
 
@@ -83,18 +114,94 @@ Route::get('/', function () {
     Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 
     Route::get('/artikel', function () {
-        return Inertia::render('user/artikel/Index');
+        $articlesQuery = Article::query()
+            ->with('category:id,name')
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->latest('created_at');
+
+        $articlesPage = $articlesQuery->paginate(6);
+
+        $articles = $articlesPage->map(function (Article $article) {
+            return [
+                'judul' => $article->title,
+                'deskripsi' => $article->description,
+                'gambar' => $article->cover_image_url ?? '/images/Artikel_1.jpg',
+                'kategori' => $article->category?->name ?? 'Umum',
+                'tanggal' => $article->published_at?->translatedFormat('d F Y')
+                    ?? $article->created_at->translatedFormat('d F Y'),
+                'slug' => $article->slug,
+            ];
+        });
+
+        return Inertia::render('user/artikel/Index', [
+            'articles' => [
+                'data' => $articles,
+                'current_page' => $articlesPage->currentPage(),
+                'last_page' => $articlesPage->lastPage(),
+                'per_page' => $articlesPage->perPage(),
+                'total' => $articlesPage->total(),
+                'from' => $articlesPage->firstItem(),
+                'to' => $articlesPage->lastItem(),
+            ],
+        ]);
     })->name('artikel');
 
     Route::get('/artikel/{slug}', function (string $slug) {
+        $article = Article::query()
+            ->with('category:id,name')
+            ->where('status', 'published')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $articles = Article::query()
+            ->with('category:id,name')
+            ->where('status', 'published')
+            ->where('slug', '!=', $slug)
+            ->latest('published_at')
+            ->latest('created_at')
+            ->limit(3)
+            ->get()
+            ->map(function (Article $article) {
+                return [
+                    'judul' => $article->title,
+                    'deskripsi' => $article->description,
+                    'gambar' => $article->cover_image_url ?? '/images/Artikel_1.jpg',
+                    'kategori' => $article->category?->name ?? 'Umum',
+                    'tanggal' => $article->published_at?->translatedFormat('d F Y')
+                        ?? $article->created_at->translatedFormat('d F Y'),
+                    'slug' => $article->slug,
+                ];
+            });
+
+        $articleData = [
+            'judul' => $article->title,
+            'deskripsi' => $article->description,
+            'gambar' => $article->cover_image_url ?? '/images/Artikel_1.jpg',
+            'kategori' => $article->category?->name ?? 'Umum',
+            'tanggal' => $article->published_at?->translatedFormat('d F Y')
+                ?? $article->created_at->translatedFormat('d F Y'),
+            'slug' => $article->slug,
+        ];
+
         return Inertia::render('user/artikel/detail', [
-            'slug' => $slug,
+            'article' => $articleData,
+            'articles' => $articles,
         ]);
     })->name('artikel.detail');
 
     // Google OAuth routes
     Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/admin/login', function () {
+            return Inertia::render('auth/LoginAdminPage', [
+                'canResetPassword' => Features::enabled(Features::resetPasswords()),
+                'status' => session('status'),
+            ]);
+        })->name('admin.login');
+    });
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard user

@@ -20,7 +20,7 @@ const profile = computed(() => page.props.companyProfile);
 </script>
 
 <template>
-    <footer class="bg-primary text-white">
+    <footer class="mt-8 bg-primary text-white">
         <div
             class="mx-auto w-full max-w-7xl p-4 px-4 py-6 sm:px-6 md:px-20 lg:py-8"
         >
@@ -96,7 +96,7 @@ const profile = computed(() => page.props.companyProfile);
                 <span class="text-body text-sm"
                     >© 2026
                     <a href="https://flowbite.com/" class="hover:underline"
-                        >Flowbite™</a
+                        >Putik Psychology Center</a
                     >. All Rights Reserved.
                 </span>
             </div>
