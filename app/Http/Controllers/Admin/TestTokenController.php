@@ -31,9 +31,9 @@ class TestTokenController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'test_type' => 'required|string',
+            'test_type' => 'required|string|in:minat-bakat,intelegensi,gaya-belajar',
             'total_tokens' => 'required|integer|min:1|max:1000',
-            'expired_at' => 'required|date|after:today',
+            'expired_at' => 'required|date|after_or_equal:today',
             'note' => 'nullable|string|max:255',
         ]);
 
@@ -89,7 +89,7 @@ class TestTokenController extends Controller
     public function update(Request $request, TestTokenBatch $batch)
     {
         $validated = $request->validate([
-            'test_type' => 'required|string',
+            'test_type' => 'required|string|in:minat-bakat,intelegensi,gaya-belajar',
             'expired_at' => 'required|date',
             'note' => 'nullable|string|max:255',
         ]);

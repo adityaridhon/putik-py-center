@@ -18,7 +18,7 @@ const props = defineProps<{
         artikelTerbit: number;
     };
     activities?: Array<{
-        id: number;
+        id: number | string;
         nama_pengguna: string;
         aktivitas: string;
         tanggal: string;

@@ -152,7 +152,21 @@ const selesaiTes = () => {
         return;
     }
 
-    router.visit('/tes-online/minat-bakat/selesai');
+    router.post('/tes-online/minat-bakat/submit', {
+        answers: {
+            ranking: jawabanRanking.value,
+            isian: jawabanIsian.value
+        }
+    }, {
+        preserveScroll: true,
+        onError: (errors) => {
+            console.error('Submission error:', errors);
+            if (errors.token) {
+                alert(errors.token);
+                router.visit('/tes-online/minat-bakat');
+            }
+        }
+    });
 };
 </script>
 

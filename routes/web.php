@@ -39,46 +39,6 @@ Route::get('/', function () {
         return Inertia::render('user/kontak/Index');
     })->name('kontak');
 
-    Route::get('/tes-online', function () {
-        return Inertia::render('user/daftar-layanan/Index');
-    })->name('daftar-layanan');
-
-    Route::get('/tes-online/minat-bakat', function () {
-        return Inertia::render('user/minat-bakat/Index');
-    })->name('tes-online.minat-bakat');
-
-    Route::get('/tes-online/minat-bakat/tes', function () {
-        return Inertia::render('user/minat-bakat/Tes');
-    })->name('tes-online.minat-bakat.tes');
-
-    Route::get('/tes-online/minat-bakat/selesai', function () {
-        return Inertia::render('user/minat-bakat/Selesai');
-    })->name('tes-online.minat-bakat.selesai');
-
-    Route::get('/tes-online/inteligensi', function () {
-        return Inertia::render('user/inteligensi/Index');
-    })->name('tes-online.inteligensi');
-
-    Route::get('/tes-online/inteligensi/tes', function () {
-        return Inertia::render('user/inteligensi/Tes');
-    })->name('tes-online.inteligensi.tes');
-
-    Route::get('/tes-online/inteligensi/selesai', function () {
-        return Inertia::render('user/inteligensi/Selesai');
-    })->name('tes-online.inteligensi.selesai');
-
-    Route::get('/tes-online/gaya-belajar', function () {
-        return Inertia::render('user/gaya-belajar/Index');
-    })->name('tes-online.gaya-belajar');
-
-    Route::get('/tes-online/gaya-belajar/tes', function () {
-        return Inertia::render('user/gaya-belajar/Tes');
-    })->name('tes-online.gaya-belajar.tes');
-
-    Route::get('/tes-online/gaya-belajar/selesai', function () {
-        return Inertia::render('user/gaya-belajar/Selesai');
-    })->name('tes-online.gaya-belajar.selesai');
-
     Route::get('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking-layanan');
     Route::post('/booking-layanan', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking-layanan.store');
 
@@ -97,6 +57,71 @@ Route::get('/', function () {
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 Route::middleware(['auth'])->group(function () {
+    // Tes Online Routes
+    Route::get('/tes-online', function () {
+        return Inertia::render('user/daftar-layanan/Index');
+    })->name('daftar-layanan');
+
+    Route::get('/tes-online/minat-bakat', function () {
+        return Inertia::render('user/minat-bakat/Index');
+    })->name('tes-online.minat-bakat');
+    
+    // New Route for Minat Bakat Submission
+    Route::post('/tes-online/minat-bakat/mulai', [App\Http\Controllers\OnlineTestController::class, 'start'])
+        ->defaults('category', 'minat-bakat')
+        ->name('tes-online.minat-bakat.mulai');
+
+    Route::post('/tes-online/minat-bakat/submit', [App\Http\Controllers\OnlineTestSubmitController::class, 'submitMinatBakat'])
+        ->name('tes-online.minat-bakat.submit');
+
+    Route::get('/tes-online/minat-bakat/tes', function () {
+        return Inertia::render('user/minat-bakat/Tes');
+    })->name('tes-online.minat-bakat.tes');
+
+    Route::get('/tes-online/minat-bakat/selesai', function () {
+        return Inertia::render('user/minat-bakat/Selesai');
+    })->name('tes-online.minat-bakat.selesai');
+
+    Route::get('/tes-online/inteligensi', function () {
+        return Inertia::render('user/inteligensi/Index');
+    })->name('tes-online.inteligensi');
+
+    // New Route for Inteligensi Submission
+    Route::post('/tes-online/inteligensi/mulai', [App\Http\Controllers\OnlineTestController::class, 'start'])
+        ->defaults('category', 'inteligensi')
+        ->name('tes-online.inteligensi.mulai');
+
+    Route::post('/tes-online/inteligensi/submit', [App\Http\Controllers\OnlineTestSubmitController::class, 'submitInteligensi'])
+        ->name('tes-online.inteligensi.submit');
+
+    Route::get('/tes-online/inteligensi/tes', function () {
+        return Inertia::render('user/inteligensi/Tes');
+    })->name('tes-online.inteligensi.tes');
+
+    Route::get('/tes-online/inteligensi/selesai', function () {
+        return Inertia::render('user/inteligensi/Selesai');
+    })->name('tes-online.inteligensi.selesai');
+
+    Route::get('/tes-online/gaya-belajar', function () {
+        return Inertia::render('user/gaya-belajar/Index');
+    })->name('tes-online.gaya-belajar');
+
+    // New Route for Gaya Belajar Submission
+    Route::post('/tes-online/gaya-belajar/mulai', [App\Http\Controllers\OnlineTestController::class, 'start'])
+        ->defaults('category', 'gaya-belajar')
+        ->name('tes-online.gaya-belajar.mulai');
+
+    Route::post('/tes-online/gaya-belajar/submit', [App\Http\Controllers\OnlineTestSubmitController::class, 'submitGayaBelajar'])
+        ->name('tes-online.gaya-belajar.submit');
+
+    Route::get('/tes-online/gaya-belajar/tes', function () {
+        return Inertia::render('user/gaya-belajar/Tes');
+    })->name('tes-online.gaya-belajar.tes');
+
+    Route::get('/tes-online/gaya-belajar/selesai', function () {
+        return Inertia::render('user/gaya-belajar/Selesai');
+    })->name('tes-online.gaya-belajar.selesai');
+
     // Dashboard user
     Route::get('/user/dashboard', function () {
         $user = auth()->user();
@@ -120,6 +145,23 @@ Route::middleware(['auth'])->group(function () {
             'riwayat' => $testSessions,
         ]);
     })->name('userDashboard');
+
+    // Download Laporan Psikologi for User
+    Route::get('/user/laporan-psikologi/{id}/download', function ($id) {
+        $session = \App\Models\TestSession::with('report')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if (!$session->report) {
+            abort(404, 'Laporan PDF belum tersedia.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->download(
+            $session->report->file_path,
+            $session->report->file_name
+        );
+    })->name('user.laporan.download');
 
     // User profile management (named distinctly to avoid clashing with settings profile routes)
     Route::get('/user/profile/edit', [UserProfileController::class, 'edit'])->name('user.profile.edit');

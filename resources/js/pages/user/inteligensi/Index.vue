@@ -9,7 +9,7 @@ import Navbar from '@/components/Navbar.vue';
         <Navbar title="TES INTELIGENSI" />
 
         <main class="flex-1 py-4 sm:py-6 md:py-8">
-            <FormMulaiTes redirect-to="/tes-online/inteligensi/tes" />
+            <FormMulaiTes submit-url="/tes-online/inteligensi/mulai" />
         </main>
 
         <Footer />

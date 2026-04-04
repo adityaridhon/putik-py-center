@@ -163,11 +163,13 @@ const deleteProfile = () => {
                             ]"
                         >{{ item.status }}</span>
                         <!-- Kalau report sudah ada, mungkin download link bisa diaktifkan -->
-                        <Button v-if="item.has_pdf" size="sm" class="gap-1.5 text-xs">
-                            <FileDown class="size-4" />
-                            Unduh Hasil (PDF)
-                        </Button>
-                        <Button v-else-if="item.raw_status !== 'completed' && item.raw_status !== 'reported'" size="sm" variant="outline" class="text-xs">    
+                        <a v-if="item.has_pdf" :href="`/user/laporan-psikologi/${item.id}/download`" target="_blank" class="contents">
+                            <Button size="sm" class="gap-1.5 text-xs bg-primary hover:bg-green-900 border-none">
+                                <FileDown class="size-4" />
+                                Unduh Hasil (PDF)
+                            </Button>
+                        </a>
+                        <Button v-else-if="item.raw_status !== 'completed' && item.raw_status !== 'reported'" size="sm" variant="outline" class="text-xs" disabled>    
                             Proses
                         </Button>
                     </div>

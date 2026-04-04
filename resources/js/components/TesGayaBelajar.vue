@@ -24,7 +24,18 @@ const handleSelesai = () => {
         return;
     }
 
-    router.visit('/tes-online/gaya-belajar/selesai');
+    router.post('/tes-online/gaya-belajar/submit', {
+        answers: daftarPernyataan.value
+    }, {
+        preserveScroll: true,
+        onError: (errors) => {
+            console.error('Submission error:', errors);
+            if (errors.token) {
+                alert(errors.token);
+                router.visit('/tes-online/gaya-belajar');
+            }
+        }
+    });
 };
 </script>
 

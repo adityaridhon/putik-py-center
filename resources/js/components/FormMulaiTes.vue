@@ -1,64 +1,47 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
-interface FormData {
-    nama: string;
-    tanggalLahir: string;
-    tanggalTes: string;
-    jenisKelamin: string;
-    token: string;
-}
 
 const props = withDefaults(
     defineProps<{
-        redirectTo?: string;
+        submitUrl?: string; // Endpoint to validate and start the test
     }>(),
     {
-        redirectTo: '',
+        submitUrl: '',
     },
 );
 
-const model = defineModel<FormData>({
-    default: {
-        nama: '',
-        tanggalLahir: '',
-        tanggalTes: '',
-        jenisKelamin: '',
-        token: '',
-    },
+const form = useForm({
+    nama: '',
+    tanggalLahir: '',
+    tanggalTes: '',
+    jenisKelamin: '',
+    token: '',
 });
-
-const updateField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
-    model.value = {
-        ...model.value,
-        [key]: value,
-    };
-};
 
 const handleNama = (event: Event) => {
     const target = event.target as HTMLInputElement;
     target.value = target.value.replace(/[^a-zA-Z\s]/g, '');
-    updateField('nama', target.value);
+    form.nama = target.value;
 };
 
 const handleTanggalLahir = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    updateField('tanggalLahir', target.value);
+    form.tanggalLahir = target.value;
 };
 
 const handleTanggalTes = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    updateField('tanggalTes', target.value);
+    form.tanggalTes = target.value;
 };
 
 const handleJenisKelamin = (value: string) => {
-    updateField('jenisKelamin', value);
+    form.jenisKelamin = value;
 };
 
 const handleToken = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    updateField('token', target.value);
+    form.token = target.value.toUpperCase();
 };
 
 const today = new Date().toISOString().split('T')[0];
@@ -83,20 +66,22 @@ const blockManualDateInput = (event: KeyboardEvent) => {
 
 const isFormComplete = computed(() => {
     return (
-        model.value.nama.trim() !== '' &&
-        model.value.tanggalLahir !== '' &&
-        model.value.tanggalTes !== '' &&
-        model.value.jenisKelamin !== '' &&
-        model.value.token.trim() !== ''
+        form.nama.trim() !== '' &&
+        form.tanggalLahir !== '' &&
+        form.tanggalTes !== '' &&
+        form.jenisKelamin !== '' &&
+        form.token.trim() !== ''
     );
 });
 
 const handleMulaiTes = () => {
-    if (!isFormComplete.value || !props.redirectTo.trim()) {
+    if (!isFormComplete.value || !props.submitUrl.trim()) {
         return;
     }
 
-    router.visit(props.redirectTo);
+    form.post(props.submitUrl, {
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -108,21 +93,30 @@ const handleMulaiTes = () => {
             Informasi Peserta
         </h2>
 
+        <!-- Tampilkan pesan error jika ada error validasi khusus -->
+        <div v-if="form.errors.token || form.errors.tanggalTes || form.errors.nama || form.errors.tanggalLahir || form.errors.jenisKelamin" class="rounded-md bg-red-50 p-4">
+            <h3 class="text-sm font-medium text-red-800">Terdapat kesalahan pada input Anda:</h3>
+            <ul class="mt-2 list-disc pl-5 text-sm text-red-700">
+                <li v-for="(error, key) in form.errors" :key="key">{{ error }}</li>
+            </ul>
+        </div>
+
         <div class="space-y-2">
             <label class="text-sm font-medium"> Nama Lengkap </label>
             <input
-                :value="model.nama"
+                :value="form.nama"
                 @input="handleNama"
                 type="text"
                 placeholder="Masukkan nama lengkap Anda"
                 class="w-full rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
+                :class="{'border-red-500': form.errors.nama}"
             />
         </div>
 
         <div class="space-y-2">
             <label class="text-sm font-medium"> Tanggal Lahir </label>
             <input
-                :value="model.tanggalLahir"
+                :value="form.tanggalLahir"
                 type="date"
                 :max="today"
                 @input="handleTanggalLahir"
@@ -130,13 +124,14 @@ const handleMulaiTes = () => {
                 @keydown="blockManualDateInput"
                 @paste.prevent
                 class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
+                :class="{'border-red-500': form.errors.tanggalLahir}"
             />
         </div>
 
         <div class="space-y-2">
             <label class="text-sm font-medium"> Tanggal Tes </label>
             <input
-                :value="model.tanggalTes"
+                :value="form.tanggalTes"
                 type="date"
                 :min="today"
                 @input="handleTanggalTes"
@@ -144,6 +139,7 @@ const handleMulaiTes = () => {
                 @keydown="blockManualDateInput"
                 @paste.prevent
                 class="w-full cursor-pointer rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
+                :class="{'border-red-500': form.errors.tanggalTes}"
             />
         </div>
 
@@ -153,12 +149,13 @@ const handleMulaiTes = () => {
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
                 <label
                     class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
+                    :class="{'border-red-500': form.errors.jenisKelamin}"
                 >
                     <input
                         type="radio"
                         name="jenisKelamin"
                         value="Pria"
-                        :checked="model.jenisKelamin === 'Pria'"
+                        :checked="form.jenisKelamin === 'Pria'"
                         @change="handleJenisKelamin('Pria')"
                         class="accent-primary"
                     />
@@ -167,12 +164,13 @@ const handleMulaiTes = () => {
 
                 <label
                     class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
+                    :class="{'border-red-500': form.errors.jenisKelamin}"
                 >
                     <input
                         type="radio"
                         name="jenisKelamin"
                         value="Wanita"
-                        :checked="model.jenisKelamin === 'Wanita'"
+                        :checked="form.jenisKelamin === 'Wanita'"
                         @change="handleJenisKelamin('Wanita')"
                         class="accent-primary"
                     />
@@ -184,26 +182,27 @@ const handleMulaiTes = () => {
         <div class="space-y-2">
             <label class="text-sm font-medium"> Token </label>
             <input
-                :value="model.token"
+                :value="form.token"
                 type="text"
                 @input="handleToken"
                 placeholder="Masukkan token tes"
-                class="w-full rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
+                class="w-full uppercase rounded-lg border bg-slate-100 px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none sm:py-3 sm:text-base"
+                :class="{'border-red-500': form.errors.token}"
             />
         </div>
 
         <button
             type="button"
-            :disabled="!isFormComplete"
+            :disabled="!isFormComplete || form.processing"
             @click="handleMulaiTes"
             :class="[
                 'mt-4 w-full rounded-lg px-4 py-2.5 text-sm text-white transition sm:text-base',
-                isFormComplete
+                (isFormComplete && !form.processing)
                     ? 'cursor-pointer bg-primary hover:bg-green-900'
                     : 'cursor-not-allowed bg-gray-400',
             ]"
         >
-            Mulai Tes
+            {{ form.processing ? 'Memproses...' : 'Mulai Tes' }}
         </button>
     </div>
 </template>

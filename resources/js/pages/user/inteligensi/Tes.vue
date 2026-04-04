@@ -227,7 +227,18 @@ const selesaiTes = () => {
         return;
     }
 
-    router.visit('/tes-online/inteligensi/selesai');
+    router.post('/tes-online/inteligensi/submit', {
+        answers: jawaban.value
+    }, {
+        preserveScroll: true,
+        onError: (errors) => {
+            console.error('Submission error:', errors);
+            if (errors.token) {
+                alert(errors.token);
+                router.visit('/tes-online/inteligensi');
+            }
+        }
+    });
 };
 </script>
 
