@@ -31,6 +31,7 @@ const props = defineProps<{
         tanggal: string;
         slug: string;
     }[];
+    partnerLogos?: string[];
 }>();
 </script>
 
@@ -41,7 +42,7 @@ const props = defineProps<{
         <AboutSection :profile="props.companyProfile" />
         <Layanan />
         <TimKami />
-        <LogoMitra />
+        <LogoMitra :partner-logos="props.partnerLogos" />
         <Artikel
             :limit="3"
             :show-more-button="true"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
+import { useForm } from '@inertiajs/vue3';
 import {
     FileDown,
     Mail,
@@ -9,7 +10,6 @@ import {
     User,
     UserRound,
 } from 'lucide-vue-next';
-import { useForm } from '@inertiajs/vue3';
 
 defineProps<{
     user: any;
@@ -19,7 +19,11 @@ defineProps<{
 const form = useForm({});
 
 const deleteProfile = () => {
-    if (confirm('Apakah Anda yakin ingin menghapus profil? Tindakan ini tidak dapat dibatalkan.')) {
+    if (
+        confirm(
+            'Apakah Anda yakin ingin menghapus profil? Tindakan ini tidak dapat dibatalkan.',
+        )
+    ) {
         form.delete('/user/profile');
     }
 };
@@ -76,12 +80,12 @@ const deleteProfile = () => {
                         >
                             <Mail class="size-7 text-primary" />
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <h2 class="text-sm font-medium text-gray-500">
                                 Alamat Email
                             </h2>
                             <p
-                                class="mt-1 text-base font-semibold text-gray-900"
+                                class="mt-1 w-full text-base font-semibold break-all text-gray-900"
                             >
                                 {{ user.email }}
                             </p>
@@ -117,7 +121,7 @@ const deleteProfile = () => {
                             Edit Profil
                         </Button>
                     </a>
-                    <Button 
+                    <Button
                         variant="destructive"
                         @click="deleteProfile"
                         :disabled="form.processing"
@@ -138,11 +142,18 @@ const deleteProfile = () => {
             </h1>
 
             <div class="flex flex-col divide-y divide-gray-100">
-                <div v-if="!riwayat || riwayat.length === 0" class="py-10 text-center text-gray-500">
+                <div
+                    v-if="!riwayat || riwayat.length === 0"
+                    class="py-10 text-center text-gray-500"
+                >
                     Belum ada riwayat tes.
                 </div>
 
-                <div v-for="item in riwayat" :key="item.id" class="flex items-center justify-between gap-4 py-4">      
+                <div
+                    v-for="item in riwayat"
+                    :key="item.id"
+                    class="flex items-center justify-between gap-4 py-4"
+                >
                     <div class="min-w-0">
                         <p
                             class="truncate text-base font-semibold text-gray-900"
@@ -153,23 +164,35 @@ const deleteProfile = () => {
                             {{ item.date }}
                         </p>
                     </div>
-                    <div class="flex shrink-0 flex-col items-end gap-2">        
+                    <div class="flex shrink-0 flex-col items-end gap-2">
                         <span
                             :class="[
                                 'rounded-full px-3 py-0.5 text-xs font-semibold',
-                                item.raw_status === 'completed' || item.raw_status === 'reported' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-yellow-100 text-yellow-700'
+                                item.raw_status === 'completed' ||
+                                item.raw_status === 'reported'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700',
                             ]"
-                        >{{ item.status }}</span>
+                            >{{ item.status }}</span
+                        >
                         <!-- Kalau report sudah ada, mungkin download link bisa diaktifkan -->
-                        <a v-if="item.has_pdf" :href="`/user/laporan-psikologi/${item.id}/download`" target="_blank" class="contents">
-                            <Button size="sm" class="gap-1.5 text-xs bg-primary hover:bg-green-900 border-none">
-                                <FileDown class="size-4" />
-                                Unduh Hasil (PDF)
-                            </Button>
-                        </a>
-                        <Button v-else-if="item.raw_status !== 'completed' && item.raw_status !== 'reported'" size="sm" variant="outline" class="text-xs" disabled>    
+                        <Button
+                            v-if="item.has_pdf"
+                            size="sm"
+                            class="gap-1.5 text-xs"
+                        >
+                            <FileDown class="size-4" />
+                            Unduh Hasil (PDF)
+                        </Button>
+                        <Button
+                            v-else-if="
+                                item.raw_status !== 'completed' &&
+                                item.raw_status !== 'reported'
+                            "
+                            size="sm"
+                            variant="outline"
+                            class="text-xs"
+                        >
                             Proses
                         </Button>
                     </div>

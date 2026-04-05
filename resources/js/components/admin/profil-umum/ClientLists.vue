@@ -149,13 +149,14 @@ const goToClientsPage = (page: number) => {
                         <TableCell class="text-center">
                             <div class="flex justify-center">
                                 <img
-                                    :src="
-                                        client.logo_url ||
-                                        '/images/logo_putik.webp'
-                                    "
+                                    v-if="client.logo_url"
+                                    :src="client.logo_url"
                                     :alt="client.name"
                                     class="h-16 w-16 rounded-lg border border-gray-200 object-cover shadow-sm dark:border-gray-700"
                                 />
+                                <span v-else class="text-sm text-gray-500"
+                                    >-</span
+                                >
                             </div>
                         </TableCell>
                         <TableCell class="font-semibold">

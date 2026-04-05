@@ -2,13 +2,26 @@
 import { artikel } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import Artikel from './Artikel.vue';
+
+type ArticleCard = {
+    judul: string;
+    deskripsi: string;
+    gambar: string;
+    kategori: string;
+    tanggal: string;
+    slug: string;
+};
+
+defineProps<{
+    articles: ArticleCard[];
+}>();
 </script>
 
 <template>
     <div class="mt-16">
         <h3 class="text-2xl font-semibold text-primary">Artikel Terkait</h3>
 
-        <Artikel :limit="3" :hide-header="true" />
+        <Artikel :articles="articles" :limit="3" :hide-header="true" />
 
         <div class="text-center">
             <Link

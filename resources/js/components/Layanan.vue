@@ -43,7 +43,9 @@ const items = [
                 berbagai layanan psikologi dengan pendekatan yang disesuaikan
                 dengan kebutuhan unik setiap klien.
             </p>
-            <div class="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:gap-8">
+            <div
+                class="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3 md:gap-8"
+            >
                 <div
                     v-for="item in items"
                     :key="item.judul"
@@ -52,7 +54,7 @@ const items = [
                     <img
                         :src="item.logo"
                         :alt="item.judul"
-                        class="mx-auto mb-1 w-8"
+                        class="mx-auto mb-3 w-14"
                     />
                     <h3
                         class="font-primary mb-1 text-xl font-bold text-primary"
@@ -60,7 +62,7 @@ const items = [
                         {{ item.judul }}
                     </h3>
                     <p
-                        class="mx-auto max-w-md text-center whitespace-pre-line text-primary"
+                        class="mx-auto max-w-md text-center text-sm whitespace-pre-line text-primary"
                     >
                         {{ item.deskripsi }}
                     </p>

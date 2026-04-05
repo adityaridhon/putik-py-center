@@ -16,7 +16,7 @@ class CompanyProfileController extends Controller
     {
         $profile = CompanyProfile::first();
         $services = Service::paginate(5, ['*'], 'services_page');
-       $clients = Client::paginate(5, ['*'], 'clients_page');
+        $clients = Client::query()->latest()->paginate(5, ['*'], 'clients_page');
         
         return Inertia::render('admin/profil-umum/Index', [
             'profile' => $profile,
