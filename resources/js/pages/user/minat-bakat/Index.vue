@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar.vue';
 <template>
     <div class="overflow-x-hidden">
         <Navbar title="TES MINAT BAKAT" />
-        <FormMulaiTes redirect-to="/tes-online/minat-bakat/tes" />
+        <FormMulaiTes submit-url="/tes-online/minat-bakat/mulai" />
         <Footer />
     </div>
 </template>

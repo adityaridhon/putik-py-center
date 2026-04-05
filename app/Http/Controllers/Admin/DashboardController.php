@@ -100,19 +100,57 @@ class DashboardController extends Controller
             ->get()
             ->map(function (Booking $booking) use ($serviceLabels, $statusLabels) {
                 return [
-                    'id' => $booking->id,
+                    'id' => 'booking_' . $booking->id,
                     'nama_pengguna' => $booking->customer_name,
                     'aktivitas' => $serviceLabels[$booking->service_category] ?? 'Layanan',
                     'tanggal' => Carbon::parse($booking->booking_date)->format('d M Y'),
                     'status' => $statusLabels[$booking->status] ?? 'Menunggu',
+                    'sort_date' => clone $booking->updated_at,
                 ];
-            })
-            ->values();
+            });
+
+        $testTypeLabels = [
+            'interest' => 'Tes Minat Bakat',
+            'intelligence' => 'Tes Intelegensi',
+            'learning_style' => 'Tes Gaya Belajar',
+            'all' => 'Semua Tes',
+        ];
+
+        $testStatusLabels = [
+            'completed' => 'Selesai',
+            'pending_analysis' => 'Menunggu Analisis',
+            'reported' => 'Selesai',
+        ];
+
+        $testSessions = TestSession::with('user')
+            ->whereIn('status', ['completed', 'pending_analysis', 'reported'])
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get()
+            ->map(function ($session) use ($testTypeLabels, $testStatusLabels) {
+                return [
+                    'id' => 'test_' . $session->id,
+                    'nama_pengguna' => $session->user ? $session->user->name : 'Peserta',
+                    'aktivitas' => $testTypeLabels[$session->test_type] ?? 'Tes Psikologi',
+                    'tanggal' => Carbon::parse($session->started_at ?? $session->created_at)->format('d M Y'),
+                    'status' => $testStatusLabels[$session->status] ?? 'Menunggu',
+                    'sort_date' => clone $session->updated_at,
+                ];
+            });
+
+        $combinedActivities = $activities->concat($testSessions)
+            ->sortByDesc('sort_date')
+            ->take(10)
+            ->values()
+            ->map(function ($item) {
+                unset($item['sort_date']);
+                return $item;
+            });
 
         return Inertia::render('admin/dashboard/Index', [
             'dashboardStats' => $dashboardStats,
             'dashboardTrends' => $dashboardTrends,
-            'activities' => $activities,
+            'activities' => $combinedActivities,
         ]);
     }
 }
