@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { Form } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     open: boolean;
@@ -43,7 +44,12 @@ watch(
 );
 
 const handleSuccess = () => {
+    toast.success('Layanan berhasil diperbarui!', { duration: 3000 });
     emit('update:open', false);
+};
+
+const handleError = () => {
+    toast.error('Gagal memperbarui layanan. Coba lagi.', { duration: 3000 });
 };
 </script>
 
@@ -62,6 +68,7 @@ const handleSuccess = () => {
                 class="space-y-4"
                 preserve-scroll
                 @success="handleSuccess"
+                @error="handleError"
                 v-slot="{ errors, processing }"
             >
                 <div>

@@ -32,6 +32,7 @@ import { getCategoryColor } from '@/utils/categoryColors';
 import { Link, router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     articles?: {
@@ -60,6 +61,12 @@ const confirmDeleteArticle = () => {
 
     router.delete(destroy.url(selectedArticle.value.slug), {
         onSuccess: () => {
+            toast.success('Artikel berhasil dihapus!', { duration: 3000 });
+            showDeleteDialog.value = false;
+            selectedArticle.value = null;
+        },
+        onError: () => {
+            toast.error('Gagal menghapus artikel. Coba lagi.', { duration: 3000 });
             showDeleteDialog.value = false;
             selectedArticle.value = null;
         },

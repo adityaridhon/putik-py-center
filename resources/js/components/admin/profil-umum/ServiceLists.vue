@@ -31,6 +31,7 @@ import { destroy } from '@/routes/service';
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 import ServiceAddDialog from './dialogs/ServiceAddDialog.vue';
 import ServiceEditDialog from './dialogs/ServiceEditDialog.vue';
 import ServiceViewDialog from './dialogs/ServiceViewDialog.vue';
@@ -79,6 +80,12 @@ const confirmDeleteService = () => {
     router.delete(destroy.url(selectedService.value.id), {
         preserveScroll: true,
         onSuccess: () => {
+            toast.success('Layanan berhasil dihapus!', { duration: 3000 });
+            showDeleteDialog.value = false;
+            selectedService.value = null;
+        },
+        onError: () => {
+            toast.error('Gagal menghapus layanan. Coba lagi.', { duration: 3000 });
             showDeleteDialog.value = false;
             selectedService.value = null;
         },

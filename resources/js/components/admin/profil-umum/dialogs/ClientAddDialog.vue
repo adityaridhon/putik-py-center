@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { store } from '@/routes/clients';
 import { useForm } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     open: boolean;
@@ -31,8 +32,12 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
+            toast.success('Klien berhasil ditambahkan!', { duration: 3000 });
             emit('update:open', false);
             form.reset();
+        },
+        onError: () => {
+            toast.error('Gagal menambahkan klien. Coba lagi.', { duration: 3000 });
         },
     });
 };

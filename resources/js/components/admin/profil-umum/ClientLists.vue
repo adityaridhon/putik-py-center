@@ -31,6 +31,7 @@ import { destroy } from '@/routes/clients';
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 import ClientAddDialog from './dialogs/ClientAddDialog.vue';
 import ClientEditDialog from './dialogs/ClientEditDialog.vue';
 import ClientViewDialog from './dialogs/ClientViewDialog.vue';
@@ -79,6 +80,12 @@ const confirmDeleteClient = () => {
     router.delete(destroy.url(selectedClient.value.id), {
         preserveScroll: true,
         onSuccess: () => {
+            toast.success('Klien berhasil dihapus!', { duration: 3000 });
+            showDeleteDialog.value = false;
+            selectedClient.value = null;
+        },
+        onError: () => {
+            toast.error('Gagal menghapus klien. Coba lagi.', { duration: 3000 });
             showDeleteDialog.value = false;
             selectedClient.value = null;
         },

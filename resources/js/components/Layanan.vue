@@ -1,6 +1,17 @@
 <script setup lang="ts">
-const items = [
+import { computed } from 'vue';
+
+const props = defineProps<{
+    services?: Array<{
+        id: number;
+        name: string;
+        description: string | null;
+    }>;
+}>();
+
+const defaultItems = [
     {
+        id: 1,
         judul: 'CHILDREN CENTER',
         deskripsi:
             'Memberikan segala bentuk pelayanan yang berkaitan dengan anak, yang berupa Taman Bermain',
@@ -8,6 +19,7 @@ const items = [
         color: 'bg-white',
     },
     {
+        id: 2,
         judul: 'KONSELING DAN TERAPI',
         deskripsi:
             'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
@@ -15,6 +27,7 @@ const items = [
         color: 'bg-white',
     },
     {
+        id: 3,
         judul: 'PEMERIKSAAN PSIKOLOGI',
         deskripsi: `1. Tes Kepribadian
                     2. Tes Penjurusan Bimbingan Karir
@@ -28,6 +41,28 @@ const items = [
         color: 'bg-white',
     },
 ];
+
+const logoMap = {
+    1: '/images/Children_Center.png',
+    2: '/images/Konseling.png',
+    3: '/images/Pemeriksaan_Sikologi.png',
+};
+
+const items = computed(() => {
+    if (props.services && props.services.length > 0) {
+        return props.services.slice(0, 3).map((service, index) => ({
+            id: service.id,
+            judul: service.name.toUpperCase(),
+            deskripsi:
+                service.description ||
+                'Deskripsi layanan tidak tersedia. Hubungi admin untuk detail lebih lanjut.',
+            logo: logoMap[(index + 1) as keyof typeof logoMap] || '/images/Children_Center.png',
+            color: 'bg-white',
+        }));
+    }
+
+    return defaultItems;
+});
 </script>
 
 <template>

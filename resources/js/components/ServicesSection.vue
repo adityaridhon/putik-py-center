@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { bookingLayanan } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -10,9 +11,18 @@ import {
     MessageCircle,
 } from 'lucide-vue-next';
 
+const props = defineProps<{
+    services?: Array<{
+        id: number;
+        name: string;
+        description: string | null;
+        image_url?: string | null;
+    }>;
+}>();
+
 const bookingHref = bookingLayanan().url;
 
-const services = [
+const defaultServices = [
     {
         id: 1,
         title: 'Konseling dan Terapi',
@@ -92,6 +102,34 @@ const services = [
         primaryAction: 'Jadwalkan Layanan',
     },
 ];
+
+const iconList = [
+    MessageCircle,
+    HeartHandshake,
+    BookOpen,
+    GraduationCap,
+    BriefcaseBusiness,
+    Brain,
+];
+
+const serviceItems = computed(() => {
+    if (props.services && props.services.length > 0) {
+        return props.services.map((service, index) => ({
+            id: service.id,
+            title: service.name,
+            description:
+                service.description ||
+                'Deskripsi layanan tidak tersedia. Silakan hubungi admin untuk informasi lebih lanjut.',
+            icon: iconList[index % iconList.length],
+            images: service.image_url
+                ? [service.image_url, service.image_url, service.image_url]
+                : defaultServices[index % defaultServices.length].images,
+            primaryAction: 'Jadwalkan Layanan',
+        }));
+    }
+
+    return defaultServices;
+});
 </script>
 
 <template>
@@ -99,7 +137,7 @@ const services = [
         class="space-y-16 px-4 py-8 sm:px-6 md:space-y-20 md:px-8 lg:space-y-24 lg:px-10"
     >
         <div
-            v-for="service in services"
+            v-for="service in serviceItems"
             :key="service.id"
             class="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:gap-10 lg:grid-cols-2 lg:gap-12"
             :class="service.id % 2 === 0 ? '' : 'lg:auto-cols-max'"

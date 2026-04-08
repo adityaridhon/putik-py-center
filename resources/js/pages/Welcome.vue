@@ -32,15 +32,21 @@ const props = defineProps<{
         slug: string;
     }[];
     partnerLogos?: string[];
+    services?: Array<{
+        id: number;
+        name: string;
+        description: string | null;
+    }>;
 }>();
 </script>
+
 
 <template>
     <div class="overflow-x-hidden">
         <Navbar :profile="props.companyProfile" />
         <HeroSection :profile="props.companyProfile" />
         <AboutSection :profile="props.companyProfile" />
-        <Layanan />
+        <Layanan :services="props.services" />
         <TimKami />
         <LogoMitra :partner-logos="props.partnerLogos" />
         <Artikel
