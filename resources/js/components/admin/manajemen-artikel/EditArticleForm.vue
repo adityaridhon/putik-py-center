@@ -8,6 +8,7 @@ import { Form, router } from '@inertiajs/vue3';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
+import { toast } from 'vue-sonner';
 import StarterKit from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 import {
@@ -83,6 +84,15 @@ const editor = useEditor({
         editorContent.value = editor.getHTML();
     },
 });
+
+// Handle success and error
+const handleSuccess = () => {
+    toast.success('Artikel berhasil diperbarui!', { duration: 3000 });
+};
+
+const handleError = () => {
+    toast.error('Gagal memperbarui artikel. Coba lagi.', { duration: 3000 });
+};
 
 // Watch article changes to update all form values
 watch(
@@ -172,6 +182,8 @@ const removeAttachment = () => {
         <Form
             v-bind="ArticleController.update.form(article.slug)"
             class="space-y-6"
+            @success="handleSuccess"
+            @error="handleError"
             v-slot="{ errors, processing }"
         >
             <!-- Title -->

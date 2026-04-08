@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { store } from '@/routes/service';
 import { useForm } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     open: boolean;
@@ -34,8 +35,12 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
+            toast.success('Layanan berhasil ditambahkan!', { duration: 3000 });
             emit('update:open', false);
             form.reset();
+        },
+        onError: () => {
+            toast.error('Gagal menambahkan layanan. Coba lagi.', { duration: 3000 });
         },
     });
 };

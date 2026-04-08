@@ -6,6 +6,7 @@ use Laravel\Fortify\Features;
 use App\Models\CompanyProfile;
 use App\Models\Article;
 use App\Models\Client;
+use App\Models\Service;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
@@ -50,11 +51,24 @@ Route::get('/', function () {
             ];
         });
 
+    $services = Service::query()
+        ->where('is_active', true)
+        ->latest('created_at')
+        ->get()
+        ->map(function (Service $service) {
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'description' => $service->description,
+            ];
+        });
+
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
         'companyProfile' => $profile,
         'partnerLogos' => $partnerLogos,
         'articles' => $articles,
+        'services' => $services,
     ]);
     })->name('home');
 
@@ -63,7 +77,22 @@ Route::get('/', function () {
     })->name('tentang-kami');
 
     Route::get('/layanan-kami', function () {
-        return Inertia::render('user/layanan-kami/Index');
+        $services = Service::query()
+            ->where('is_active', true)
+            ->latest('created_at')
+            ->get()
+            ->map(function (Service $service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'description' => $service->description,
+                    'image_url' => $service->image_url,
+                ];
+            });
+
+        return Inertia::render('user/layanan-kami/Index', [
+            'services' => $services,
+        ]);
     })->name('layanan-kami');
     
     Route::get('/kontak', function () {

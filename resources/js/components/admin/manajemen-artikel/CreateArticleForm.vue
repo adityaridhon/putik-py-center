@@ -152,14 +152,16 @@ const handleSubmit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            // toast.success('Artikel berhasil dibuat!');
+            toast.success('Artikel berhasil dibuat!', { duration: 3000 });
             form.reset();
             editor.value?.commands.setContent('');
             coverPreview.value = null;
             attachmentName.value = null;
+            // Redirect ke artikel list setelah 1 detik
+            setTimeout(() => router.visit('/admin/articles'), 1000);
         },
         onError: (errors) => {
-            toast.error('Gagal membuat artikel. Periksa kembali form Anda.');
+            toast.error('Gagal membuat artikel. Periksa kembali form Anda.', { duration: 3000 });
             console.error(errors);
         },
     });

@@ -35,9 +35,19 @@ class BookingController extends Controller
             'nama'       => 'required|string|max:100',
             'hp'         => 'required|string|max:20',
             'kategori'   => 'required|in:children_center,konseling_terapi,pemeriksaan_psikologi',
-            'tanggal'    => 'required|date',
+            'tanggal'    => 'required|date|after_or_equal:today',
             'jam'        => 'required',
         ]);
+
+        // 2. Validasi booking tidak boleh di masa lalu
+        $bookingTime = strtotime($request->tanggal . ' ' . $request->jam);
+        $currentTime = time();
+
+        if ($bookingTime <= $currentTime) {
+            return back()->withErrors([
+                'jadwal' => 'Waktu booking sudah lewat. Silakan pilih tanggal dan jam yang akan datang.',
+            ]);
+        }
 
         // 2. Mapping kategori frontend ke database service_id
         $serviceId = 1;

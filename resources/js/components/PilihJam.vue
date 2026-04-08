@@ -47,11 +47,38 @@ const bookedTimes = computed(() => {
     );
 });
 
+const isToday = computed(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (!props.selectedDate) return false;
+
+    const selectedDate = new Date(props.selectedDate);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    return today.getTime() === selectedDate.getTime();
+});
+
+const currentTime = computed(() => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+});
+
 const jamList = computed<JamItem[]>(() =>
-    defaultJamList.map((slot) => ({
-        ...slot,
-        tersedia: !bookedTimes.value.has(slot.waktu),
-    })),
+    defaultJamList.map((slot) => {
+        // Check if time has passed today
+        let isPastTime = false;
+        if (isToday.value) {
+            isPastTime = slot.waktu <= currentTime.value;
+        }
+
+        return {
+            ...slot,
+            tersedia: !bookedTimes.value.has(slot.waktu) && !isPastTime,
+        };
+    }),
 );
 
 watch(

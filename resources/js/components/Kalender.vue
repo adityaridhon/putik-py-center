@@ -8,10 +8,18 @@ interface BookedSlot {
     status: string;
 }
 
-const props = defineProps<{ isConfirmed?: boolean; bookedSlots?: BookedSlot[] }>();
+interface Props {
+    isConfirmed?: boolean;
+    bookedSlots?: BookedSlot[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    isConfirmed: false,
+    bookedSlots: () => [],
+});
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string): void;
+    'update:modelValue': [value: string];
 }>();
 
 const selected = ref<string>('');
@@ -80,11 +88,19 @@ function generateCalendar(date: Date) {
     return days;
 }
 
-const calendarDays = computed(() =>
-    generateCalendar(currentDate.value).map((item) => {
+const calendarDays = computed(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return generateCalendar(currentDate.value).map((item) => {
         if (!item.currentMonth) {
             return item;
         }
+
+        // Check if date is in the past
+        const itemDate = new Date(item.value);
+        itemDate.setHours(0, 0, 0, 0);
+        const isPast = itemDate < today;
 
         const confirmedTimes = new Set(
             (props.bookedSlots || [])
@@ -101,10 +117,11 @@ const calendarDays = computed(() =>
 
         return {
             ...item,
-            tersedia: !isFull,
+            tersedia: !isFull && !isPast,
+            isPast,
         };
-    }),
-);
+    });
+});
 
 function pilih(item: any) {
     if (!item.tersedia || !item.currentMonth || props.isConfirmed) return;
@@ -151,9 +168,11 @@ function pilih(item: any) {
                 :class="[
                     'flex aspect-square items-center justify-center border p-1 text-xs sm:p-2 sm:text-sm',
                     !item.currentMonth && 'bg-gray-50 text-gray-300',
-                    item.currentMonth && item.tersedia && 'cursor-pointer',
+                    item.isPast && item.currentMonth && 'cursor-not-allowed bg-gray-100 text-gray-400',
+                    item.currentMonth && !item.isPast && item.tersedia && 'cursor-pointer',
                     item.currentMonth &&
                         !item.tersedia &&
+                        !item.isPast &&
                         'cursor-not-allowed bg-gray-200 text-gray-400',
                     selected === item.value &&
                         !props.isConfirmed &&

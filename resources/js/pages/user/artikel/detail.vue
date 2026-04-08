@@ -22,11 +22,13 @@ defineProps<{
 <template>
     <PageHeader title="Detail Artikel" :back-url="-1" />
     <div
-        class="mx-auto w-full max-w-5xl space-y-2 px-6 py-8 sm:px-8 sm:py-10 md:max-w-6xl md:px-10"
+        class="mx-auto w-full max-w-4xl space-y-8 px-4 py-8 sm:px-6 sm:py-10 md:px-8"
     >
         <ArtikelHero :article="article" />
 
-        <ArtikelContent :article="article" />
+        <div class="prose prose-lg max-w-none rounded-lg bg-white p-6 sm:p-8 shadow-sm">
+            <ArtikelContent :article="article" />
+        </div>
 
         <ArtikelTerkait :articles="articles" />
     </div>

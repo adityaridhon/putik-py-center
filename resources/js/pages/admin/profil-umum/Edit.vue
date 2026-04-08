@@ -9,6 +9,7 @@ import { update } from '@/routes/konten';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { watch } from 'vue';
+import { toast } from 'vue-sonner';
 
 // Props dari Controller
 const props = defineProps<{
@@ -83,8 +84,12 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
+            toast.success('Profil perusahaan berhasil diperbarui!', { duration: 3000 });
             form.logo = null;
             form.landing_image = null;
+        },
+        onError: () => {
+            toast.error('Gagal memperbarui profil perusahaan. Coba lagi.', { duration: 3000 });
         },
     });
 };

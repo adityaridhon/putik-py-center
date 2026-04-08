@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     open: boolean;
@@ -27,7 +28,12 @@ const emit = defineEmits<{
 }>();
 
 const handleSuccess = () => {
+    toast.success('Klien berhasil diperbarui!', { duration: 3000 });
     emit('update:open', false);
+};
+
+const handleError = () => {
+    toast.error('Gagal memperbarui klien. Coba lagi.', { duration: 3000 });
 };
 </script>
 
@@ -46,6 +52,7 @@ const handleSuccess = () => {
                 class="space-y-4"
                 preserve-scroll
                 @success="handleSuccess"
+                @error="handleError"
                 v-slot="{ errors, processing }"
             >
                 <div>

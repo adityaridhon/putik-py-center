@@ -14,7 +14,7 @@ type ArticleCard = {
     slug: string;
 };
 
-const truncate = (text: string, limit = 80) => {
+const truncate = (text: string, limit = 100) => {
     if (!text) return '';
     const plainText = text
         .replace(/<[^>]*>/g, ' ')
@@ -92,8 +92,8 @@ const visibleCards = computed(() =>
                         {{ card.judul }}
                     </h3>
 
-                    <p class="mt-2 line-clamp-3 text-sm text-gray-600">
-                        {{ truncate(card.deskripsi, 80) }}
+                    <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-gray-600">
+                        {{ truncate(card.deskripsi, 100) }}
                     </p>
 
                     <div
