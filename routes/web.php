@@ -6,6 +6,8 @@ use Laravel\Fortify\Features;
 use App\Models\CompanyProfile;
 use App\Models\Article;
 use App\Models\Client;
+use App\Models\InterestCategory;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
@@ -17,6 +19,8 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\LearningStyleController;
 use App\Http\Controllers\Admin\TestTokenController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Models\IntelligenceTestCategory;
+use App\Models\LearningStyleStatement;
 use App\Http\Controllers\UserProfileController;
 
 
@@ -182,7 +186,22 @@ Route::middleware(['auth'])->group(function () {
         ->name('tes-online.minat-bakat.submit');
 
     Route::get('/tes-online/minat-bakat/tes', function () {
-        return Inertia::render('user/minat-bakat/Tes');
+        $categories = InterestCategory::query()
+            ->with(['jobs' => fn ($query) => $query->orderBy('order')])
+            ->orderBy('order')
+            ->get()
+            ->map(fn (InterestCategory $category) => [
+                'code' => $category->code,
+                'name' => $category->name,
+                'instruction' => $category->instruction,
+                'has_jobs' => $category->has_jobs,
+                'jobs' => $category->jobs->pluck('job_name')->values()->all(),
+            ])
+            ->values();
+
+        return Inertia::render('user/minat-bakat/Tes', [
+            'categories' => $categories,
+        ]);
     })->name('tes-online.minat-bakat.tes');
 
     Route::get('/tes-online/minat-bakat/selesai', function () {
@@ -202,7 +221,75 @@ Route::middleware(['auth'])->group(function () {
         ->name('tes-online.inteligensi.submit');
 
     Route::get('/tes-online/inteligensi/tes', function () {
-        return Inertia::render('user/inteligensi/Tes');
+        $categories = IntelligenceTestCategory::query()
+            ->with([
+                'questions' => function ($query) {
+                    $query->where('is_active', true)->orderBy('order');
+                },
+            ])
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get()
+            ->map(function (IntelligenceTestCategory $category) {
+                $isMemory = $category->question_type === 'memory';
+                $isImage = $category->question_type === 'image';
+
+                $questions = $category->questions->map(function ($question) use ($category) {
+                    if ($category->answer_type === 'text' && $category->question_type !== 'memory') {
+                        return $question->question_text ?? '';
+                    }
+
+                    if ($category->answer_type === 'text' && $category->question_type === 'memory') {
+                        return 'Tuliskan satu kata yang Anda ingat';
+                    }
+
+                    return [
+                        'pertanyaan' => $question->question_text ?? '',
+                        'gambarSoal' => $question->question_image,
+                        'opsi' => collect([
+                            $question->option_a,
+                            $question->option_b,
+                            $question->option_c,
+                            $question->option_d,
+                            $question->option_e,
+                        ])
+                            ->filter(fn ($option) => filled($option))
+                            ->map(function ($option) use ($category) {
+                                return [
+                                    'tipe' => $category->question_type === 'image' ? 'gambar' : 'teks',
+                                    'nilai' => $option,
+                                ];
+                            })
+                            ->values()
+                            ->all(),
+                    ];
+                })->filter()->values()->all();
+
+                $kataHafalan = $isMemory
+                    ? $category->questions
+                        ->pluck('question_text')
+                        ->filter(fn ($word) => filled($word))
+                        ->values()
+                        ->all()
+                    : [];
+
+                return [
+                    'kode' => $category->code,
+                    'tipe' => $category->answer_type === 'text' ? 'isian' : 'pilihan',
+                    'questionType' => $category->question_type,
+                    'waktuInstruksi' => 180,
+                    'waktuSoal' => $category->duration_minutes * 60,
+                    'instruksi' => $category->instruction ?? $category->description ?? '',
+                    'gambarInstruksi' => $isMemory ? '/images/ist/me-board.svg' : null,
+                    'kataHafalan' => $kataHafalan,
+                    'soal' => $questions,
+                ];
+            })
+            ->values();
+
+        return Inertia::render('user/inteligensi/Tes', [
+            'categories' => $categories,
+        ]);
     })->name('tes-online.inteligensi.tes');
 
     Route::get('/tes-online/inteligensi/selesai', function () {
@@ -222,7 +309,19 @@ Route::middleware(['auth'])->group(function () {
         ->name('tes-online.gaya-belajar.submit');
 
     Route::get('/tes-online/gaya-belajar/tes', function () {
-        return Inertia::render('user/gaya-belajar/Tes');
+        $statements = LearningStyleStatement::query()
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get()
+            ->map(fn (LearningStyleStatement $statement) => [
+                'id' => $statement->id,
+                'teks' => $statement->statement,
+            ])
+            ->values();
+
+        return Inertia::render('user/gaya-belajar/Tes', [
+            'statements' => $statements,
+        ]);
     })->name('tes-online.gaya-belajar.tes');
 
     Route::get('/tes-online/gaya-belajar/selesai', function () {
@@ -230,20 +329,24 @@ Route::middleware(['auth'])->group(function () {
     })->name('tes-online.gaya-belajar.selesai');
 
     // Dashboard user
-    Route::get('/user/dashboard', function () {
-        $user = auth()->user();
+    Route::get('/user/dashboard', function (Request $request) {
+        $user = $request->user();
         $testSessions = \App\Models\TestSession::with(['report'])
             ->where('user_id', $user->id)
             ->latest()
             ->get()
             ->map(function ($session) {
+                $hasReport = $session->has_report;
+
                 return [
                     'id' => $session->id,
                     'test_type' => ucwords(str_replace('_', ' ', $session->test_type)),
                     'date' => $session->created_at->format('j F Y'),
                     'status' => $session->status_badge ?? $session->status,
                     'raw_status' => $session->status,
-                    'has_pdf' => $session->has_report,
+                    'has_pdf' => $hasReport,
+                    'report_view_url' => $hasReport ? route('user.laporan.view', $session->id) : null,
+                    'report_download_url' => $hasReport ? route('user.laporan.download', $session->id) : null,
                 ];
             });
 
@@ -253,21 +356,43 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('userDashboard');
 
-    // Download Laporan Psikologi for User
-    Route::get('/user/laporan-psikologi/{id}/download', function ($id) {
+    Route::get('/user/laporan-psikologi/{id}/view', function (Request $request, $id) {
         $session = \App\Models\TestSession::with('report')
             ->where('id', $id)
-            ->where('user_id', auth()->id())
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        if (! $session->report) {
+            abort(404, 'Laporan PDF belum tersedia.');
+        }
+
+        $filePath = storage_path('app/public/' . $session->report->file_path);
+
+        if (! is_file($filePath)) {
+            abort(404, 'File laporan tidak ditemukan.');
+        }
+
+        return response()->file($filePath);
+    })->name('user.laporan.view');
+
+    // Download Laporan Psikologi for User
+    Route::get('/user/laporan-psikologi/{id}/download', function (Request $request, $id) {
+        $session = \App\Models\TestSession::with('report')
+            ->where('id', $id)
+            ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
         if (!$session->report) {
             abort(404, 'Laporan PDF belum tersedia.');
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download(
-            $session->report->file_path,
-            $session->report->file_name
-        );
+        $filePath = storage_path('app/public/' . $session->report->file_path);
+
+        if (! is_file($filePath)) {
+            abort(404, 'File laporan tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $session->report->file_name);
     })->name('user.laporan.download');
 
     // User profile management (named distinctly to avoid clashing with settings profile routes)

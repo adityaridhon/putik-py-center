@@ -5,6 +5,11 @@ const props = defineProps({
     kategori: String,
     instruksi: String,
     waktu: Number,
+    gambar: String,
+    kataHafalan: {
+        type: Array as () => string[],
+        default: () => [],
+    },
 });
 
 const emit = defineEmits(['mulai']);
@@ -60,6 +65,33 @@ onUnmounted(() => {
                 class="mt-4 flex-1 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left text-sm leading-relaxed text-slate-700 sm:mt-6 sm:p-5 sm:text-base"
             >
                 {{ instruksi || '-' }}
+            </div>
+
+            <div
+                v-if="gambar || kataHafalan.length"
+                class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"
+            >
+                <img
+                    v-if="gambar"
+                    :src="gambar"
+                    alt="Materi hafalan"
+                    class="mx-auto mb-3 max-h-56 rounded-lg border border-amber-200 bg-white object-contain"
+                />
+
+                <div v-if="kataHafalan.length" class="space-y-2">
+                    <p class="text-sm font-semibold text-amber-800">
+                        Daftar kata yang perlu dihafal:
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            v-for="(kata, index) in kataHafalan"
+                            :key="index"
+                            class="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-200"
+                        >
+                            {{ kata }}
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <button

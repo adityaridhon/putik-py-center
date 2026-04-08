@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="220" viewBox="0 0 520 220">
+  <rect width="520" height="220" fill="#f8fafc"/>
+  <text x="20" y="34" font-size="20" fill="#0f172a" font-family="Arial">Hafalkan kata-kata berikut:</text>
+  <g font-size="18" fill="#1e293b" font-family="Arial">
+    <text x="30" y="75">BUNGA</text>
+    <text x="150" y="75">PERKAKAS</text>
+    <text x="320" y="75">BURUNG</text>
+    <text x="30" y="115">JENDELA</text>
+    <text x="150" y="115">KAPAL</text>
+    <text x="320" y="115">LILIN</text>
+    <text x="30" y="155">KERTAS</text>
+    <text x="150" y="155">JAMUR</text>
+    <text x="320" y="155">PENSIL</text>
+  </g>
+  <text x="20" y="198" font-size="14" fill="#475569" font-family="Arial">Waktu menghafal 3 menit</text>
+</svg>

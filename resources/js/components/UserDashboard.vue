@@ -2,6 +2,7 @@
 import Button from '@/components/ui/button/Button.vue';
 import { useForm } from '@inertiajs/vue3';
 import {
+    Eye,
     FileDown,
     Mail,
     Pencil,
@@ -176,14 +177,32 @@ const deleteProfile = () => {
                             >{{ item.status }}</span
                         >
                         <!-- Kalau report sudah ada, mungkin download link bisa diaktifkan -->
-                        <Button
+                        <div
                             v-if="item.has_pdf"
-                            size="sm"
-                            class="gap-1.5 text-xs"
+                            class="flex flex-wrap justify-end gap-2"
                         >
-                            <FileDown class="size-4" />
-                            Unduh Hasil (PDF)
-                        </Button>
+                            <Button
+                                as-child
+                                size="sm"
+                                variant="outline"
+                                class="gap-1.5 text-xs"
+                            >
+                                <a
+                                    :href="item.report_view_url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Eye class="size-4" />
+                                    Lihat Hasil
+                                </a>
+                            </Button>
+                            <Button as-child size="sm" class="gap-1.5 text-xs">
+                                <a :href="item.report_download_url">
+                                    <FileDown class="size-4" />
+                                    Unduh Hasil
+                                </a>
+                            </Button>
+                        </div>
                         <Button
                             v-else-if="
                                 item.raw_status !== 'completed' &&
