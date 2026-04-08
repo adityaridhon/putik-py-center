@@ -9,7 +9,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Toaster } from '@/components/ui/sonner';
 import { getInitials } from '@/composables/useInitials';
+import { useFlashMessages } from '@/composables/useToast';
 import {
     artikel,
     daftarLayanan,
@@ -122,9 +124,12 @@ const layananItemClasses = (active: boolean) =>
 const closeMenu = () => {
     menuOpen.value = false;
 };
+
+useFlashMessages();
 </script>
 
 <template>
+    <Toaster position="top-right" :duration="4000" rich-colors />
     <nav v-if="isTitleMode" class="w-full bg-primary px-3 py-3 sm:px-6">
         <div class="mx-auto flex w-full max-w-5xl items-center gap-2 sm:gap-3">
             <img
@@ -381,6 +386,16 @@ const closeMenu = () => {
                             "
                             @click="closeMenu"
                             >Kontak</Link
+                        >
+                    </li>
+                    <li v-if="auth?.user" class="md:hidden">
+                        <Link
+                            :href="logout().url"
+                            method="post"
+                            as="button"
+                            :class="linkClasses(false)"
+                            @click="closeMenu"
+                            >Logout</Link
                         >
                     </li>
                     <li v-if="!auth?.user" class="md:hidden">

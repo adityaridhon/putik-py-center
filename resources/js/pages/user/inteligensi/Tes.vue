@@ -1,13 +1,45 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Navbar from '@/components/Navbar.vue';
 import HalamanInstruksi from '@/components/HalamanInstruksi.vue';
+import Navbar from '@/components/Navbar.vue';
 import SoalIsian from '@/components/SoalInteligensiIsian.vue';
 import SoalPilihan from '@/components/SoalInteligensiPilihan.vue';
 import { router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
-// DATA TES
-const kategoriTes = [
+interface OpsiItem {
+    tipe: 'teks' | 'gambar';
+    nilai: string;
+}
+
+interface SoalPilihanItem {
+    pertanyaan: string;
+    gambarSoal?: string | null;
+    opsi: OpsiItem[];
+}
+
+interface SoalPilihanItemRaw {
+    pertanyaan: string;
+    gambarSoal?: string | null;
+    opsi: Array<OpsiItem | string>;
+}
+
+interface KategoriTes {
+    kode: string;
+    tipe: 'pilihan' | 'isian';
+    questionType?: string;
+    waktuInstruksi: number;
+    waktuSoal: number;
+    instruksi: string;
+    gambarInstruksi?: string | null;
+    kataHafalan?: string[];
+    soal: SoalPilihanItemRaw[] | string[];
+}
+
+const props = defineProps<{
+    categories?: KategoriTes[];
+}>();
+
+const fallbackKategoriTes: KategoriTes[] = [
     {
         kode: 'SE',
         tipe: 'pilihan',
@@ -162,18 +194,59 @@ const kategoriTes = [
     },
 ];
 
+const kategoriTes = computed<KategoriTes[]>(() => {
+    const fromBackend = (props.categories ?? []).filter(
+        (kategori): kategori is KategoriTes =>
+            Boolean(kategori?.kode) && Array.isArray(kategori.soal),
+    );
+
+    return fromBackend.length > 0 ? fromBackend : fallbackKategoriTes;
+});
+
+const kategoriTesNormalized = computed<KategoriTes[]>(() => {
+    return kategoriTes.value.map((kategori) => {
+        if (kategori.tipe === 'isian') {
+            return kategori;
+        }
+
+        const soalPilihan = (kategori.soal as SoalPilihanItemRaw[]).map((item) => ({
+            pertanyaan: item.pertanyaan,
+            gambarSoal: item.gambarSoal ?? null,
+            opsi: item.opsi.map((opsi) => {
+                if (typeof opsi === 'string') {
+                    return {
+                        tipe: 'teks' as const,
+                        nilai: opsi,
+                    };
+                }
+
+                return opsi;
+            }),
+        }));
+
+        return {
+            ...kategori,
+            soal: soalPilihan,
+        };
+    });
+});
+
 // STATE
 const kategoriIndex = ref(0);
 const mode = ref<'instruksi' | 'soal'>('instruksi');
 
-const jawaban: any = ref({});
+const jawaban = ref<Record<string, string[]>>({});
 
 // kategori aktif
-const kategoriAktif = computed(() => kategoriTes[kategoriIndex.value]);
+const kategoriAktif = computed(
+    () =>
+        kategoriTesNormalized.value[kategoriIndex.value] ??
+        kategoriTesNormalized.value[0],
+);
 const kodeKategoriAktif = computed(() => kategoriAktif.value.kode);
 const labelKategoriAktif = computed(() => kodeKategoriAktif.value);
 const isLastKategori = computed(
-    () => kategoriIndex.value === kategoriTes.length - 1,
+    () => kategoriIndex.value === kategoriTesNormalized.value.length - 1,
 );
 const jawabanKategoriAktif = computed<string[]>(() => {
     return jawaban.value[kodeKategoriAktif.value] ?? [];
@@ -181,10 +254,7 @@ const jawabanKategoriAktif = computed<string[]>(() => {
 
 const bisaLanjut = computed(() => {
     if (kategoriAktif.value.tipe === 'pilihan') {
-        const daftarSoal = kategoriAktif.value.soal as {
-            pertanyaan: string;
-            opsi: string[];
-        }[];
+        const daftarSoal = kategoriAktif.value.soal as SoalPilihanItem[];
 
         return daftarSoal.every(
             (_, index) =>
@@ -195,10 +265,13 @@ const bisaLanjut = computed(() => {
 
     const daftarSoal = kategoriAktif.value.soal as string[];
 
-    return daftarSoal.every(
-        (_, index) =>
-            typeof jawabanKategoriAktif.value[index] === 'string' &&
-            jawabanKategoriAktif.value[index].trim() !== '',
+    return (
+        daftarSoal.length > 0 &&
+        daftarSoal.every(
+            (_, index) =>
+                typeof jawabanKategoriAktif.value[index] === 'string' &&
+                jawabanKategoriAktif.value[index].trim() !== '',
+        )
     );
 });
 
@@ -227,18 +300,22 @@ const selesaiTes = () => {
         return;
     }
 
-    router.post('/tes-online/inteligensi/submit', {
-        answers: jawaban.value
-    }, {
-        preserveScroll: true,
-        onError: (errors) => {
-            console.error('Submission error:', errors);
-            if (errors.token) {
-                alert(errors.token);
-                router.visit('/tes-online/inteligensi');
-            }
-        }
-    });
+    router.post(
+        '/tes-online/inteligensi/submit',
+        {
+            answers: jawaban.value,
+        },
+        {
+            preserveScroll: true,
+            onError: (errors) => {
+                console.error('Submission error:', errors);
+                if (errors.token) {
+                    alert(errors.token);
+                    router.visit('/tes-online/inteligensi');
+                }
+            },
+        },
+    );
 };
 </script>
 
@@ -255,18 +332,15 @@ const selesaiTes = () => {
                 :kategori="labelKategoriAktif"
                 :instruksi="kategoriAktif.instruksi"
                 :waktu="kategoriAktif.waktuInstruksi"
+                :gambar="kategoriAktif.gambarInstruksi ?? undefined"
+                :kataHafalan="kategoriAktif.kataHafalan || []"
                 @mulai="mulaiTes"
             />
 
             <!-- SOAL PILIHAN -->
             <SoalPilihan
                 v-if="mode === 'soal' && kategoriAktif.tipe === 'pilihan'"
-                :soal="
-                    kategoriAktif.soal as {
-                        pertanyaan: string;
-                        opsi: string[];
-                    }[]
-                "
+                :soal="kategoriAktif.soal as SoalPilihanItem[]"
                 :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"

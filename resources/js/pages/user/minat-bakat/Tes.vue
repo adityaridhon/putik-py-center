@@ -6,59 +6,91 @@ import TabelRangking from '@/components/TabelRangking.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
-const kategoriList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+interface MinatBakatCategory {
+    code: string;
+    name: string;
+    instruction?: string | null;
+    has_jobs: boolean;
+    jobs: string[];
+}
 
-const kategoriAktif = ref('A');
+const props = defineProps<{
+    categories?: MinatBakatCategory[];
+}>();
 
-// tipe kategori
-const tipeKategori: any = {
-    A: 'ranking',
-    B: 'ranking',
-    C: 'ranking',
-    D: 'ranking',
-    E: 'ranking',
-    F: 'ranking',
-    G: 'ranking',
-    H: 'ranking',
-    I: 'isian',
-};
+const categories = computed<MinatBakatCategory[]>(() => {
+    const fromBackend = (props.categories ?? []).filter(
+        (category) => category?.code,
+    );
 
-// contoh data pekerjaan
-const dataTes: any = {
-    A: [
-        'Polisi Lalu Lintas',
-        'Insinyur Sipil',
-        'Akuntan',
-        'Ilmuwati',
-        'Penjual Hasil Mode',
-        'Seniman',
-        'Wartawan',
-        'Pianis Konser',
-        'Guru Sekolah Dasar',
-        'Sekretaris',
-        'Penata Busana',
-        'Dokter',
-    ],
+    if (fromBackend.length > 0) {
+        return fromBackend;
+    }
 
-    B: [
-        'Petugas Komnas HAM',
-        'Pegawai Tata Usaha',
-        'Koki/Chef',
-        'Dokter Anak',
-        'Atlit',
-        'Kontraktor',
-        'Petugas Pajak',
-        'Laboran',
-        'Manager Promosi',
-        'Perancang Motif Tekstil',
-        'Penyair',
-        'Komposer',
-    ],
-};
+    // Fallback ketika data backend belum tersedia.
+    return [
+        {
+            code: 'A',
+            name: 'Kategori A',
+            instruction: 'Pilih pekerjaan yang paling Anda minati.',
+            has_jobs: true,
+            jobs: [
+                'Polisi Lalu Lintas',
+                'Insinyur Sipil',
+                'Akuntan',
+                'Ilmuwati',
+                'Penjual Hasil Mode',
+                'Seniman',
+                'Wartawan',
+                'Pianis Konser',
+                'Guru Sekolah Dasar',
+                'Sekretaris',
+                'Penata Busana',
+                'Dokter',
+            ],
+        },
+        {
+            code: 'B',
+            name: 'Kategori B',
+            instruction: 'Pilih pekerjaan yang paling Anda minati.',
+            has_jobs: true,
+            jobs: [
+                'Petugas Komnas HAM',
+                'Pegawai Tata Usaha',
+                'Koki/Chef',
+                'Dokter Anak',
+                'Atlit',
+                'Kontraktor',
+                'Petugas Pajak',
+                'Laboran',
+                'Manager Promosi',
+                'Perancang Motif Tekstil',
+                'Penyair',
+                'Komposer',
+            ],
+        },
+        {
+            code: 'I',
+            name: 'Pekerjaan Favorit',
+            instruction:
+                'Tuliskan 3 pekerjaan yang paling ingin anda lakukan.',
+            has_jobs: false,
+            jobs: [],
+        },
+    ];
+});
+
+const kategoriList = computed(() => categories.value.map((item) => item.code));
+
+const kategoriAktif = ref(kategoriList.value[0] ?? 'A');
 
 // jawaban user
-const jawabanRanking: any = ref({});
-const jawabanIsian: any = ref({});
+const jawabanRanking = ref<Record<string, number[]>>({});
+const jawabanIsian = ref<Record<string, string[]>>({});
+
+const kategoriAktifData = computed<MinatBakatCategory | undefined>(() =>
+    categories.value.find((category) => category.code === kategoriAktif.value),
+);
 
 const rankingAktif = computed({
     get: () => jawabanRanking.value[kategoriAktif.value] ?? [],
@@ -76,11 +108,11 @@ const isianAktif = computed({
 
 // kategori sekarang
 const tipeAktif = computed(() => {
-    return tipeKategori[kategoriAktif.value];
+    return kategoriAktifData.value?.has_jobs ? 'ranking' : 'isian';
 });
 
 const pekerjaanAktif = computed<string[]>(() => {
-    return dataTes[kategoriAktif.value] ?? [];
+    return kategoriAktifData.value?.jobs ?? [];
 });
 
 const isRankingLengkap = computed(() => {
@@ -93,7 +125,7 @@ const isRankingLengkap = computed(() => {
             (_, index) =>
                 typeof jawaban[index] === 'number' &&
                 jawaban[index] >= 1 &&
-                jawaban[index] <= 12,
+                jawaban[index] <= pekerjaan.length,
         )
     );
 });
@@ -118,24 +150,24 @@ const nextKategori = () => {
         return;
     }
 
-    const index = kategoriList.indexOf(kategoriAktif.value);
+    const index = kategoriList.value.indexOf(kategoriAktif.value);
 
-    if (index < kategoriList.length - 1) {
-        kategoriAktif.value = kategoriList[index + 1];
+    if (index < kategoriList.value.length - 1) {
+        kategoriAktif.value = kategoriList.value[index + 1];
     }
 };
 
 const prevKategori = () => {
-    const index = kategoriList.indexOf(kategoriAktif.value);
+    const index = kategoriList.value.indexOf(kategoriAktif.value);
 
     if (index > 0) {
-        kategoriAktif.value = kategoriList[index - 1];
+        kategoriAktif.value = kategoriList.value[index - 1];
     }
 };
 
 const ubahKategori = (kategoriTujuan: string) => {
-    const indexSaatIni = kategoriList.indexOf(kategoriAktif.value);
-    const indexTujuan = kategoriList.indexOf(kategoriTujuan);
+    const indexSaatIni = kategoriList.value.indexOf(kategoriAktif.value);
+    const indexTujuan = kategoriList.value.indexOf(kategoriTujuan);
 
     if (indexTujuan === -1) {
         return;
@@ -155,8 +187,8 @@ const selesaiTes = () => {
     router.post('/tes-online/minat-bakat/submit', {
         answers: {
             ranking: jawabanRanking.value,
-            isian: jawabanIsian.value
-        }
+            isian: jawabanIsian.value,
+        },
     }, {
         preserveScroll: true,
         onError: (errors) => {
@@ -165,7 +197,7 @@ const selesaiTes = () => {
                 alert(errors.token);
                 router.visit('/tes-online/minat-bakat');
             }
-        }
+        },
     });
 };
 </script>
@@ -176,22 +208,27 @@ const selesaiTes = () => {
         class="mx-auto mt-6 max-w-5xl px-4 sm:mt-8 sm:px-6 md:mt-10 md:px-8 lg:px-10"
     >
         <h2 class="mb-4 text-center text-base font-semibold sm:text-lg">
-            Kategori {{ kategoriAktif }}
+            {{ kategoriAktifData?.name ?? `Kategori ${kategoriAktif}` }}
         </h2>
 
         <p
             v-if="tipeAktif === 'ranking'"
             class="mb-6 text-center text-xs sm:text-sm"
         >
-            Beri Peringkat Pekerjaan Berikut ini dari 1 (paling disukai) sampai
-            12 (paling tidak disukai)
+            {{
+                kategoriAktifData?.instruction ||
+                `Beri peringkat pekerjaan berikut dari 1 (paling disukai) sampai ${pekerjaanAktif.length} (paling tidak disukai).`
+            }}
         </p>
 
         <p
             v-if="tipeAktif === 'isian'"
             class="mb-6 text-center text-xs sm:text-sm"
         >
-            Tuliskan 3 pekerjaan yang paling ingin anda lakukan
+            {{
+                kategoriAktifData?.instruction ||
+                'Tuliskan 3 pekerjaan yang paling ingin anda lakukan'
+            }}
         </p>
 
         <!-- ranking -->
@@ -208,6 +245,7 @@ const selesaiTes = () => {
 
         <NavigasiKategori
             :kategoriAktif="kategoriAktif"
+            :categories="kategoriList"
             :disable-next="!bisaLanjut"
             @ubahKategori="ubahKategori"
             @selanjutnya="nextKategori"
