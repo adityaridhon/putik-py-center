@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
 import { artikel } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 import Artikel from './Artikel.vue';
@@ -19,16 +20,13 @@ defineProps<{
 
 <template>
     <div class="mt-16">
-        <h3 class="text-2xl font-semibold text-primary">Artikel Terkait</h3>
+        <h3 class="text-2xl font-semibold text-primary">Artikel Lainnya</h3>
 
         <Artikel :articles="articles" :limit="3" :hide-header="true" />
 
-        <div class="text-center">
-            <Link
-                :href="artikel().url"
-                class="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-900"
-            >
-                Kembali ke Halaman Artikel
+        <div class="mt-4 text-center">
+            <Link :href="artikel().url">
+                <Button> Kembali ke Halaman Artikel </Button>
             </Link>
         </div>
     </div>

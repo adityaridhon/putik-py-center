@@ -390,6 +390,17 @@ useFlashMessages();
                     </li>
                     <li v-if="auth?.user" class="md:hidden">
                         <Link
+                            :href="userDashboard().url"
+                            method="post"
+                            as="button"
+                            :class="linkClasses(false)"
+                            @click="closeMenu"
+                        >
+                            Dashboard User</Link
+                        >
+                    </li>
+                    <li v-if="auth?.user" class="md:hidden">
+                        <Link
                             :href="logout().url"
                             method="post"
                             as="button"
