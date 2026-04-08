@@ -92,7 +92,9 @@ const visibleCards = computed(() =>
                         {{ card.judul }}
                     </h3>
 
-                    <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-gray-600">
+                    <p
+                        class="mt-3 line-clamp-2 text-sm leading-relaxed text-gray-600"
+                    >
                         {{ truncate(card.deskripsi, 100) }}
                     </p>
 
