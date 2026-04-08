@@ -39,8 +39,27 @@ class TestAnswer extends Model
     // Helper method to get question model
     public function getQuestionModel()
     {
+        if ($this->question_type === 'intelligence_question') {
+            $category = IntelligenceTestCategory::query()
+                ->where('code', $this->category_name)
+                ->first();
+
+            if ($category) {
+                $questionByOrder = IntelligenceTestQuestion::query()
+                    ->where('category_id', $category->id)
+                    ->where('order', $this->question_id)
+                    ->first();
+
+                if ($questionByOrder) {
+                    return $questionByOrder;
+                }
+            }
+
+            // Backward compatibility: if question_id is already the real PK.
+            return IntelligenceTestQuestion::find($this->question_id);
+        }
+
         $models = [
-            'intelligence_question' => IntelligenceTestQuestion::class,
             'learning_statement' => LearningStyleStatement::class,
             'interest_job' => InterestJob::class,
         ];

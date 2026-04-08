@@ -70,10 +70,14 @@ class AuthController extends Controller
             Log::info('Redirecting to', ['route' => $redirectRoute]);
 
             if ($user->canAccessAdminPanel()) {
-                return redirect()->to($redirectRoute);
+                return redirect()
+                    ->to($redirectRoute)
+                    ->with('success', 'Login berhasil. Selamat datang kembali!');
             }
 
-            return redirect()->intended($redirectRoute);
+            return redirect()
+                ->intended($redirectRoute)
+                ->with('success', 'Login berhasil. Selamat datang kembali!');
         } catch (\Exception $e) {
             Log::error('Google OAuth error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return redirect()->route('login')->with('error', 'Google authentication failed: ' . $e->getMessage());

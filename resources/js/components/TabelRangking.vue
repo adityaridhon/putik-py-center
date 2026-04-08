@@ -14,6 +14,32 @@ const emit = defineEmits(['update:modelValue']);
 
 const isPopupOpen = ref(false);
 
+const getUsedRankings = (excludeIndex: number): number[] => {
+    return props.modelValue
+        .filter(
+            (value, index): value is number =>
+                index !== excludeIndex &&
+                typeof value === 'number' &&
+                Number.isInteger(value),
+        )
+        .sort((a, b) => a - b);
+};
+
+const rankingOptions = (index: number): number[] => {
+    const maxRank = props.pekerjaan.length;
+
+    if (maxRank <= 0) {
+        return [];
+    }
+
+    const used = new Set(getUsedRankings(index));
+    const currentValue = props.modelValue[index] ?? null;
+
+    return Array.from({ length: maxRank }, (_, i) => i + 1).filter(
+        (rank) => rank === currentValue || !used.has(rank),
+    );
+};
+
 const parseRankingValue = (rawValue: string): number | null => {
     if (rawValue === '') {
         return null;
@@ -21,7 +47,11 @@ const parseRankingValue = (rawValue: string): number | null => {
 
     const parsed = Number(rawValue);
 
-    if (!Number.isInteger(parsed) || parsed < 1 || parsed > 12) {
+    if (
+        !Number.isInteger(parsed) ||
+        parsed < 1 ||
+        parsed > props.pekerjaan.length
+    ) {
         return null;
     }
 
@@ -79,7 +109,11 @@ const closePopup = () => {
                         "
                     >
                         <option value="">...</option>
-                        <option v-for="n in 12" :key="n" :value="n">
+                        <option
+                            v-for="n in rankingOptions(index)"
+                            :key="n"
+                            :value="n"
+                        >
                             {{ n }}
                         </option>
                     </select>
@@ -93,7 +127,7 @@ const closePopup = () => {
                     <tr>
                         <th class="w-16 border p-2">No</th>
                         <th class="border p-2">Pekerjaan</th>
-                        <th class="w-40 border p-2">Peringkat (1-12)</th>
+                        <th class="w-40 border p-2">Peringkat</th>
                     </tr>
                 </thead>
 
@@ -121,7 +155,11 @@ const closePopup = () => {
                             >
                                 <option value="">...</option>
 
-                                <option v-for="n in 12" :key="n" :value="n">
+                                <option
+                                    v-for="n in rankingOptions(index)"
+                                    :key="n"
+                                    :value="n"
+                                >
                                     {{ n }}
                                 </option>
                             </select>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {
     soal: string[];
@@ -18,7 +18,14 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue']);
 
 const jawaban = ref<string[]>([...props.modelValue]);
+const currentQuestion = ref(0);
 const timer = ref(props.waktu);
+const totalSoal = computed(() => props.soal.length);
+const soalAktif = computed(() => props.soal[currentQuestion.value] ?? '');
+const isFirstSoal = computed(() => currentQuestion.value === 0);
+const isLastSoal = computed(
+    () => currentQuestion.value === totalSoal.value - 1,
+);
 const formattedTime = computed(() => {
     const menit = Math.floor(timer.value / 60);
     const detik = timer.value % 60;
@@ -38,9 +45,42 @@ onUnmounted(() => {
     if (interval) clearInterval(interval);
 });
 
+watch(
+    () => props.modelValue,
+    (value) => {
+        jawaban.value = [...value];
+    },
+    { deep: true },
+);
+
+watch(
+    () => props.soal,
+    () => {
+        currentQuestion.value = 0;
+    },
+);
+
 const update = (index: number, value: string) => {
     jawaban.value[index] = value;
     emit('update:modelValue', jawaban.value);
+};
+
+const nextSoal = () => {
+    if (!isLastSoal.value) {
+        currentQuestion.value++;
+    }
+};
+
+const prevSoal = () => {
+    if (!isFirstSoal.value) {
+        currentQuestion.value--;
+    }
+};
+
+const goToSoal = (index: number) => {
+    if (index >= 0 && index < totalSoal.value) {
+        currentQuestion.value = index;
+    }
 };
 </script>
 
@@ -68,26 +108,75 @@ const update = (index: number, value: string) => {
 
         <div class="space-y-5">
             <article
-                v-for="(_, i) in soal"
-                :key="i"
                 class="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5"
             >
                 <p
                     class="mb-3 text-sm leading-relaxed font-semibold text-slate-800 sm:text-base"
                 >
-                    {{ i + 1 }}.
+                    {{ currentQuestion + 1 }} / {{ totalSoal }}.
+                </p>
+
+                <p
+                    class="mb-3 text-xs leading-relaxed text-slate-600 sm:text-sm"
+                >
+                    {{ soalAktif }}
                 </p>
 
                 <input
                     type="text"
                     class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none sm:px-4 sm:py-3"
-                    :placeholder="'Ketik jawaban untuk nomor ' + (i + 1)"
-                    :value="jawaban[i]"
+                    :placeholder="
+                        'Ketik jawaban untuk nomor ' + (currentQuestion + 1)
+                    "
+                    :value="jawaban[currentQuestion]"
                     @input="
-                        update(i, ($event.target as HTMLInputElement).value)
+                        update(
+                            currentQuestion,
+                            ($event.target as HTMLInputElement).value,
+                        )
                     "
                 />
             </article>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isFirstSoal"
+                        @click="prevSoal"
+                    >
+                        Sebelumnya
+                    </button>
+                    <button
+                        type="button"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isLastSoal"
+                        @click="nextSoal"
+                    >
+                        Berikutnya
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        v-for="(_, index) in soal"
+                        :key="index"
+                        type="button"
+                        class="h-8 min-w-8 rounded-md border text-xs font-semibold"
+                        :class="
+                            index === currentQuestion
+                                ? 'border-primary bg-primary text-white'
+                                : jawaban[index]
+                                  ? 'border-green-600 bg-green-50 text-green-700'
+                                  : 'border-slate-300 bg-white text-slate-700'
+                        "
+                        @click="goToSoal(index)"
+                    >
+                        {{ index + 1 }}
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 </template>

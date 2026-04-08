@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TestSession;
 use App\Models\TestAnswer;
 use App\Models\TestToken;
+use App\Models\IntelligenceTestCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class OnlineTestSubmitController extends Controller
             return redirect()->route('tes-online.minat-bakat')->withErrors(['token' => 'Token tidak ditemukan.']);
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         DB::beginTransaction();
         try {
@@ -89,7 +90,7 @@ class OnlineTestSubmitController extends Controller
             return redirect()->route('tes-online.inteligensi')->withErrors(['token' => 'Token tidak ditemukan.']);
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         DB::beginTransaction();
         try {
@@ -103,14 +104,35 @@ class OnlineTestSubmitController extends Controller
             ]);
 
             $answersData = $request->input('answers', []);
+
+            $questionIdMap = IntelligenceTestCategory::query()
+                ->with([
+                    'questions' => function ($query) {
+                        $query->where('is_active', true)->orderBy('order');
+                    },
+                ])
+                ->whereIn('code', array_keys($answersData))
+                ->get()
+                ->mapWithKeys(function (IntelligenceTestCategory $category) {
+                    return [
+                        $category->code => $category->questions
+                            ->mapWithKeys(fn ($question) => [$question->order => $question->id])
+                            ->all(),
+                    ];
+                })
+                ->all();
+
             foreach ($answersData as $category => $answers) {
                 foreach ($answers as $index => $val) {
+                    $order = $index + 1;
+                    $resolvedQuestionId = $questionIdMap[$category][$order] ?? $order;
+
                     TestAnswer::create([
                         'test_session_id' => $testSession->id,
                         'test_type' => 'intelligence',
                         'category_name' => $category,
                         'question_type' => 'intelligence_question',
-                        'question_id' => $index + 1,
+                        'question_id' => $resolvedQuestionId,
                         'answer_value' => $val,
                     ]);
                 }
@@ -139,7 +161,7 @@ class OnlineTestSubmitController extends Controller
             return redirect()->route('tes-online.gaya-belajar')->withErrors(['token' => 'Token tidak ditemukan.']);
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         DB::beginTransaction();
         try {

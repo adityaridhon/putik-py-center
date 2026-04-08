@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\InterestCategory;
 use App\Models\TestSession;
 use App\Models\TestAnswer;
 use App\Models\PsychologicalReport;
@@ -223,19 +224,22 @@ class PsychologicalReportController extends Controller
         $categories = [];
 
         foreach ($grouped as $categoryName => $categoryAnswers) {
+            $category = InterestCategory::where('code', $categoryName)->first();
             $questions = [];
             
             foreach ($categoryAnswers as $answer) {
                 $job = $answer->getQuestionModel();
                 
                 $questions[] = [
-                    'question' => 'Pilih 1 pekerjaan',
-                    'user_answer' => $job?->name ?? $answer->answer_value,
+                    'question' => $job?->job_name ?? 'Pekerjaan tidak ditemukan',
+                    'user_answer' => $answer->answer_value,
                 ];
             }
 
             $categories[] = [
-                'name' => $categoryName,
+                'code' => $categoryName,
+                'name' => $category?->name ?? "Kategori {$categoryName}",
+                'instruction' => $category?->instruction,
                 'questions' => $questions,
             ];
         }

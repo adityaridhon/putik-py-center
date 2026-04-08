@@ -20,6 +20,13 @@ import TabsContent from '@/components/ui/tabs/TabsContent.vue';
 import TabsList from '@/components/ui/tabs/TabsList.vue';
 import TabsTrigger from '@/components/ui/tabs/TabsTrigger.vue';
 import { Brain, Flame, GraduationCap, User } from 'lucide-vue-next';
+import { computed } from 'vue';
+
+type TestTab = {
+    value: 'intelligence' | 'learning-style' | 'interest';
+    label: string;
+    icon: typeof Brain;
+};
 
 interface Props {
     participant?: {
@@ -49,7 +56,9 @@ interface Props {
     };
     interestResults?: {
         categories: Array<{
+            code: string;
             name: string;
+            instruction?: string | null;
             questions: Array<{
                 question: string;
                 user_answer: string;
@@ -111,10 +120,12 @@ const props = withDefaults(defineProps<Props>(), {
     interestResults: () => ({
         categories: [
             {
+                code: 'A',
                 name: 'A',
+                instruction: 'Respon peserta pada kategori A',
                 questions: [
                     {
-                        question: 'Pilih 1 pekerjaan',
+                        question: 'Polisi Lalu Lintas',
                         user_answer: 'polisi',
                     },
                 ],
@@ -122,6 +133,38 @@ const props = withDefaults(defineProps<Props>(), {
         ],
     }),
 });
+
+const availableTabs = computed<TestTab[]>(() => {
+    const tabs: TestTab[] = [];
+
+    if (props.intelligenceResults?.subtests?.length) {
+        tabs.push({
+            value: 'intelligence',
+            label: 'Tes Intelegensi',
+            icon: Brain,
+        });
+    }
+
+    if (props.learningStyleResults?.statements?.length) {
+        tabs.push({
+            value: 'learning-style',
+            label: 'Gaya Belajar',
+            icon: GraduationCap,
+        });
+    }
+
+    if (props.interestResults?.categories?.length) {
+        tabs.push({
+            value: 'interest',
+            label: 'Minat Bakat',
+            icon: Flame,
+        });
+    }
+
+    return tabs;
+});
+
+const defaultTab = computed(() => availableTabs.value[0]?.value ?? 'interest');
 </script>
 
 <template>
@@ -162,24 +205,30 @@ const props = withDefaults(defineProps<Props>(), {
         <!-- Alert Disclaimer -->
 
         <!-- Tabs untuk berbagai jenis tes -->
-        <Tabs default-value="intelligence" class="w-full">
-            <TabsList class="grid w-full grid-cols-3">
-                <TabsTrigger value="intelligence" class="gap-2">
-                    <Brain class="h-4 w-4" />
-                    Tes Intelegensi
-                </TabsTrigger>
-                <TabsTrigger value="learning-style" class="gap-2">
-                    <GraduationCap class="h-4 w-4" />
-                    Gaya Belajar
-                </TabsTrigger>
-                <TabsTrigger value="interest" class="gap-2">
-                    <Flame class="h-4 w-4" />
-                    Minat Bakat
+        <Tabs :default-value="defaultTab" class="w-full">
+            <TabsList
+                class="grid w-full gap-2"
+                :style="{
+                    gridTemplateColumns: `repeat(${availableTabs.length || 1}, minmax(0, 1fr))`,
+                }"
+            >
+                <TabsTrigger
+                    v-for="tab in availableTabs"
+                    :key="tab.value"
+                    :value="tab.value"
+                    class="gap-2"
+                >
+                    <component :is="tab.icon" class="h-4 w-4" />
+                    {{ tab.label }}
                 </TabsTrigger>
             </TabsList>
 
             <!-- Tes Intelegensi -->
-            <TabsContent value="intelligence" class="space-y-4">
+            <TabsContent
+                v-if="intelligenceResults?.subtests?.length"
+                value="intelligence"
+                class="space-y-4"
+            >
                 <!-- Subtests -->
                 <div
                     v-for="subtest in intelligenceResults.subtests"
@@ -237,7 +286,11 @@ const props = withDefaults(defineProps<Props>(), {
             </TabsContent>
 
             <!-- Gaya Belajar -->
-            <TabsContent value="learning-style" class="space-y-4">
+            <TabsContent
+                v-if="learningStyleResults?.statements?.length"
+                value="learning-style"
+                class="space-y-4"
+            >
                 <!-- Statements -->
                 <Card>
                     <CardHeader>
@@ -298,18 +351,24 @@ const props = withDefaults(defineProps<Props>(), {
             </TabsContent>
 
             <!-- Minat Bakat -->
-            <TabsContent value="interest" class="space-y-4">
+            <TabsContent
+                v-if="interestResults?.categories?.length"
+                value="interest"
+                class="space-y-4"
+            >
                 <!-- Categories -->
                 <div
                     v-for="category in interestResults.categories"
-                    :key="category.name"
+                    :key="category.code"
                 >
                     <Card>
                         <CardHeader>
                             <CardTitle>Kategori: {{ category.name }}</CardTitle>
                             <CardDescription
-                                >Respon peserta pada kategori
-                                {{ category.name }}</CardDescription
+                                >{{
+                                    category.instruction ||
+                                    `Respon peserta pada kategori ${category.name}`
+                                }}</CardDescription
                             >
                         </CardHeader>
                         <CardContent>

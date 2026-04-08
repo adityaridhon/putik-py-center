@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
+interface OpsiItem {
+    tipe: 'teks' | 'gambar';
+    nilai: string;
+}
 
 interface SoalItem {
     pertanyaan: string;
-    opsi: string[];
+    gambarSoal?: string | null;
+    opsi: OpsiItem[];
 }
 
 interface Props {
@@ -23,7 +29,14 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue']);
 
 const jawaban = ref<string[]>([...props.modelValue]);
+const currentQuestion = ref(0);
 const timer = ref(props.waktu);
+const totalSoal = computed(() => props.soal.length);
+const soalAktif = computed(() => props.soal[currentQuestion.value]);
+const isFirstSoal = computed(() => currentQuestion.value === 0);
+const isLastSoal = computed(
+    () => currentQuestion.value === totalSoal.value - 1,
+);
 const formattedTime = computed(() => {
     const menit = Math.floor(timer.value / 60);
     const detik = timer.value % 60;
@@ -43,9 +56,42 @@ onUnmounted(() => {
     if (interval) clearInterval(interval);
 });
 
+watch(
+    () => props.modelValue,
+    (value) => {
+        jawaban.value = [...value];
+    },
+    { deep: true },
+);
+
+watch(
+    () => props.soal,
+    () => {
+        currentQuestion.value = 0;
+    },
+);
+
 const pilih = (index: number, value: string) => {
     jawaban.value[index] = value;
     emit('update:modelValue', jawaban.value);
+};
+
+const nextSoal = () => {
+    if (!isLastSoal.value) {
+        currentQuestion.value++;
+    }
+};
+
+const prevSoal = () => {
+    if (!isFirstSoal.value) {
+        currentQuestion.value--;
+    }
+};
+
+const goToSoal = (index: number) => {
+    if (index >= 0 && index < totalSoal.value) {
+        currentQuestion.value = index;
+    }
 };
 </script>
 
@@ -71,25 +117,31 @@ const pilih = (index: number, value: string) => {
             </div>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-5" v-if="soalAktif">
             <article
-                v-for="(s, i) in soal"
-                :key="i"
                 class="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5"
             >
                 <p
                     class="mb-4 text-sm leading-relaxed font-semibold text-slate-800 sm:text-base"
                 >
-                    {{ i + 1 }}. {{ s.pertanyaan }}
+                    {{ currentQuestion + 1 }} / {{ totalSoal }}.
+                    {{ soalAktif.pertanyaan }}
                 </p>
+
+                <img
+                    v-if="soalAktif.gambarSoal"
+                    :src="soalAktif.gambarSoal"
+                    alt="Gambar soal"
+                    class="mb-4 max-h-64 rounded-lg border border-slate-200 bg-white object-contain"
+                />
 
                 <div class="grid gap-2 md:grid-cols-2">
                     <label
-                        v-for="(opsi, j) in s.opsi"
+                        v-for="(opsi, j) in soalAktif.opsi"
                         :key="j"
                         class="group relative cursor-pointer rounded-lg border p-2.5 transition sm:p-3"
                         :class="
-                            jawaban[i] === opsi
+                            jawaban[currentQuestion] === opsi.nilai
                                 ? 'border-primary bg-primary/10 ring-1 ring-primary/30'
                                 : 'border-slate-300 bg-white hover:border-primary/60 hover:bg-primary/5'
                         "
@@ -97,10 +149,10 @@ const pilih = (index: number, value: string) => {
                         <input
                             type="radio"
                             class="sr-only"
-                            :name="'soal' + i"
-                            :value="opsi"
-                            :checked="jawaban[i] === opsi"
-                            @change="pilih(i, opsi)"
+                            :name="'soal' + currentQuestion"
+                            :value="opsi.nilai"
+                            :checked="jawaban[currentQuestion] === opsi.nilai"
+                            @change="pilih(currentQuestion, opsi.nilai)"
                         />
 
                         <div class="flex items-start gap-3">
@@ -118,12 +170,61 @@ const pilih = (index: number, value: string) => {
                             <span
                                 class="text-xs leading-relaxed text-slate-700 sm:text-sm"
                             >
-                                {{ opsi }}
+                                <template v-if="opsi.tipe === 'gambar'">
+                                    <img
+                                        :src="opsi.nilai"
+                                        :alt="`Opsi ${String.fromCharCode(65 + j)}`"
+                                        class="max-h-24 rounded border border-slate-200 bg-white object-contain"
+                                    />
+                                </template>
+                                <template v-else>
+                                    {{ opsi.nilai }}
+                                </template>
                             </span>
                         </div>
                     </label>
                 </div>
             </article>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isFirstSoal"
+                        @click="prevSoal"
+                    >
+                        Sebelumnya
+                    </button>
+                    <button
+                        type="button"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isLastSoal"
+                        @click="nextSoal"
+                    >
+                        Berikutnya
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        v-for="(_, index) in soal"
+                        :key="index"
+                        type="button"
+                        class="h-8 min-w-8 rounded-md border text-xs font-semibold"
+                        :class="
+                            index === currentQuestion
+                                ? 'border-primary bg-primary text-white'
+                                : jawaban[index]
+                                  ? 'border-green-600 bg-green-50 text-green-700'
+                                  : 'border-slate-300 bg-white text-slate-700'
+                        "
+                        @click="goToSoal(index)"
+                    >
+                        {{ index + 1 }}
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 </template>
