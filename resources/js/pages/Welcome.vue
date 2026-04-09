@@ -40,7 +40,6 @@ const props = defineProps<{
 }>();
 </script>
 
-
 <template>
     <div class="overflow-x-hidden">
         <Navbar :profile="props.companyProfile" />
