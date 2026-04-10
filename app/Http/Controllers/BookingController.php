@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Service;
+use App\Models\User;
+use App\Notifications\NewBookingNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -82,7 +85,7 @@ class BookingController extends Controller
         }
 
         // 3. Simpan ke Database
-        Booking::create([
+        $booking = Booking::create([
             'user_id'          => $userId,
             'service_id'       => $serviceId,
             'customer_name'    => $request->nama,
@@ -96,7 +99,11 @@ class BookingController extends Controller
             'status'           => 'pending' 
         ]);
 
-        return redirect()->back()->with('success', 'Booking berhasil dibuat!');
+        // Kirim notifikasi ke admin
+        $admins = User::where('role', 'admin')->get();
+        Notification::send($admins, new NewBookingNotification($booking));
+
+        return redirect()->route('booking-layanan')->with('success', 'Booking berhasil dibuat!');
     }
 
     public function updateStatus(Request $request, Booking $booking)
@@ -142,5 +149,12 @@ class BookingController extends Controller
         ]);
 
         return back();
+    }
+
+    public function show(Booking $booking)
+    {
+        return Inertia::render('admin/bookings/Show', [
+            'booking' => $booking->load('service', 'user'),
+        ]);
     }
 }

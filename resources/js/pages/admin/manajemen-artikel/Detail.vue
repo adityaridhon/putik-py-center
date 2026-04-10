@@ -12,7 +12,7 @@ import { article as articleRoute } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { getCategoryColor } from '@/utils/categoryColors';
 import { Head } from '@inertiajs/vue3';
-import { Calendar, Download, FileText, User } from 'lucide-vue-next';
+import { Calendar, Download, FileText } from 'lucide-vue-next';
 
 const props = defineProps<{
     artikel: {
@@ -67,6 +67,50 @@ const getStatusText = (status: string) => {
     };
     return statusText[status as keyof typeof statusText] || status;
 };
+
+// Fungsi untuk membersihkan tag HTML dari deskripsi
+const cleanDescription = (html: string) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
+
+// Check if content is HTML format (from TipTap editor)
+const isHtmlContent = (content: string) => {
+    return content.includes('<p>') || content.includes('<h1>') || content.includes('<h2>') || content.includes('<em>') || content.includes('<strong>');
+};
+
+// Add Tailwind prose classes to HTML content for proper styling
+const styledHtmlContent = (html: string) => {
+    let content = html;
+    
+    // Add classes to paragraphs
+    content = content.replace(/<p>/g, '<p class="text-gray-700 leading-8 text-base text-justify">');
+    
+    // Add classes to headings
+    content = content.replace(/<h1>/g, '<h1 class="text-2xl font-bold mt-6 mb-4 text-gray-900">');
+    content = content.replace(/<h2>/g, '<h2 class="text-xl font-bold mt-5 mb-3 text-gray-900">');
+    content = content.replace(/<h3>/g, '<h3 class="text-lg font-bold mt-4 mb-2 text-gray-900">');
+    
+    // Add classes to lists and list items
+    content = content.replace(/<ul>/g, '<ul class="list-disc ml-5 text-gray-700">');
+    content = content.replace(/<ol>/g, '<ol class="list-decimal ml-5 text-gray-700">');
+    content = content.replace(/<li>/g, '<li class="text-gray-700 leading-7 ml-2">');
+    
+    // Add classes to links
+    content = content.replace(/<a /g, '<a class="text-blue-600 underline hover:text-blue-800" ');
+    
+    // Add classes to blockquotes
+    content = content.replace(/<blockquote>/g, '<blockquote class="border-l-4 border-gray-300 pl-4 italic text-gray-700 my-4">');
+    
+    // Strong tags
+    content = content.replace(/<strong>/g, '<strong class="font-bold text-gray-900">');
+    
+    // Emphasis tags
+    content = content.replace(/<em>/g, '<em class="italic text-gray-700">');
+    
+    return content;
+};
 </script>
 
 <template>
@@ -94,37 +138,45 @@ const getStatusText = (status: string) => {
 
                     <!-- Article Content -->
                     <Card>
-                        <CardHeader>
-                            <CardTitle class="text-3xl">
-                                {{ artikel.title }}
-                            </CardTitle>
-                            <CardDescription
-                                class="flex items-center gap-4 text-base"
-                            >
-                                <span class="flex items-center gap-1">
-                                    <User class="h-4 w-4" />
-                                    {{ artikel.author }}
-                                </span>
-                                <span class="flex items-center gap-1">
-                                    <Calendar class="h-4 w-4" />
-                                    {{ formatDate(artikel.published_at) }}
-                                </span>
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent class="space-y-4">
+                        <CardContent class="space-y-6 pt-6">
+                            <!-- Category Badge -->
                             <div>
-                                <h3 class="mb-2 text-lg font-semibold">
-                                    Deskripsi
-                                </h3>
-                                <div
-                                    class="prose prose-gray dark:prose-invert max-w-none"
+                                <span
+                                    :class="[
+                                        'inline-flex items-center rounded-full px-4 py-1 text-sm font-medium',
+                                        getCategoryColor(artikel.category_id).badge,
+                                    ]"
                                 >
-                                    <p
-                                        class="whitespace-pre-wrap text-gray-700 dark:text-gray-300"
-                                    >
-                                        {{ artikel.description }}
-                                    </p>
-                                </div>
+                                    {{ artikel.category?.name || '-' }}
+                                </span>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="space-y-3">
+                                <h1 class="text-4xl font-bold leading-tight text-gray-900">
+                                    {{ artikel.title }}
+                                </h1>
+                                <p class="text-sm text-gray-500">
+                                    {{ formatDate(artikel.published_at) }} • Oleh {{ artikel.author }}
+                                </p>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="border-t border-gray-200"></div>
+
+                            <!-- Description -->
+                            <div class="space-y-4">
+                                <div
+                                    v-if="isHtmlContent(artikel.description)"
+                                    v-html="styledHtmlContent(artikel.description)"
+                                    class="prose prose-base max-w-none space-y-4"
+                                />
+                                <p
+                                    v-else
+                                    class="text-gray-700 leading-8 text-base text-justify"
+                                >
+                                    {{ cleanDescription(artikel.description) }}
+                                </p>
                             </div>
 
                             <!-- PDF File -->
@@ -135,7 +187,7 @@ const getStatusText = (status: string) => {
                                 <a
                                     :href="`/storage/${artikel.file_path}`"
                                     target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                                    class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 transition-colors hover:bg-gray-100"
                                 >
                                     <FileText class="h-5 w-5 text-red-500" />
                                     <span class="font-medium">
@@ -159,7 +211,7 @@ const getStatusText = (status: string) => {
                             <!-- Status -->
                             <div>
                                 <p
-                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                    class="mb-1 text-sm font-medium text-gray-500"
                                 >
                                     Status
                                 </p>
@@ -176,7 +228,7 @@ const getStatusText = (status: string) => {
                             <!-- Category -->
                             <div>
                                 <p
-                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                    class="mb-1 text-sm font-medium text-gray-500"
                                 >
                                     Kategori
                                 </p>
@@ -193,18 +245,18 @@ const getStatusText = (status: string) => {
 
                             <!-- Divider -->
                             <div
-                                class="border-t border-gray-200 dark:border-gray-700"
-                            ></div>
+                                class="border-t border-gray-200"
+                            />
 
                             <!-- Dates -->
                             <div>
                                 <p
-                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                    class="mb-1 text-sm font-medium text-gray-500"
                                 >
                                     Tanggal Publikasi
                                 </p>
                                 <p
-                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                    class="text-sm text-gray-900"
                                 >
                                     {{ formatDate(artikel.published_at) }}
                                 </p>
@@ -212,12 +264,12 @@ const getStatusText = (status: string) => {
 
                             <div>
                                 <p
-                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                    class="mb-1 text-sm font-medium text-gray-500"
                                 >
                                     Dibuat Pada
                                 </p>
                                 <p
-                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                    class="text-sm text-gray-900"
                                 >
                                     {{ formatDate(artikel.created_at) }}
                                 </p>
@@ -225,12 +277,12 @@ const getStatusText = (status: string) => {
 
                             <div>
                                 <p
-                                    class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400"
+                                    class="mb-1 text-sm font-medium text-gray-500"
                                 >
                                     Terakhir Diperbarui
                                 </p>
                                 <p
-                                    class="text-sm text-gray-900 dark:text-gray-100"
+                                    class="text-sm text-gray-900"
                                 >
                                     {{ formatDate(artikel.updated_at) }}
                                 </p>

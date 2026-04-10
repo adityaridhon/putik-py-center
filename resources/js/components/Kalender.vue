@@ -92,6 +92,11 @@ const calendarDays = computed(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const now = new Date();
+    const currentHour = String(now.getHours()).padStart(2, '0');
+    const currentMinute = String(now.getMinutes()).padStart(2, '0');
+    const currentTime = `${currentHour}:${currentMinute}`;
+
     return generateCalendar(currentDate.value).map((item) => {
         if (!item.currentMonth) {
             return item;
@@ -101,6 +106,7 @@ const calendarDays = computed(() => {
         const itemDate = new Date(item.value);
         itemDate.setHours(0, 0, 0, 0);
         const isPast = itemDate < today;
+        const isToday = itemDate.getTime() === today.getTime();
 
         const confirmedTimes = new Set(
             (props.bookedSlots || [])
@@ -113,7 +119,13 @@ const calendarDays = computed(() => {
                 .map((slot) => (slot.booking_time || '').substring(0, 5)),
         );
 
-        const isFull = availableTimes.every((time) => confirmedTimes.has(time));
+        const remainingTimes = availableTimes.filter((time) => {
+            const isBooked = confirmedTimes.has(time);
+            const isPastTime = isToday && time <= currentTime;
+            return !isBooked && !isPastTime;
+        });
+
+        const isFull = remainingTimes.length === 0;
 
         return {
             ...item,

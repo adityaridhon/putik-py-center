@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { watch } from 'vue';
+
 interface FormData {
     nama: string;
     hp: string;
@@ -15,16 +17,14 @@ const model = defineModel<FormData>({
     },
 });
 
-const handleNama = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    target.value = target.value.replace(/[^a-zA-Z\s]/g, '');
-    model.value.nama = target.value;
+// Fungsi untuk memvalidasi input nama (hanya huruf dan spasi)
+const validateNama = (value: string) => {
+    return value.replace(/[^a-zA-Z\s]/g, '');
 };
 
-const handleHp = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    target.value = target.value.replace(/[^0-9]/g, '');
-    model.value.hp = target.value;
+// Fungsi untuk memvalidasi input HP (hanya angka)
+const validateHp = (value: string) => {
+    return value.replace(/[^0-9]/g, '');
 };
 </script>
 
@@ -43,8 +43,8 @@ const handleHp = (event: Event) => {
                 Nama Lengkap <span class="text-red-500">*</span>
             </label>
             <input
-                :value="model.nama"
-                @input="handleNama"
+                v-model.lazy="model.nama"
+                @blur="model.nama = validateNama(model.nama)"
                 type="text"
                 placeholder="Masukkan nama lengkap Anda"
                 class="w-full rounded-lg border bg-slate-100 px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
@@ -56,8 +56,8 @@ const handleHp = (event: Event) => {
                 Nomor HP <span class="text-red-500">*</span>
             </label>
             <input
-                :value="model.hp"
-                @input="handleHp"
+                v-model.lazy="model.hp"
+                @blur="model.hp = validateHp(model.hp)"
                 type="tel"
                 placeholder="08xxxxxxxxxx"
                 inputmode="numeric"

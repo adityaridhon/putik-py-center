@@ -108,7 +108,7 @@ function pilih(j: JamItem) {
 </script>
 
 <template>
-    <div class="space-y-3">
+    <div class="space-y-3" data-jam-section>
         <p class="text-sm font-semibold text-primary">Pilih Jam</p>
 
         <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">

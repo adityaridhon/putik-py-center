@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\PsychologicalReport;
 use App\Models\TestSession;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -151,6 +152,34 @@ class DashboardController extends Controller
             'dashboardStats' => $dashboardStats,
             'dashboardTrends' => $dashboardTrends,
             'activities' => $combinedActivities,
+            'notifications' => Auth::user()->unreadNotifications,
         ]);
+    }
+
+    public function notifications()
+    {
+        $notifications = Auth::user()
+            ->notifications()
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'data' => $notification->data,
+                    'read_at' => $notification->read_at,
+                    'created_at' => $notification->created_at?->toDateTimeString(),
+                ];
+            });
+
+        return Inertia::render('admin/notifications/Index', [
+            'notifications' => $notifications,
+        ]);
+    }
+
+    public function markAsRead($id)
+    {
+        Auth::user()->notifications()->where('id', $id)->update(['read_at' => now()]);
+        return response()->json(['success' => true]);
     }
 }
