@@ -20,6 +20,8 @@ const props = defineProps<{
     jam: string;
 }>();
 
+const emit = defineEmits(['booked']);
+
 const isLoading = ref(false);
 
 const tanggalLengkap = computed(() => {
@@ -109,6 +111,7 @@ const handleWhatsAppClick = () => {
     }, {
         onSuccess: () => {
             isLoading.value = false;
+            emit('booked');
             window.open(whatsappMessageUrl.value, '_blank');
         },
         onError: () => {
@@ -122,7 +125,7 @@ const handleWhatsAppClick = () => {
 </script>
 
 <template>
-    <div class="w-full rounded-xl border bg-white p-4 shadow-md sm:p-6 md:p-8">
+    <div class="w-full rounded-xl border bg-white p-4 shadow-md sm:p-6 md:p-8" data-konfirmasi-section>
         <h2 class="mb-6 text-center text-xl font-bold text-primary sm:text-2xl">
             KONFIRMASI
         </h2>

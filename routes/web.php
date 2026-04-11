@@ -435,6 +435,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     // Dashboard admin
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/notifications', [DashboardController::class, 'notifications'])->name('notifications.index');
+    Route::post('/admin/notifications/{id}/read', [DashboardController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/admin/bookings/{booking}', [BookingController::class, 'show'])->name('booking.show');
 
     // Company Profile & Content Management
     Route::get('/admin/konten', [CompanyProfileController::class, 'index'])->name('konten');
