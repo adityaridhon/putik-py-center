@@ -8,6 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { computed } from 'vue';
 
 const props = defineProps<{
     activities?: Array<{
@@ -18,6 +19,10 @@ const props = defineProps<{
         status: string;
     }>;
 }>();
+
+const displayedActivities = computed(() =>
+    (props.activities || []).slice(0, 5),
+);
 
 const getBadgeClass = (status: string) => {
     switch (status) {
@@ -37,7 +42,7 @@ const getBadgeClass = (status: string) => {
 </script>
 
 <template>
-    <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">   
+    <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
         <Table>
             <TableHeader class="bg-primary">
                 <TableRow class="border-0 hover:bg-transparent">
@@ -50,19 +55,24 @@ const getBadgeClass = (status: string) => {
                     <TableHead class="font-semibold text-white">
                         Tanggal
                     </TableHead>
-                    <TableHead class="w-32 text-center font-semibold text-white">
+                    <TableHead
+                        class="w-32 text-center font-semibold text-white"
+                    >
                         Status
                     </TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-if="(props.activities || []).length === 0">
-                    <TableCell colspan="4" class="h-20 text-center text-gray-500">
+                <TableRow v-if="displayedActivities.length === 0">
+                    <TableCell
+                        colspan="4"
+                        class="h-20 text-center text-gray-500"
+                    >
                         Belum ada aktivitas.
                     </TableCell>
                 </TableRow>
                 <TableRow
-                    v-for="activity in props.activities || []"
+                    v-for="activity in displayedActivities"
                     :key="activity.id"
                     class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 >
@@ -76,7 +86,10 @@ const getBadgeClass = (status: string) => {
                         {{ activity.tanggal }}
                     </TableCell>
                     <TableCell class="text-center">
-                        <Badge variant="outline" :class="getBadgeClass(activity.status)">
+                        <Badge
+                            variant="outline"
+                            :class="getBadgeClass(activity.status)"
+                        >
                             {{ activity.status }}
                         </Badge>
                     </TableCell>
