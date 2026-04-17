@@ -516,6 +516,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/asesmen/bank-soal/create', [TestTokenController::class, 'create'])->name('bankSoal.create');
     Route::post('/admin/asesmen/bank-soal', [TestTokenController::class, 'store'])->name('bankSoal.store');
     Route::get('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'show'])->name('bankSoal.show');
+    Route::get('/admin/asesmen/bank-soal/{batch}/export/excel', [TestTokenController::class, 'exportExcel'])->name('bankSoal.export.excel');
+    Route::get('/admin/asesmen/bank-soal/{batch}/export/pdf', [TestTokenController::class, 'exportPdf'])->name('bankSoal.export.pdf');
     Route::get('/admin/asesmen/bank-soal/{batch}/edit', [TestTokenController::class, 'edit'])->name('bankSoal.edit');
     Route::put('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'update'])->name('bankSoal.update');
     Route::delete('/admin/asesmen/bank-soal/{batch}', [TestTokenController::class, 'destroy'])->name('bankSoal.destroy');

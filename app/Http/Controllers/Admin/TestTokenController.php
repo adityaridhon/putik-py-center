@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TestTokenBatch;
 use App\Models\TestToken;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TestTokenController extends Controller
 {
@@ -72,11 +76,75 @@ class TestTokenController extends Controller
 
     public function show(TestTokenBatch $batch)
     {
-        $batch->load('tokens');
+        $batch->load(['tokens' => fn ($query) => $query->orderBy('id')]);
 
         return Inertia::render('admin/bank-soal/Detail', [
             'batch' => $batch
         ]);
+    }
+
+    public function exportExcel(TestTokenBatch $batch): BinaryFileResponse
+    {
+        $batch->load(['tokens' => fn ($query) => $query->orderBy('id')]);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setTitle('Token Batch');
+        $sheet->fromArray([
+            'Batch ID',
+            'Jenis Tes',
+            'Token',
+            'Status',
+            'Digunakan Pada',
+            'Masa Berlaku',
+            'Tanggal Dibuat Batch',
+            'Catatan',
+        ], null, 'A1');
+
+        $row = 2;
+        foreach ($batch->tokens as $token) {
+            $sheet->fromArray([
+                $batch->id,
+                $this->testTypeLabel($batch->test_type),
+                $token->token,
+                $token->is_used ? 'Terpakai' : 'Tersedia',
+                optional($token->used_at)?->format('d-m-Y H:i:s') ?? '-',
+                optional($batch->expired_at)?->format('d-m-Y') ?? '-',
+                optional($batch->created_at)?->format('d-m-Y H:i:s') ?? '-',
+                $batch->note ?: '-',
+            ], null, 'A' . $row);
+
+            $row++;
+        }
+
+        foreach (range('A', 'H') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        $safeType = str_replace(' ', '-', strtolower($this->testTypeLabel($batch->test_type)));
+        $fileName = "token-batch-{$batch->id}-{$safeType}.xlsx";
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'token-batch-');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function exportPdf(TestTokenBatch $batch)
+    {
+        $batch->load(['tokens' => fn ($query) => $query->orderBy('id')]);
+
+        $safeType = str_replace(' ', '-', strtolower($this->testTypeLabel($batch->test_type)));
+        $fileName = "token-batch-{$batch->id}-{$safeType}.pdf";
+
+        $pdf = Pdf::loadView('pdf.token-batch', [
+            'batch' => $batch,
+            'testTypeLabel' => $this->testTypeLabel($batch->test_type),
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download($fileName);
     }
 
     public function edit(TestTokenBatch $batch)
@@ -120,5 +188,15 @@ class TestTokenController extends Controller
                 ->back()
                 ->with('error', 'Gagal menghapus batch.');
         }
+    }
+
+    private function testTypeLabel(string $testType): string
+    {
+        return match ($testType) {
+            'minat-bakat' => 'Tes Minat Bakat',
+            'intelegensi' => 'Tes Intelegensi',
+            'gaya-belajar' => 'Tes Gaya Belajar',
+            default => $testType,
+        };
     }
 }
