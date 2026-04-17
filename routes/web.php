@@ -261,15 +261,9 @@ Route::middleware(['auth'])->group(function () {
             ->get()
             ->map(function (IntelligenceTestCategory $category) {
                 $isMemory = $category->question_type === 'memory';
-                $isImage = $category->question_type === 'image';
-
                 $questions = $category->questions->map(function ($question) use ($category) {
-                    if ($category->answer_type === 'text' && $category->question_type !== 'memory') {
+                    if ($category->answer_type === 'text') {
                         return $question->question_text ?? '';
-                    }
-
-                    if ($category->answer_type === 'text' && $category->question_type === 'memory') {
-                        return 'Tuliskan satu kata yang Anda ingat';
                     }
 
                     return [
@@ -294,13 +288,32 @@ Route::middleware(['auth'])->group(function () {
                     ];
                 })->filter()->values()->all();
 
-                $kataHafalan = $isMemory
-                    ? $category->questions
-                        ->pluck('question_text')
+                $kataHafalan = [];
+
+                if ($isMemory) {
+                    $memoryWords = collect($category->questions)
+                        ->map(function ($question) {
+                            return collect((array) ($question->question_data ?? []))
+                                ->get('memory_words', []);
+                        })
+                        ->flatten()
                         ->filter(fn ($word) => filled($word))
+                        ->map(fn ($word) => (string) $word)
+                        ->unique()
                         ->values()
-                        ->all()
-                    : [];
+                        ->all();
+
+                    $kataHafalan = $memoryWords;
+                }
+
+                $instructionText = trim((string) ($category->instruction ?? $category->description ?? ''));
+                $durationMinutes = max(1, (int) $category->duration_minutes);
+
+                if ($isMemory) {
+                    $instructionText = 'Hafalkan daftar kata yang ditampilkan pada sesi instruksi. Setelah sesi soal dimulai, jawablah pertanyaan pilihan ganda berdasarkan kata yang telah Anda hafalkan.';
+                }
+
+                $instructionText .= ' Total waktu pengerjaan kategori ini: ' . $durationMinutes . ' menit.';
 
                 return [
                     'kode' => $category->code,
@@ -308,7 +321,7 @@ Route::middleware(['auth'])->group(function () {
                     'questionType' => $category->question_type,
                     'waktuInstruksi' => 180,
                     'waktuSoal' => $category->duration_minutes * 60,
-                    'instruksi' => $category->instruction ?? $category->description ?? '',
+                    'instruksi' => $instructionText,
                     'gambarInstruksi' => $isMemory ? '/images/ist/me-board.svg' : null,
                     'kataHafalan' => $kataHafalan,
                     'soal' => $questions,

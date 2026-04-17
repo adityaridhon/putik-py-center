@@ -281,8 +281,8 @@ const mulaiTes = () => {
 };
 
 // next kategori
-const nextKategori = () => {
-    if (!bisaLanjut.value) {
+const nextKategori = (force = false) => {
+    if (!force && !bisaLanjut.value) {
         return;
     }
 
@@ -292,11 +292,11 @@ const nextKategori = () => {
         return;
     }
 
-    selesaiTes();
+    selesaiTes(force);
 };
 
-const selesaiTes = () => {
-    if (!bisaLanjut.value) {
+const selesaiTes = (force = false) => {
+    if (!force && !bisaLanjut.value) {
         return;
     }
 
@@ -316,6 +316,10 @@ const selesaiTes = () => {
             },
         },
     );
+};
+
+const handleCategoryTimeout = () => {
+    nextKategori(true);
 };
 </script>
 
@@ -344,6 +348,7 @@ const selesaiTes = () => {
                 :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"
+                @timeout="handleCategoryTimeout"
             />
 
             <!-- SOAL ISIAN -->
@@ -353,6 +358,7 @@ const selesaiTes = () => {
                 :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"
+                @timeout="handleCategoryTimeout"
             />
 
             <div v-if="mode === 'soal'" class="mt-6 flex justify-end">

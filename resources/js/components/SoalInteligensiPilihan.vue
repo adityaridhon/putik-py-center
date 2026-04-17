@@ -26,17 +26,19 @@ const props = withDefaults(defineProps<Props>(), {
     modelValue: () => [],
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'timeout']);
 
 const jawaban = ref<string[]>([...props.modelValue]);
 const currentQuestion = ref(0);
 const timer = ref(props.waktu);
+const sudahTimeout = ref(false);
 const totalSoal = computed(() => props.soal.length);
 const soalAktif = computed(() => props.soal[currentQuestion.value]);
 const isFirstSoal = computed(() => currentQuestion.value === 0);
 const isLastSoal = computed(
     () => currentQuestion.value === totalSoal.value - 1,
 );
+const showTimer = computed(() => timer.value <= 10);
 const formattedTime = computed(() => {
     const menit = Math.floor(timer.value / 60);
     const detik = timer.value % 60;
@@ -48,7 +50,15 @@ let interval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
     interval = setInterval(() => {
-        if (timer.value > 0) timer.value--;
+        if (timer.value > 0) {
+            timer.value--;
+            return;
+        }
+
+        if (!sudahTimeout.value) {
+            sudahTimeout.value = true;
+            emit('timeout');
+        }
     }, 1000);
 });
 
@@ -68,6 +78,16 @@ watch(
     () => props.soal,
     () => {
         currentQuestion.value = 0;
+        timer.value = props.waktu;
+        sudahTimeout.value = false;
+    },
+);
+
+watch(
+    () => props.waktu,
+    (value) => {
+        timer.value = value;
+        sudahTimeout.value = false;
     },
 );
 
@@ -110,7 +130,9 @@ const goToSoal = (index: number) => {
                 Kategori Soal: {{ kategori }}
             </div>
             <div
+                v-if="showTimer"
                 class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium whitespace-nowrap text-primary"
+                :class="timer <= 10 ? 'border-red-300 bg-red-50 text-red-700' : ''"
             >
                 <span>Waktu</span>
                 <span>{{ formattedTime }}</span>
@@ -159,7 +181,7 @@ const goToSoal = (index: number) => {
                             <span
                                 class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
                                 :class="
-                                    jawaban[i] === opsi
+                                    jawaban[currentQuestion] === opsi.nilai
                                         ? 'bg-primary text-white'
                                         : 'bg-slate-200 text-slate-700'
                                 "
