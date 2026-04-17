@@ -4,8 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useClipboard } from '@vueuse/core';
-import { Calendar, Check, Copy, FileText, Hash } from 'lucide-vue-next';
-import { ref, computed, type PropType } from 'vue';
+import {
+    Calendar,
+    Check,
+    Copy,
+    Download,
+    FileText,
+    Hash,
+} from 'lucide-vue-next';
+import { computed, ref, type PropType } from 'vue';
 
 export interface TestToken {
     id: number;
@@ -54,7 +61,7 @@ const getStatusText = (isUsed: boolean) => {
 
 const testTypeLabel: Record<string, string> = {
     'minat-bakat': 'Tes Minat Bakat',
-    'intelegensi': 'Tes Intelegensi',
+    intelegensi: 'Tes Intelegensi',
     'gaya-belajar': 'Tes Gaya Belajar',
 };
 
@@ -67,7 +74,15 @@ const formatDate = (date: string) => {
 };
 
 const availableTokenCount = computed(() => {
-    return props.batch.tokens?.filter(t => !t.is_used).length || 0;
+    return props.batch.tokens?.filter((t) => !t.is_used).length || 0;
+});
+
+const exportExcelUrl = computed(() => {
+    return `/admin/asesmen/bank-soal/${props.batch.id}/export/excel`;
+});
+
+const exportPdfUrl = computed(() => {
+    return `/admin/asesmen/bank-soal/${props.batch.id}/export/pdf`;
 });
 </script>
 
@@ -76,7 +91,25 @@ const availableTokenCount = computed(() => {
         <!-- Summary Information -->
         <Card>
             <CardHeader>
-                <CardTitle class="text-lg">Informasi Token</CardTitle>
+                <div
+                    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <CardTitle class="text-lg">Informasi Token</CardTitle>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a :href="exportExcelUrl">
+                            <Button variant="outline" size="sm">
+                                <Download class="mr-2 h-4 w-4" />
+                                Export Excel
+                            </Button>
+                        </a>
+                        <a :href="exportPdfUrl">
+                            <Button variant="outline" size="sm">
+                                <Download class="mr-2 h-4 w-4" />
+                                Export PDF
+                            </Button>
+                        </a>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent class="space-y-4">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -85,7 +118,10 @@ const availableTokenCount = computed(() => {
                             >Jenis Tes</Label
                         >
                         <p class="font-medium">
-                            {{ testTypeLabel[batch.test_type] || batch.test_type }}
+                            {{
+                                testTypeLabel[batch.test_type] ||
+                                batch.test_type
+                            }}
                         </p>
                     </div>
                     <div class="space-y-2">
@@ -135,12 +171,16 @@ const availableTokenCount = computed(() => {
                 <div class="flex items-center justify-between">
                     <CardTitle class="text-lg">Daftar Token</CardTitle>
                     <Badge variant="secondary">
-                        {{ availableTokenCount }} / {{ batch.total_tokens }} Tersedia
+                        {{ availableTokenCount }} /
+                        {{ batch.total_tokens }} Tersedia
                     </Badge>
                 </div>
             </CardHeader>
             <CardContent>
-                <div v-if="batch.tokens && batch.tokens.length > 0" class="space-y-3">
+                <div
+                    v-if="batch.tokens && batch.tokens.length > 0"
+                    class="space-y-3"
+                >
                     <div
                         v-for="token in batch.tokens"
                         :key="token.id"
@@ -166,7 +206,8 @@ const availableTokenCount = computed(() => {
                                         v-if="token.used_at"
                                         class="text-xs text-muted-foreground"
                                     >
-                                        Digunakan pada: {{ formatDate(token.used_at) }}
+                                        Digunakan pada:
+                                        {{ formatDate(token.used_at) }}
                                     </span>
                                 </div>
                             </div>
@@ -195,7 +236,10 @@ const availableTokenCount = computed(() => {
                         </Button>
                     </div>
                 </div>
-                <div v-else class="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
+                <div
+                    v-else
+                    class="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-700"
+                >
                     <p class="text-gray-500 dark:text-gray-400">
                         Tidak ada token untuk batch ini.
                     </p>
