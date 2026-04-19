@@ -101,7 +101,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <!-- Content -->
             <div class="space-y-6">
-                <SubtestEditForm />
+                <SubtestEditForm :category="category" />
 
                 <!-- Bulk Question Creator -->
                 <div

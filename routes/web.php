@@ -322,23 +322,42 @@ Route::middleware(['auth'])->group(function () {
                     $kataHafalan = $memoryWords;
                 }
 
-                $instructionText = trim((string) ($category->instruction ?? $category->description ?? ''));
+                $instructionText = trim((string) ($category->description ?? ''));
                 $durationMinutes = max(1, (int) $category->duration_minutes);
+                
+                $gambarInstruksi = null;
 
                 if ($isMemory) {
-                    $instructionText = 'Hafalkan daftar kata yang ditampilkan pada sesi instruksi. Setelah sesi soal dimulai, jawablah pertanyaan pilihan ganda berdasarkan kata yang telah Anda hafalkan.';
+                    $instructionText = 'Hafalkan daftar kata/gambar yang ditampilkan pada sesi instruksi ini. Setelah sesi soal dimulai, jawablah pertanyaan berdasarkan yang Anda hafalkan.';
+                    
+                    // Cek apakah instruksi di DB berakhiran ekstensi gambar/path
+                    if (!empty($category->instruction) && str_contains($category->instruction, 'intelligence-test/instructions')) {
+                        $gambarInstruksi = '/storage/' . $category->instruction;
+                    } else {
+                        $gambarInstruksi = '/images/ist/me-board.svg'; // default bawaan awal
+                    }
+                } else {
+                    // Jika bukan memory, pakai teks normal dari database
+                    $instructionText = trim((string) ($category->instruction ?? $category->description ?? ''));
                 }
 
                 $instructionText .= ' Total waktu pengerjaan kategori ini: ' . $durationMinutes . ' menit.';
 
+                $tipe = 'pilihan';
+                if ($category->question_type === 'numeric' || $category->question_type === 'series') {
+                    $tipe = 'angka';
+                } elseif ($category->answer_type === 'text') {
+                    $tipe = 'isian';
+                }
+
                 return [
                     'kode' => $category->code,
-                    'tipe' => $category->answer_type === 'text' ? 'isian' : 'pilihan',
+                    'tipe' => $tipe,
                     'questionType' => $category->question_type,
                     'waktuInstruksi' => 180,
                     'waktuSoal' => $category->duration_minutes * 60,
                     'instruksi' => $instructionText,
-                    'gambarInstruksi' => $isMemory ? '/images/ist/me-board.svg' : null,
+                    'gambarInstruksi' => $gambarInstruksi,
                     'kataHafalan' => $kataHafalan,
                     'soal' => $questions,
                 ];

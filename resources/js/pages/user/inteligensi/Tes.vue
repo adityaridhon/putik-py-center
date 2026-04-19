@@ -3,6 +3,7 @@ import HalamanInstruksi from '@/components/HalamanInstruksi.vue';
 import Navbar from '@/components/Navbar.vue';
 import SoalIsian from '@/components/SoalInteligensiIsian.vue';
 import SoalPilihan from '@/components/SoalInteligensiPilihan.vue';
+import SoalAngka from '@/components/SoalInteligensiAngka.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -17,6 +18,11 @@ interface SoalPilihanItem {
     opsi: OpsiItem[];
 }
 
+interface SoalAngkaItem {
+    pertanyaan: string;
+    gambarSoal?: string | null;
+}
+
 interface SoalPilihanItemRaw {
     pertanyaan: string;
     gambarSoal?: string | null;
@@ -25,14 +31,14 @@ interface SoalPilihanItemRaw {
 
 interface KategoriTes {
     kode: string;
-    tipe: 'pilihan' | 'isian';
+    tipe: 'pilihan' | 'isian' | 'angka';
     questionType?: string;
     waktuInstruksi: number;
     waktuSoal: number;
     instruksi: string;
     gambarInstruksi?: string | null;
     kataHafalan?: string[];
-    soal: SoalPilihanItemRaw[] | string[];
+    soal: SoalPilihanItemRaw[] | string[] | SoalAngkaItem[];
 }
 
 const props = defineProps<{
@@ -208,6 +214,16 @@ const kategoriTesNormalized = computed<KategoriTes[]>(() => {
         if (kategori.tipe === 'isian') {
             return kategori;
         }
+        
+        if (kategori.tipe === 'angka') {
+            return {
+                ...kategori,
+                soal: (kategori.soal as SoalPilihanItemRaw[]).map((item) => ({
+                    pertanyaan: typeof item === 'string' ? item : item.pertanyaan,
+                    gambarSoal: typeof item === 'string' ? null : (item.gambarSoal ?? null),
+                }))
+            };
+        }
 
         const soalPilihan = (kategori.soal as SoalPilihanItemRaw[]).map((item) => ({
             pertanyaan: item.pertanyaan,
@@ -255,6 +271,16 @@ const jawabanKategoriAktif = computed<string[]>(() => {
 const bisaLanjut = computed(() => {
     if (kategoriAktif.value.tipe === 'pilihan') {
         const daftarSoal = kategoriAktif.value.soal as SoalPilihanItem[];
+
+        return daftarSoal.every(
+            (_, index) =>
+                typeof jawabanKategoriAktif.value[index] === 'string' &&
+                jawabanKategoriAktif.value[index].trim() !== '',
+        );
+    }
+    
+    if (kategoriAktif.value.tipe === 'angka') {
+        const daftarSoal = kategoriAktif.value.soal as SoalAngkaItem[];
 
         return daftarSoal.every(
             (_, index) =>
@@ -355,6 +381,16 @@ const handleCategoryTimeout = () => {
             <SoalIsian
                 v-if="mode === 'soal' && kategoriAktif.tipe === 'isian'"
                 :soal="kategoriAktif.soal as string[]"
+                :kategori="labelKategoriAktif"
+                :waktu="kategoriAktif.waktuSoal"
+                v-model="jawaban[kategoriAktif.kode]"
+                @timeout="handleCategoryTimeout"
+            />
+            
+            <!-- SOAL ANGKA -->
+            <SoalAngka
+                v-if="mode === 'soal' && kategoriAktif.tipe === 'angka'"
+                :soal="kategoriAktif.soal as SoalAngkaItem[]"
                 :kategori="labelKategoriAktif"
                 :waktu="kategoriAktif.waktuSoal"
                 v-model="jawaban[kategoriAktif.kode]"

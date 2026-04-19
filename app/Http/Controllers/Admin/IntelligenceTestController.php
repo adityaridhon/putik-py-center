@@ -7,6 +7,7 @@ use App\Models\IntelligenceTestCategory;
 use App\Models\IntelligenceTestQuestion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class IntelligenceTestController extends Controller
 {
@@ -41,15 +42,41 @@ class IntelligenceTestController extends Controller
     // Update Kategori
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
+        $category = IntelligenceTestCategory::findOrFail($id);
+
+        $rules = [
             'name' => 'nullable|string|max:255',
             'duration_minutes' => 'nullable|integer|min:1',
             'total_questions' => 'nullable|integer|min:1',
             'description' => 'nullable|string',
-            'instruction' => 'nullable|string',
-        ]);
+        ];
 
-        $category = IntelligenceTestCategory::findOrFail($id);
+        // Jika metode submit mengirimkan gambar, instruksi divalidasi sebagai file
+        if ($request->hasFile('instruction_file')) {
+            $rules['instruction_file'] = 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'; // Max 2MB
+        } else {
+            $rules['instruction'] = 'nullable|string';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Jika ada file terunggah, simpan gambarnya
+        if ($request->hasFile('instruction_file')) {
+            $file = $request->file('instruction_file');
+            $path = $file->store('intelligence-test/instructions', 'public');
+            
+            // Hapus file lama jika ada (opsional tapi disarankan)
+            if ($category->instruction && Storage::disk('public')->exists($category->instruction)) {
+                Storage::disk('public')->delete($category->instruction);
+            }
+            
+            // Simpan path ke kolom instruction yang sudah ada
+            $validated['instruction'] = $path;
+        }
+
+        // Hapus instruction_file dari array supaya tidak error waktu update DB
+        unset($validated['instruction_file']);
+
         $category->update(array_filter($validated));
 
         return redirect()->back()->with('success', 'Kategori berhasil diupdate!');
