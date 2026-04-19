@@ -9,38 +9,38 @@ const props = defineProps<{
     }>;
 }>();
 
-const defaultItems = [
-    {
-        id: 1,
-        judul: 'CHILDREN CENTER',
-        deskripsi:
-            'Memberikan segala bentuk pelayanan yang berkaitan dengan anak, yang berupa Taman Bermain',
-        logo: '/images/Children_Center.png',
-        color: 'bg-white',
-    },
-    {
-        id: 2,
-        judul: 'KONSELING DAN TERAPI',
-        deskripsi:
-            'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
-        logo: '/images/Konseling.png',
-        color: 'bg-white',
-    },
-    {
-        id: 3,
-        judul: 'PEMERIKSAAN PSIKOLOGI',
-        deskripsi: `1. Tes Kepribadian
-                    2. Tes Penjurusan Bimbingan Karir
-                    3. Tes Kematangan Kesiapan Masuk SD
-                    4. Tes Perusahaan
-                    5. Tes Talent Mapping
-                    6. Tes Inteligensi
-                    7. Tes Gaya Belajar
-                    8. Tes Minat Bakat`,
-        logo: '/images/Pemeriksaan_Sikologi.png',
-        color: 'bg-white',
-    },
-];
+// const defaultItems = [
+//     {
+//         id: 1,
+//         judul: 'CHILDREN CENTER',
+//         deskripsi:
+//             'Memberikan segala bentuk pelayanan yang berkaitan dengan anak, yang berupa Taman Bermain',
+//         logo: '/images/Children_Center.png',
+//         color: 'bg-white',
+//     },
+//     {
+//         id: 2,
+//         judul: 'KONSELING DAN TERAPI',
+//         deskripsi:
+//             'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
+//         logo: '/images/Konseling.png',
+//         color: 'bg-white',
+//     },
+//     {
+//         id: 3,
+//         judul: 'PEMERIKSAAN PSIKOLOGI',
+//         deskripsi: `1. Tes Kepribadian
+//                     2. Tes Penjurusan Bimbingan Karir
+//                     3. Tes Kematangan Kesiapan Masuk SD
+//                     4. Tes Perusahaan
+//                     5. Tes Talent Mapping
+//                     6. Tes Inteligensi
+//                     7. Tes Gaya Belajar
+//                     8. Tes Minat Bakat`,
+//         logo: '/images/Pemeriksaan_Sikologi.png',
+//         color: 'bg-white',
+//     },
+// ];
 
 const logoMap = {
     1: '/images/Children_Center.png',
@@ -56,12 +56,12 @@ const items = computed(() => {
             deskripsi:
                 service.description ||
                 'Deskripsi layanan tidak tersedia. Hubungi admin untuk detail lebih lanjut.',
-            logo: logoMap[(index + 1) as keyof typeof logoMap] || '/images/Children_Center.png',
+            logo:
+                logoMap[(index + 1) as keyof typeof logoMap] ||
+                '/images/Children_Center.png',
             color: 'bg-white',
         }));
     }
-
-    return defaultItems;
 });
 </script>
 

@@ -7,11 +7,13 @@ use App\Models\CompanyProfile;
 use App\Models\Article;
 use App\Models\Client;
 use App\Models\Service;
+use App\Models\Psychologist;
 use App\Models\InterestCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\PsychologistController;
 use App\Http\Controllers\Admin\InterestCategoryController;
 use App\Http\Controllers\Admin\InterestJobController;
 use App\Http\Controllers\AuthController;
@@ -77,7 +79,21 @@ Route::get('/', function () {
     })->name('home');
 
     Route::get('/tentang-kami', function () {
-        return Inertia::render('user/tentang-kami/Index');
+        $psychologists = Psychologist::query()
+            ->latest('created_at')
+            ->get()
+            ->map(function (Psychologist $psychologist) {
+                return [
+                    'id' => $psychologist->id,
+                    'name' => $psychologist->name,
+                    'specialization' => $psychologist->specialization,
+                    'photo_url' => $psychologist->photo_url,
+                ];
+            });
+
+        return Inertia::render('user/tentang-kami/Index', [
+            'psychologists' => $psychologists,
+        ]);
     })->name('tentang-kami');
 
     Route::get('/layanan-kami', function () {
@@ -465,6 +481,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     // Clients Management
     Route::resource('admin/clients', ClientController::class)->except(['create', 'edit']);
+
+    // Psychologists Management
+    Route::resource('admin/psychologists', PsychologistController::class)->except(['create', 'edit']);
 
     // Articles Management
     Route::get('/admin/articles', [ArticleController::class, 'index'])->name('article');

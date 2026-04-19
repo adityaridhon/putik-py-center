@@ -40,7 +40,9 @@ const submit = () => {
             form.reset();
         },
         onError: () => {
-            toast.error('Gagal menambahkan layanan. Coba lagi.', { duration: 3000 });
+            toast.error('Gagal menambahkan layanan. Coba lagi.', {
+                duration: 3000,
+            });
         },
     });
 };
@@ -56,8 +58,10 @@ const submit = () => {
                 </DialogDescription>
             </DialogHeader>
             <form @submit.prevent="submit" class="space-y-4">
-                <div>
-                    <Label>Nama Layanan</Label>
+                <div class="space-y-2">
+                    <Label
+                        >Nama Layanan <span class="text-red-500">*</span></Label
+                    >
                     <Input
                         v-model="form.name"
                         placeholder="Contoh: Konseling Psikologi"
@@ -67,12 +71,13 @@ const submit = () => {
                         {{ form.errors.name }}
                     </span>
                 </div>
-                <div>
-                    <Label>Deskripsi</Label>
+                <div class="space-y-2">
+                    <Label>Deskripsi <span class="text-red-500">*</span></Label>
                     <Textarea
                         v-model="form.description"
                         placeholder="Deskripsi layanan..."
                         class="resize-none"
+                        required
                     />
                     <span
                         v-if="form.errors.description"
@@ -81,8 +86,11 @@ const submit = () => {
                         {{ form.errors.description }}
                     </span>
                 </div>
-                <div>
-                    <Label>Gambar Layanan</Label>
+                <div class="space-y-2">
+                    <Label
+                        >Gambar Layanan
+                        <span class="text-red-500">*</span></Label
+                    >
                     <Input
                         type="file"
                         accept="image/*"

@@ -41,7 +41,7 @@ const kontakItems = [
                 >
                     <iframe
                         class="h-56 w-full sm:h-64 md:h-72"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.913805567909!2d116.83237247424891!3d-1.220048535555804!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2df147d7b54024ed%3A0x1eafad990c3ce7d1!2sJl.%20Telindung%20No.141%2C%20Muara%20Rapak%2C%20Kec.%20Balikpapan%20Utara%2C%20Kota%20Balikpapan%2C%20Kalimantan%20Timur!5e0!3m2!1sen!2sid!4v1770785444609!5m2!1sen!2sid"
+                        src="https://www.google.com/maps/embed?pb=!4v1776425875708!6m8!1m7!1sYUWQfqrJqagcH8pmWpOUPw!2m2!1d-1.220575870818638!2d116.8364601231658!3f140.37!4f-17.590000000000003!5f0.7820865974627469"
                         style="border: 0"
                         loading="lazy"
                     ></iframe>

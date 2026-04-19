@@ -71,14 +71,14 @@ const handleError = () => {
                 @error="handleError"
                 v-slot="{ errors, processing }"
             >
-                <div>
+                <div class="space-y-2">
                     <Label>Nama Layanan</Label>
                     <Input name="name" :default-value="service.name" required />
                     <span v-if="errors.name" class="text-sm text-red-500">
                         {{ errors.name }}
                     </span>
                 </div>
-                <div>
+                <div class="space-y-2">
                     <Label>Deskripsi</Label>
                     <Textarea
                         name="description"
@@ -92,7 +92,7 @@ const handleError = () => {
                         {{ errors.description }}
                     </span>
                 </div>
-                <div>
+                <div class="space-y-2">
                     <Label
                         >Gambar Layanan (Kosongkan jika tidak ingin
                         mengubah)</Label

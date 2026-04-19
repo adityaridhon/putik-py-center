@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+    psychologists?: Array<{
+        id: number;
+        name: string;
+        specialization?: string | null;
+        photo_url?: string | null;
+    }>;
+}>();
+</script>
 
 <template>
     <div
@@ -27,6 +36,14 @@
                 serta pengalaman yang beragam, sesuai dengan berbagai jenis jasa
                 dan pelayanan yang akan diberikan kepada masyarakat.
             </p>
+            <p>
+                Selain memiliki tenaga tetap, Putik juga merekrut tenaga lepasan
+                (Associates) yang telah dilatih dan memiliki pengalaman dalam
+                memberikan pelayanan psikologi yang dibutuhkan dibawah
+                koordinasi dan tanggung jawab psikolog yang telah memiliki
+                pengalaman dan izin praktek SIPP (Surat Izin Praktek Psikologi)
+                yang terdaftar di HIMPSI (Himpunan Psikologi Indonesia).
+            </p>
             <div
                 class="w-full rounded-2xl bg-linear-to-r from-primary/80 to-emerald-600/70 px-6 py-4 text-center text-sm font-semibold text-white shadow-lg"
             >
@@ -40,36 +57,35 @@
         </div>
     </div>
 
-    <!-- PARAGRAF TAMBAHAN -->
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10">
-        <p class="w-full text-justify text-base leading-relaxed text-primary">
-            Selain memiliki tenaga tetap, Putik juga merekrut tenaga lepasan
-            (Associates) yang telah dilatih dan memiliki pengalaman dalam
-            memberikan pelayanan psikologi yang dibutuhkan dibawah koordinasi
-            dan tanggung jawab psikolog yang telah memiliki pengalaman dan izin
-            praktek SIPP (Surat Izin Praktek Psikologi) yang terdaftar di HIMPSI
-            (Himpunan Psikologi Indonesia).
-        </p>
-    </div>
-
-    <!-- FOTO TIM -->
+    <!-- KARTU TIM PSIKOLOG -->
     <div
-        class="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-6 px-4 pb-10 sm:px-6 md:px-8 lg:grid-cols-2 lg:px-10"
+        class="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-6 px-4 pb-10 sm:grid-cols-2 sm:px-6 md:grid-cols-3 md:px-8 lg:grid-cols-4 lg:px-10"
     >
-        <div class="overflow-hidden rounded-3xl shadow-lg">
+        <div
+            v-for="psychologist in psychologists"
+            :key="psychologist.id"
+            class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+        >
             <img
-                src="/images/Tim_Putik.png"
-                alt="Tim Putik"
-                class="h-64 w-full object-cover sm:h-72 md:h-80"
+                :src="psychologist.photo_url || '/images/logo_putik.webp'"
+                :alt="psychologist.name"
+                class="h-64 w-full object-cover"
             />
+            <div class="space-y-1 p-4">
+                <p class="line-clamp-2 text-base font-semibold text-gray-900">
+                    {{ psychologist.name }}
+                </p>
+                <p class="line-clamp-2 text-sm text-gray-600">
+                    {{ psychologist.specialization || 'Psikolog' }}
+                </p>
+            </div>
         </div>
 
-        <div class="overflow-hidden rounded-3xl shadow-lg">
-            <img
-                src="/images/Tim_Putik2.png"
-                alt="Tim Putik"
-                class="h-64 w-full object-cover sm:h-72 md:h-80"
-            />
+        <div
+            v-if="!psychologists || psychologists.length === 0"
+            class="col-span-full rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-gray-500"
+        >
+            Data psikolog belum tersedia.
         </div>
     </div>
 </template>
