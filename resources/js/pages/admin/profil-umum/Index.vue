@@ -2,6 +2,7 @@
 import ClientLists from '@/components/admin/profil-umum/ClientLists.vue';
 import GeneralProfileCard from '@/components/admin/profil-umum/GeneralProfileCard.vue';
 import ProfileCard from '@/components/admin/profil-umum/ProfileCardHeader.vue';
+import PsychologyLists from '@/components/admin/profil-umum/PsychologyLists.vue';
 import ServiceLists from '@/components/admin/profil-umum/ServiceLists.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { konten } from '@/routes';
@@ -13,6 +14,7 @@ const props = defineProps<{
     profile?: any;
     services?: any;
     clients?: any;
+    psychologists?: any;
 }>();
 
 const servicesCount = computed(
@@ -46,6 +48,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div>
                 <h1 class="my-4 text-2xl font-bold">Profil umum</h1>
                 <GeneralProfileCard :profile="profile" />
+                <PsychologyLists class="my-10" :psychologists="psychologists" />
                 <ServiceLists class="my-10" :services="services" />
                 <ClientLists class="my-10" :clients="clients" />
             </div>

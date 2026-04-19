@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { store } from '@/routes/clients';
+import { store } from '@/routes/psychologists';
 import { useForm } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 
@@ -23,8 +23,8 @@ const emit = defineEmits<{
 
 const form = useForm({
     name: '',
-    location: '',
-    logo: null as File | null,
+    specialization: '',
+    photo: null as File | null,
 });
 
 const submit = () => {
@@ -32,12 +32,12 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            toast.success('Klien berhasil ditambahkan!', { duration: 3000 });
+            toast.success('Psikolog berhasil ditambahkan!', { duration: 3000 });
             emit('update:open', false);
             form.reset();
         },
         onError: () => {
-            toast.error('Gagal menambahkan klien. Coba lagi.', {
+            toast.error('Gagal menambahkan psikolog. Coba lagi.', {
                 duration: 3000,
             });
         },
@@ -49,56 +49,64 @@ const submit = () => {
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="max-w-2xl">
             <DialogHeader>
-                <DialogTitle>Tambah Klien Baru</DialogTitle>
+                <DialogTitle>Tambah Psikolog Baru</DialogTitle>
                 <DialogDescription>
-                    Isi form di bawah ini untuk menambahkan klien baru
+                    Isi form di bawah ini untuk menambahkan data psikolog
                 </DialogDescription>
             </DialogHeader>
+
             <form @submit.prevent="submit" class="space-y-4">
                 <div class="space-y-2">
                     <Label
-                        >Nama Klien <span class="text-red-500">*</span></Label
+                        >Nama Psikolog
+                        <span class="text-red-500">*</span></Label
                     >
                     <Input
                         v-model="form.name"
-                        placeholder="Contoh: Pertamina"
+                        placeholder="Contoh: Dr. Aisyah, M.Psi"
                         required
                     />
                     <span v-if="form.errors.name" class="text-sm text-red-500">
                         {{ form.errors.name }}
                     </span>
                 </div>
+
                 <div class="space-y-2">
-                    <Label>Domisili <span class="text-red-500">*</span></Label>
+                    <Label
+                        >Spesialisasi <span class="text-red-500">*</span></Label
+                    >
                     <Input
-                        v-model="form.location"
-                        placeholder="Contoh: Balikpapan"
+                        v-model="form.specialization"
+                        placeholder="Contoh: Psikologi Klinis"
                         required
                     />
                     <span
-                        v-if="form.errors.location"
+                        v-if="form.errors.specialization"
                         class="text-sm text-red-500"
                     >
-                        {{ form.errors.location }}
+                        {{ form.errors.specialization }}
                     </span>
                 </div>
+
                 <div class="space-y-2">
                     <Label
-                        >Logo Klien <span class="text-red-500">*</span></Label
+                        >Foto Psikolog<span class="text-red-500">*</span></Label
                     >
                     <Input
                         type="file"
                         accept="image/*"
+                        required
                         @change="
-                            form.logo =
+                            form.photo =
                                 ($event.target as HTMLInputElement)
                                     .files?.[0] || null
                         "
                     />
-                    <span v-if="form.errors.logo" class="text-sm text-red-500">
-                        {{ form.errors.logo }}
+                    <span v-if="form.errors.photo" class="text-sm text-red-500">
+                        {{ form.errors.photo }}
                     </span>
                 </div>
+
                 <div class="flex justify-end gap-2 pt-4">
                     <Button
                         type="button"
