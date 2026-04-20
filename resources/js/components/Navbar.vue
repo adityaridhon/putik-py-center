@@ -132,11 +132,15 @@ useFlashMessages();
     <Toaster position="top-right" :duration="4000" rich-colors />
     <nav v-if="isTitleMode" class="w-full bg-primary px-3 py-3 sm:px-6">
         <div class="mx-auto flex w-full max-w-5xl items-center gap-2 sm:gap-3">
-            <img
-                :src="logoSrc"
-                alt="Putik Psychology Center"
-                class="h-7 w-auto shrink-0 sm:h-8"
-            />
+            <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-sm sm:h-11 sm:w-11"
+            >
+                <img
+                    :src="logoSrc"
+                    alt="Putik Psychology Center"
+                    class="h-7 w-7 object-contain sm:h-8 sm:w-8"
+                />
+            </div>
 
             <h1
                 class="flex-1 pr-7 text-center text-sm font-bold tracking-wide text-white sm:pr-8 sm:text-xl md:text-2xl"
@@ -153,7 +157,15 @@ useFlashMessages();
             class="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4"
         >
             <div class="logo">
-                <img :src="logoSrc" width="50" alt="Logo" />
+                <div
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm"
+                >
+                    <img
+                        :src="logoSrc"
+                        alt="Logo"
+                        class="h-9 w-9 object-contain"
+                    />
+                </div>
             </div>
 
             <div
