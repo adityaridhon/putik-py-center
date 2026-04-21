@@ -5,6 +5,7 @@ import ArtikelTerkait from '@/components/ArtikelTerkait.vue';
 import Footer from '@/components/Footer.vue';
 import Navbar from '@/components/Navbar.vue';
 import PageHeader from '@/components/PageHeader.vue';
+import { FileText } from 'lucide-vue-next';
 
 type ArticleCard = {
     judul: string;
@@ -13,6 +14,8 @@ type ArticleCard = {
     kategori: string;
     tanggal: string;
     slug: string;
+    file_path_url?: string | null;
+    penulis?: string;
 };
 
 defineProps<{
@@ -34,6 +37,29 @@ defineProps<{
                 class="prose prose-lg max-w-none rounded-lg bg-white p-6 shadow-sm sm:p-8"
             >
                 <ArtikelContent :article="article" />
+
+                <!-- PDF Viewer Section -->
+                <div v-if="article.file_path_url" class="border-t pt-6 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">File Artikel</h3>
+                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
+                        <iframe
+                            :src="article.file_path_url"
+                            class="w-full h-96 rounded-lg"
+                            title="PDF Artikel"
+                        />
+                    </div>
+                    <div class="mt-4">
+                        <a
+                            :href="article.file_path_url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition font-medium"
+                        >
+                            <FileText class="w-5 h-5" />
+                            Buka PDF di Tab Baru
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <ArtikelTerkait :articles="articles" />

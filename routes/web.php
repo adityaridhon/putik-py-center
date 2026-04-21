@@ -191,6 +191,8 @@ Route::get('/', function () {
             'tanggal' => $article->published_at?->translatedFormat('d F Y')
                 ?? $article->created_at->translatedFormat('d F Y'),
             'slug' => $article->slug,
+            'file_path_url' => $article->file_path_url,
+            'penulis' => $article->author,
         ];
 
         return Inertia::render('user/artikel/detail', [
