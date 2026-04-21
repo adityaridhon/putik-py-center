@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import Footer from '@/components/Footer.vue';
 import Navbar from '@/components/Navbar.vue';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
 import TestList from '@/components/TestList.vue';
 </script>
 
 <template>
     <div class="overflow-x-hidden">
         <Navbar />
+        <ScrollProgressBar />
+
         <section class="bg-gray-50 pt-28 pb-16 sm:pt-32 sm:pb-20 md:pb-24">
             <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10">
                 <div class="mx-auto max-w-4xl text-center">

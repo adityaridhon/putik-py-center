@@ -7,6 +7,8 @@ import Navbar from '@/components/Navbar.vue';
 import PilihKategori from '@/components/PilihKategori.vue';
 import RingkasanBooking from '@/components/RingkasanBooking.vue';
 import { Check } from 'lucide-vue-next';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
+
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -51,7 +53,9 @@ const canConfirm = computed(() => {
 });
 
 const confirmButtonLabel = computed(() => {
-    return konfirmasi.value ? 'Pendaftaran Terkonfirmasi' : 'Konfirmasi Pendaftaran';
+    return konfirmasi.value
+        ? 'Pendaftaran Terkonfirmasi'
+        : 'Konfirmasi Pendaftaran';
 });
 
 const handleConfirm = () => {
@@ -78,7 +82,7 @@ watch(kategori, (newKategori) => {
         if (jadwalElement) {
             jadwalElement.scrollIntoView({
                 behavior: 'smooth',
-                block: 'start'
+                block: 'start',
             });
         }
     }, 100);
@@ -95,7 +99,7 @@ watch(layanan, (newLayanan) => {
         if (jadwalElement) {
             jadwalElement.scrollIntoView({
                 behavior: 'smooth',
-                block: 'start'
+                block: 'start',
             });
         }
     }, 100);
@@ -110,7 +114,7 @@ watch(tanggal, (newTanggal) => {
             if (jamElement) {
                 jamElement.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'start'
+                    block: 'start',
                 });
             }
         }, 100);
@@ -122,11 +126,13 @@ watch(konfirmasi, (newKonfirmasi) => {
     if (newKonfirmasi) {
         // Delay sedikit untuk memastikan komponen ter-render
         setTimeout(() => {
-            const konfirmasiElement = document.querySelector('[data-konfirmasi-section]');
+            const konfirmasiElement = document.querySelector(
+                '[data-konfirmasi-section]',
+            );
             if (konfirmasiElement) {
                 konfirmasiElement.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'start'
+                    block: 'start',
                 });
             }
         }, 100);
@@ -159,14 +165,14 @@ watch(
             resetForm();
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 </script>
 
 <template>
     <div class="overflow-x-hidden">
         <Navbar />
-
+        <ScrollProgressBar />   
         <section
             class="mx-auto max-w-5xl space-y-6 px-4 pt-24 pb-10 sm:space-y-8 sm:px-6 md:px-8 lg:px-10"
         >
@@ -182,14 +188,14 @@ watch(
                 v-model:jumlahPeserta="jumlahPeserta"
             />
 
-        <Jadwal
-            v-if="kategori"
-            v-model:tanggal="tanggal"
-            v-model:jam="jam"
-            :is-confirmed="konfirmasi"
-            :booked-slots="props.bookedSlots || []"
-            data-jadwal-section
-        />
+            <Jadwal
+                v-if="kategori"
+                v-model:tanggal="tanggal"
+                v-model:jam="jam"
+                :is-confirmed="konfirmasi"
+                :booked-slots="props.bookedSlots || []"
+                data-jadwal-section
+            />
 
             <button
                 v-if="kategori"
@@ -199,10 +205,10 @@ watch(
                 class="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition sm:px-6 sm:text-base"
                 :class="
                     konfirmasi
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        ? 'cursor-not-allowed bg-gray-300 text-gray-600'
                         : canConfirm
-                        ? 'bg-primary text-white hover:bg-green-900'
-                        : 'cursor-not-allowed bg-gray-300 text-gray-600'
+                          ? 'bg-primary text-white hover:bg-green-900'
+                          : 'cursor-not-allowed bg-gray-300 text-gray-600'
                 "
             >
                 <Check class="h-5 w-5" />

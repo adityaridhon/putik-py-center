@@ -22,87 +22,6 @@ const props = defineProps<{
 
 const bookingHref = bookingLayanan().url;
 
-// const defaultServices = [
-//     {
-//         id: 1,
-//         title: 'Konseling dan Terapi',
-//         description:
-//             'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
-//         icon: MessageCircle,
-//         images: [
-//             '/images/Konseling_1.png',
-//             '/images/Konseling_2.png',
-//             '/images/Konseling_3.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-//     {
-//         id: 2,
-//         title: 'Tes Kepribadian ',
-//         description:
-//             'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
-//         icon: HeartHandshake,
-//         images: [
-//             '/images/TesKep_1.png',
-//             '/images/TesKep_2.png',
-//             '/images/TesKep_1.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-//     {
-//         id: 3,
-//         title: 'Tes Kesiapan Masuk SD',
-//         description:
-//             'Memperoleh gambaran mengenai kematangan aspek-aspek perkembangan atau fungsi psikologis anak untuk mengikuti kegiatan pendidikan di SD.',
-//         icon: BookOpen,
-//         images: [
-//             '/images/TesSD_1.png',
-//             '/images/TesSD_2.png',
-//             '/images/TesSD_1.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-//     {
-//         id: 4,
-//         title: 'Tes Penjurusan Bimbingan Karir',
-//         description:
-//             'Mencari potensi kesesuaian bakat dan minat dalam mengikuti pendidikan pada jurusan di SMA maupun Perguruan Tinggi.',
-//         icon: GraduationCap,
-//         images: [
-//             '/images/Penjurusan_1.png',
-//             '/images/Penjurusan_2.png',
-//             '/images/Penjurusan_1.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-//     {
-//         id: 5,
-//         title: 'Tes Perusahaan',
-//         description:
-//             'Mencari potensi, minat dan bakat, kecakapan intelektual,emosi serta motivasi dari pribadi seseorang sesuai dengan tuntutan tugas agar nantinya tercapai kepuasan kerja.',
-//         icon: BriefcaseBusiness,
-//         images: [
-//             '/images/TesPer_1.png',
-//             '/images/TesPer_2.png',
-//             '/images/TesPer_1.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-//     {
-//         id: 6,
-//         title: 'Talent Mapping',
-//         description:
-//             'Asesmen ini berguna untuk memetakan bakat alami, potensi, dan kekuatan unik seseorang melalui identifikasi urutan bakat dari yang paling dominan hingga terlemah, guna membantu menentukan karier atau jurusan yang tepat serta mengoptimalkan kinerja individu dan tim dalam organisasi.',
-//         icon: Brain,
-//         images: [
-//             '/images/Mapping_1.png',
-//             '/images/Mapping_1.png',
-//             '/images/Mapping_1.png',
-//         ],
-//         primaryAction: 'Jadwalkan Layanan',
-//     },
-// ];
-
 const iconList = [
     MessageCircle,
     HeartHandshake,
@@ -144,19 +63,19 @@ const serviceItems = computed(() => {
 
 <template>
     <section
-        class="space-y-16 px-4 py-8 sm:px-6 md:space-y-20 md:px-8 lg:space-y-24 lg:px-10"
+        class="mx-auto max-w-7xl space-y-14 px-4 py-10 sm:px-6 sm:py-12 md:space-y-16 lg:space-y-20 lg:px-8 lg:py-14"
     >
         <div
             v-for="service in serviceItems"
             :key="service.id"
-            class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 md:gap-10 lg:grid-cols-2 lg:gap-12"
+            class="grid grid-cols-1 items-center gap-8 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6 md:gap-10 lg:grid-cols-2 lg:gap-12 lg:p-8"
         >
             <div
                 class="flex justify-center"
                 :class="service.id % 2 === 0 ? 'lg:order-2' : ''"
             >
                 <div
-                    class="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-slate-200"
+                    class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-slate-200"
                 >
                     <img
                         :src="service.image"
@@ -166,19 +85,21 @@ const serviceItems = computed(() => {
                 </div>
             </div>
 
-            <div class="flex flex-col justify-center">
+            <div class="flex flex-col justify-center px-1 sm:px-2 lg:px-4">
                 <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary"
+                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary"
                 >
                     <component :is="service.icon" class="h-6 w-6 text-white" />
                 </div>
 
-                <h3 class="mb-4 text-xl font-semibold sm:text-2xl">
+                <h3
+                    class="mb-3 text-xl leading-tight font-semibold sm:text-2xl"
+                >
                     {{ service.title }}
                 </h3>
 
                 <p
-                    class="mb-6 max-w-xl text-sm text-slate-600 sm:mb-8 sm:text-base"
+                    class="mb-7 max-w-xl text-sm leading-relaxed text-slate-600 sm:mb-8 sm:text-base"
                 >
                     {{ service.description }}
                 </p>

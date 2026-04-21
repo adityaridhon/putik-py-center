@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -9,39 +11,6 @@ const props = defineProps<{
     }>;
 }>();
 
-// const defaultItems = [
-//     {
-//         id: 1,
-//         judul: 'CHILDREN CENTER',
-//         deskripsi:
-//             'Memberikan segala bentuk pelayanan yang berkaitan dengan anak, yang berupa Taman Bermain',
-//         logo: '/images/Children_Center.png',
-//         color: 'bg-white',
-//     },
-//     {
-//         id: 2,
-//         judul: 'KONSELING DAN TERAPI',
-//         deskripsi:
-//             'Memberikan segala bentuk pelayanan yang berkaitan dengan tumbuh kembang anak dan aplikasinya, remaja dan permasalahannya, dewasa, orangtua dan klinis yang dilakukan baik secara individu & kelompok.',
-//         logo: '/images/Konseling.png',
-//         color: 'bg-white',
-//     },
-//     {
-//         id: 3,
-//         judul: 'PEMERIKSAAN PSIKOLOGI',
-//         deskripsi: `1. Tes Kepribadian
-//                     2. Tes Penjurusan Bimbingan Karir
-//                     3. Tes Kematangan Kesiapan Masuk SD
-//                     4. Tes Perusahaan
-//                     5. Tes Talent Mapping
-//                     6. Tes Inteligensi
-//                     7. Tes Gaya Belajar
-//                     8. Tes Minat Bakat`,
-//         logo: '/images/Pemeriksaan_Sikologi.png',
-//         color: 'bg-white',
-//     },
-// ];
-
 const logoMap = {
     1: '/images/Children_Center.png',
     2: '/images/Konseling.png',
@@ -50,7 +19,7 @@ const logoMap = {
 
 const items = computed(() => {
     if (props.services && props.services.length > 0) {
-        return props.services.slice(0, 3).map((service, index) => ({
+        return props.services.slice(0, 4).map((service, index) => ({
             id: service.id,
             judul: service.name.toUpperCase(),
             deskripsi:
@@ -79,7 +48,7 @@ const items = computed(() => {
                 dengan kebutuhan unik setiap klien.
             </p>
             <div
-                class="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3 md:gap-8"
+                class="mx-auto grid max-w-7xl grid-cols-2 gap-8 md:grid-cols-4 md:gap-8"
             >
                 <div
                     v-for="item in items"
@@ -92,7 +61,7 @@ const items = computed(() => {
                         class="mx-auto mb-3 w-14"
                     />
                     <h3
-                        class="font-primary mb-1 text-xl font-bold text-primary"
+                        class="font-primary mb-1 text-lg font-bold text-primary md:text-xl"
                     >
                         {{ item.judul }}
                     </h3>
@@ -102,6 +71,11 @@ const items = computed(() => {
                         {{ item.deskripsi }}
                     </p>
                 </div>
+            </div>
+            <div class="mt-8">
+                <Link href="/layanan-kami">
+                    <Button>Lihat Semua Layanan</Button>
+                </Link>
             </div>
         </div>
     </section>

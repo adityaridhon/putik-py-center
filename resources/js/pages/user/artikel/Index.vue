@@ -2,6 +2,8 @@
 import Artikel from '@/components/Artikel.vue';
 import Footer from '@/components/Footer.vue';
 import Navbar from '@/components/Navbar.vue';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
+
 import {
     Pagination,
     PaginationContent,
@@ -43,6 +45,7 @@ const goToArticlesPage = (page: number) => {
 
 <template>
     <Navbar />
+    <ScrollProgressBar />
     <main class="pt-4">
         <Artikel :articles="props.articles.data" />
 
