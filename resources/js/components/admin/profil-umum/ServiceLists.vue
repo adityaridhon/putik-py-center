@@ -30,7 +30,7 @@ import { konten } from '@/routes';
 import { destroy } from '@/routes/service';
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash, TriangleAlert } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import ServiceAddDialog from './dialogs/ServiceAddDialog.vue';
 import ServiceEditDialog from './dialogs/ServiceEditDialog.vue';
@@ -47,6 +47,8 @@ const props = defineProps<{
         to: number;
     };
 }>();
+
+const hasServices = computed(() => (props.services?.data?.length ?? 0) > 0);
 
 // State untuk modal
 const showAddModal = ref(false);
@@ -85,7 +87,9 @@ const confirmDeleteService = () => {
             selectedService.value = null;
         },
         onError: () => {
-            toast.error('Gagal menghapus layanan. Coba lagi.', { duration: 3000 });
+            toast.error('Gagal menghapus layanan. Coba lagi.', {
+                duration: 3000,
+            });
             showDeleteDialog.value = false;
             selectedService.value = null;
         },
@@ -114,6 +118,7 @@ const goToServicesPage = (page: number) => {
         </div>
 
         <div
+            v-if="hasServices"
             class="overflow-hidden rounded-lg border border-gray-200 shadow-sm"
         >
             <Table>
@@ -142,6 +147,7 @@ const goToServicesPage = (page: number) => {
                         </TableHead>
                     </TableRow>
                 </TableHeader>
+
                 <TableBody>
                     <TableRow
                         v-for="(service, index) in services?.data"
@@ -206,8 +212,33 @@ const goToServicesPage = (page: number) => {
             </Table>
         </div>
 
+        <div
+            v-else
+            class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center"
+        >
+            <div
+                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"
+            >
+                <TriangleAlert class="h-8 w-8 text-primary" />
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">
+                Belum ada layanan
+            </h3>
+            <p class="mx-auto mt-2 max-w-md text-sm text-gray-600">
+                Data layanan belum tersedia. Tambahkan layanan pertama agar
+                dapat ditampilkan di daftar.
+            </p>
+            <Button class="mt-5" @click="showAddModal = true">
+                <Plus class="mr-2 h-4 w-4" />
+                Tambah Layanan Pertama
+            </Button>
+        </div>
+
         <!-- Pagination -->
-        <div v-if="services && services.last_page > 1" class="mt-4">
+        <div
+            v-if="hasServices && services && services.last_page > 1"
+            class="mt-4"
+        >
             <div class="w-full flex-col items-center justify-between">
                 <div class="mb-2 text-center text-sm text-gray-600">
                     Menampilkan {{ services.from }} - {{ services.to }} dari

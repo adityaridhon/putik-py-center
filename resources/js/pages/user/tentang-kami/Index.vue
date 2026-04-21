@@ -4,6 +4,7 @@ import Footer from '@/components/Footer.vue';
 import Navbar from '@/components/Navbar.vue';
 import OurStory from '@/components/OurStory.vue';
 import ProfilTim from '@/components/ProfilTim.vue';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
 import VisiMisi from '@/components/VisiMisi.vue';
 import WhyChooseUs from '@/components/WhyChooseUs.vue';
 
@@ -20,6 +21,7 @@ defineProps<{
 <template>
     <div class="overflow-x-hidden">
         <Navbar />
+        <ScrollProgressBar />
         <AboutHeadline />
         <OurStory />
         <VisiMisi />

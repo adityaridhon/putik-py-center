@@ -7,6 +7,7 @@ import Layanan from '@/components/Layanan.vue';
 import LogoMitra from '@/components/LogoMitra.vue';
 import Navbar from '@/components/Navbar.vue';
 import TimKami from '@/components/TimKami.vue';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
 
 const props = defineProps<{
     companyProfile?: {
@@ -42,6 +43,7 @@ const props = defineProps<{
 
 <template>
     <div class="overflow-x-hidden">
+        <ScrollProgressBar />
         <Navbar :profile="props.companyProfile" />
         <HeroSection :profile="props.companyProfile" />
         <AboutSection :profile="props.companyProfile" />

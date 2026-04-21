@@ -3,6 +3,8 @@ import Footer from '@/components/Footer.vue';
 import HeroLayanan from '@/components/HeroLayanan.vue';
 import Navbar from '@/components/Navbar.vue';
 import ServicesSection from '@/components/ServicesSection.vue';
+import ScrollProgressBar from '@/components/ScrollProgressBar.vue';
+
 
 const props = defineProps<{
     services?: Array<{
@@ -17,6 +19,7 @@ const props = defineProps<{
 <template>
     <div class="overflow-x-hidden">
         <Navbar />
+        <ScrollProgressBar />
         <HeroLayanan />
         <ServicesSection :services="props.services" />
         <Footer />
